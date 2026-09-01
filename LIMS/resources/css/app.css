@@ -1,0 +1,46 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+/* Color pallete 
+#151922 Main Background
+#202633
+#202633/2A2938 Cards
+#373348 Border
+#514174 Button
+#514174 Sidebar Item
+#F5F4F6 Text1
+#C4C2C3 Text2 */
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
+
+    --color-lims-900: #151922;
+
+    --color-lims-text: #C4C2C3;
+}
+
+@layer components {
+
+    .bg-image {
+        @apply min-h-screen w-full bg-cover bg-center bg-no-repeat;
+    }
+    .btn {
+        @apply inline-flex items-center justify-center rounded-lg px-4 py-2 font-medium transition;
+    }
+    .bg-lims-overlay {
+        @apply bg-lims-900/90;
+    }
+
+    .divrow{
+        @apply inline-flex
+
+    }
+
+}
+

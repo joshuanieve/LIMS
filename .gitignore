@@ -1,0 +1,58 @@
+# ============================================
+# Laravel
+# ============================================
+
+LIMS/.env
+LIMS/.env.*
+!LIMS/.env.example
+
+LIMS/vendor/
+LIMS/node_modules/
+
+LIMS/storage/logs/*
+LIMS/storage/framework/cache/*
+LIMS/storage/framework/sessions/*
+LIMS/storage/framework/views/*
+
+LIMS/public/hot
+LIMS/public/build/
+
+# ============================================
+# .NET / Visual Studio
+# ============================================
+
+LIMS_API/.vs/
+LIMS_API/**/bin/
+LIMS_API/**/obj/
+
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ============================================
+# Vite
+# ============================================
+
+.vite/
+**/.vite/
+
+# ============================================
+# IDE
+# ============================================
+
+.vscode/
+.idea/
+
+# ============================================
+# Operating System
+# ============================================
+
+.DS_Store
+Thumbs.db
+
+# ============================================
+# Logs
+# ============================================
+
+*.log
