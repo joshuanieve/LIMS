@@ -8,25 +8,66 @@ let rowIndex = 1;
         const row = document.createElement('tr');
 
         row.innerHTML = `
-            <td><input  type="text"             name="samples[${rowIndex}][sample]"                 class="input" placeholder="Enter Sample"></td>
-            <td><input  type="text"             name="samples[${rowIndex}][customer_sample_code]"   class="input" placeholder="Enter Customer Sample Code"></td>
-            <td><input  type="datetime-local"   name="samples[${rowIndex}][date_collected]"         class="input"></td>
-            <td><input  type="text"             name="samples[${rowIndex}][place_collected]"        class="input" placeholder="Enter Place Collected"></td>
-            <td>
-                <div><button
-                    type="button"
-                    class="analysis-picker"
-                    data-row="${rowIndex}"
+                <td><input
+                        type="text"
+                        name="samples[${rowIndex}][sample]"
+                        class="lims-table-input"
+                        placeholder="Test Sample"
+                        required
                     >
-                        <span id="analysisDisplay${rowIndex}">Select analysis...</span>
+                </td>
+
+                <td><input
+                        type="text"
+                        name="samples[${rowIndex}][customer_sample_code]"
+                        class="lims-table-input"
+                        placeholder="Sample code"
+                        required
+                    >
+                </td>
+
+                <td><input
+                        type="datetime-local"
+                        name="samples[${rowIndex}][date_collected]"
+                        class="lims-table-input"
+                    >
+                </td>
+
+                <td><input
+                        type="text"
+                        name="samples[${rowIndex}][place_collected]"
+                        class="lims-table-input"
+                        placeholder="Location"
+                    >
+                </td>
+
+                <td>
+                    <button
+                        type="button"
+                        class="analysis-picker"
+                        data-row="${rowIndex}"
+                    >
+                        <span id="analysisDisplay${rowIndex}">
+                            Select analysis...
+                        </span>
                     </button>
+                    
+                    <input
+                        type="hidden"
+                        name="samples[${rowIndex}][testarray]"
+                        id="samplehidden${rowIndex}"
+                    >
+                </td>
 
-                    <input type="text" name="samples[${rowIndex}][testarray]" id="samplehidden${rowIndex}">
-                </div>
-            </td>
-
-            <td><button type="button" class="btn btn-danger remove-row">Remove</button></td>
-        `;
+                <td>
+                    <button
+                        type="button"
+                        class="lims-remove-button remove-row"
+                    >
+                        Remove
+                    </button>
+                </td>
+            `;
 
         tbody.appendChild(row);
         rowIndex++;
@@ -55,7 +96,7 @@ let activeAnalysisRow = null;
         document.querySelectorAll('.analysis-checkbox').forEach(cb => cb.checked = false);
         const row_id = analysisButton.dataset.row;
         activeAnalysisRow = row_id;
-
+        
         load_checkboxes();
 
         // Show the Tab
@@ -64,8 +105,9 @@ let activeAnalysisRow = null;
     });
 
     function load_checkboxes(){
+        
         const hidden_inputvalue = document.getElementById(`samplehidden${activeAnalysisRow}`).value;
-
+        console.log(hidden_inputvalue);
         if (hidden_inputvalue !== '') {
             const selectedIds = hidden_inputvalue
             .split(',')
@@ -121,8 +163,8 @@ let activeAnalysisRow = null;
         `samplehidden${activeAnalysisRow}`
         ).value = ID.join(', ');
 
-
-
+        analysisModal.classList.remove('flex');
+        analysisModal.classList.add('hidden');
     });
 
     // Close Analysis Tab
@@ -131,4 +173,40 @@ let activeAnalysisRow = null;
         analysisModal.classList.remove('flex');
     }
     cancelAnalysis.addEventListener('click', closeAnalysisModal);
+
+// VALIDATE FIELDS
+const form = document.querySelector('.lims-form');
+form.addEventListener('submit', function (event) {
+    validate_fields();
+});
+
+function validate_fields(){
+    
+    let hasError = false;
+    const analysisButtons = document.querySelectorAll('.analysis-picker');
+
+    analysisButtons.forEach(function (button) {
+        const rowIndex = button.dataset.row;
+        const hiddenInput = document.getElementById(
+            `samplehidden${rowIndex}`
+        );
+
+        if (!hiddenInput || hiddenInput.value.trim() === '') {
+            hasError = true;
+            button.classList.add('analysis-picker-error');
+        } else {
+            button.classList.remove('analysis-picker-error');
+        }
+    });
+
+    if (hasError) {
+        event.preventDefault();
+        swal_error(
+            'Incomplete Information',
+            'Please select an analysis for every sample.'
+        );
+    }
+}
+
+
 

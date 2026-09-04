@@ -19,4 +19,14 @@ class RequestFormServices
             ->throw()
             ->json();
     }
+
+    public function createRequest(array $data)
+    {
+        return Http::post(
+            "{$this->baseUrl}/api/RequestForm",
+            $data
+        )
+        ->throw()
+        ->json();
+    }
 }

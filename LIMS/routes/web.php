@@ -2,15 +2,18 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RequestFormController;
+
 
 
 Route::get('/', [LoginController::class, 'welcome'])->name('welcome');
 Route::post('/ffast', [LoginController::class, 'login'])->name('login');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-Route::get('/requestform', [RequestFormController::class, 'index'])->name('dashboard');
+Route::get('/requestform', [RequestFormController::class, 'index'])->name('requestform.index');
 Route::get('/request-form', [RequestFormController::class, 'index'])
     ->name('requestform.index');
 

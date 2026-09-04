@@ -1,0 +1,591 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+
+
+@source '../**/*.js';
+
+@layer RequestForm {
+
+    /* =====================================================
+       MAIN FORM
+    ====================================================== */
+
+    .lims-form {
+        @apply mx-auto
+               flex w-full
+               flex-col
+               gap-5;
+    }
+
+
+    /* =====================================================
+       CARDS
+    ====================================================== */
+
+    .lims-form-card {
+        @apply rounded-2xl
+               border border-[#79C7FF]/10
+               bg-[#0A1A2F]/80
+               p-6
+               shadow-[0_10px_35px_rgba(0,0,0,0.10)];
+    }
+
+    .lims-form-card-header {
+        @apply mb-7
+               flex items-start
+               justify-between
+               gap-5
+               border-b border-[#79C7FF]/10
+               pb-5;
+    }
+
+    .lims-form-eyebrow {
+        @apply mb-1
+               text-[10px]
+               font-bold
+               uppercase
+               tracking-[0.20em]
+               text-[#2589D8];
+    }
+
+    .lims-form-card-title {
+        @apply text-xl
+               font-bold
+               text-[#F4F8FC];
+    }
+
+    .lims-form-card-description {
+        @apply mt-1
+               text-sm
+               leading-relaxed
+               text-[#F4F8FC]/40;
+    }
+
+    .lims-form-step {
+        @apply flex h-10 w-10
+               shrink-0
+               items-center justify-center
+               rounded-xl
+               border border-[#2589D8]/25
+               bg-[#0B5FA5]/15
+               text-xs
+               font-bold
+               text-[#79C7FF];
+    }
+
+
+    /* =====================================================
+       GRID
+    ====================================================== */
+
+    .lims-form-grid {
+        @apply grid gap-5;
+    }
+
+    .lims-form-grid + .lims-form-grid {
+        @apply mt-5;
+    }
+
+    .lims-form-grid-2 {
+        @apply grid-cols-1
+               lg:grid-cols-2;
+    }
+
+    .lims-form-grid-3 {
+        @apply grid-cols-1
+               md:grid-cols-2
+               xl:grid-cols-3;
+    }
+
+
+    /* =====================================================
+       INPUTS
+    ====================================================== */
+
+    .lims-field {
+        @apply flex flex-col gap-2;
+    }
+
+    .lims-field + .lims-field {
+        @apply mt-5;
+    }
+
+    .lims-form-grid .lims-field + .lims-field {
+        @apply mt-0;
+    }
+
+    .lims-field-medium {
+        @apply mt-6
+               max-w-xl;
+    }
+
+    .lims-label {
+        @apply text-xs
+               font-semibold
+               text-[#F4F8FC]/70;
+    }
+
+    .lims-input,
+    .lims-textarea,
+    .lims-table-input {
+        @apply w-full
+               rounded-xl
+               border border-[#79C7FF]/10
+               bg-[#07111F]/60
+               px-4 py-3
+               text-sm
+               text-[#F4F8FC]
+               outline-none
+               transition-all
+               duration-200
+               placeholder:text-[#F4F8FC]/20
+               focus:border-[#2589D8]/60
+               focus:bg-[#07111F]/80
+               focus:ring-2
+               focus:ring-[#2589D8]/10;
+    }
+
+    .lims-textarea {
+        @apply min-h-[120px]
+               resize-y;
+    }
+
+    .lims-form-divider {
+        @apply my-7
+               border-t border-[#79C7FF]/10;
+    }
+
+
+    /* =====================================================
+       RADIO / CHOICES
+    ====================================================== */
+
+    .lims-radio {
+        @apply h-4 w-4
+               shrink-0
+               cursor-pointer
+               accent-[#2589D8];
+    }
+
+    .lims-choice-group {
+        @apply flex
+               flex-wrap
+               gap-3;
+    }
+
+    .lims-choice {
+        @apply flex
+               cursor-pointer
+               items-center
+               gap-2
+               rounded-lg
+               border border-[#79C7FF]/10
+               bg-[#07111F]/30
+               px-4 py-2.5
+               text-sm
+               text-[#F4F8FC]/65
+               transition-all
+               duration-200
+               hover:border-[#2589D8]/30
+               hover:bg-[#0B294D]/70
+               hover:text-[#F4F8FC];
+    }
+
+
+    /* =====================================================
+       LARGE OPTION CARDS
+    ====================================================== */
+
+    .lims-option-grid {
+        @apply grid
+               grid-cols-1
+               gap-3
+               lg:grid-cols-3;
+    }
+
+    .lims-option-grid-2 {
+        @apply lg:grid-cols-2;
+    }
+
+    .lims-option-card {
+        @apply flex
+               cursor-pointer
+               items-start
+               gap-3
+               rounded-xl
+               border border-[#79C7FF]/10
+               bg-[#07111F]/30
+               p-4
+               transition-all
+               duration-200
+               hover:-translate-y-0.5
+               hover:border-[#2589D8]/35
+               hover:bg-[#0B294D]/70;
+    }
+
+    .lims-option-title {
+        @apply block
+               text-sm
+               font-semibold
+               text-[#F4F8FC];
+    }
+
+    .lims-option-description {
+        @apply mt-1
+               block
+               text-xs
+               leading-relaxed
+               text-[#F4F8FC]/35;
+    }
+
+
+    /* =====================================================
+       QUESTIONS
+    ====================================================== */
+
+    .lims-question {
+        @apply flex
+               items-center
+               justify-between
+               gap-6
+               border-b border-[#79C7FF]/10
+               py-5;
+    }
+
+    .lims-question:first-of-type {
+        @apply pt-0;
+    }
+
+    .lims-question-text {
+        @apply text-sm
+               leading-relaxed
+               text-[#F4F8FC]/70;
+    }
+
+    .lims-yes-no {
+        @apply flex
+               shrink-0
+               items-center
+               gap-2;
+    }
+
+
+    /* =====================================================
+       SAMPLE TABLE
+    ====================================================== */
+
+    .lims-sample-table-wrapper {
+    @apply block
+           w-full
+           min-w-0
+           max-w-full
+           overflow-x-auto
+           rounded-xl
+           border border-[#79C7FF]/10;
+    }
+
+    .lims-sample-table {
+        @apply w-full
+            min-w-[850px]
+            table-fixed
+            border-collapse
+            text-left;
+    }
+
+    .lims-sample-table thead {
+        @apply bg-[#07111F]/60;
+    }
+
+    .lims-sample-table th {
+        @apply border-b border-[#79C7FF]/10
+            px-4 py-3
+            text-[10px]
+            font-bold
+            uppercase
+            tracking-[0.12em]
+            text-[#F4F8FC]/35;
+    }
+
+    .lims-sample-table td {
+        @apply border-b border-[#79C7FF]/10
+            p-3;
+    }
+
+    .lims-sample-table tbody tr {
+        @apply transition-colors
+            hover:bg-[#0B294D]/30;
+    }
+
+    .lims-sample-table tbody tr:last-child td {
+        @apply border-b-0;
+    }
+
+    .lims-table-input {
+        @apply w-full
+            min-w-0;
+    }
+
+    .analysis-picker {
+        @apply w-full
+            min-w-0;
+    }
+
+
+    /* =====================================================
+       ANALYSIS BUTTON
+    ====================================================== */
+
+    .analysis-picker {
+        @apply w-full
+            min-w-0
+            rounded-xl
+            border border-[#2589D8]/20
+            bg-[#0B5FA5]/10
+            px-4 py-3
+            text-left
+            text-sm
+            font-medium
+            text-[#79C7FF]
+            transition-all
+            hover:border-[#2589D8]/50
+            hover:bg-[#0B5FA5]/20;
+    }
+
+    .lims-remove-button {
+        @apply rounded-lg
+               border border-red-400/15
+               bg-red-500/10
+               px-3 py-2
+               text-xs
+               font-semibold
+               text-red-300
+               transition
+               hover:bg-red-500/20;
+    }
+
+    .lims-add-sample-button {
+        @apply mt-4
+               inline-flex
+               items-center
+               gap-2
+               rounded-xl
+               border border-[#2589D8]/25
+               bg-[#0B5FA5]/10
+               px-4 py-2.5
+               text-sm
+               font-semibold
+               text-[#79C7FF]
+               transition-all
+               hover:-translate-y-0.5
+               hover:border-[#2589D8]/50
+               hover:bg-[#0B5FA5]/20;
+    }
+
+
+    /* =====================================================
+       FORM ACTIONS
+    ====================================================== */
+
+    .lims-form-actions {
+        @apply flex
+               items-center
+               justify-end
+               gap-3
+               pb-8;
+    }
+
+    .lims-form-cancel {
+        @apply rounded-xl
+               border border-[#79C7FF]/10
+               px-5 py-3
+               text-sm
+               font-semibold
+               text-[#F4F8FC]/50
+               transition
+               hover:bg-[#F4F8FC]/5
+               hover:text-[#F4F8FC];
+    }
+
+    .lims-form-submit {
+        @apply flex
+               items-center
+               gap-3
+               rounded-xl
+               border border-[#2589D8]/40
+               bg-[#0B5FA5]
+               px-6 py-3
+               text-sm
+               font-semibold
+               text-white
+               transition-all
+               duration-200
+               hover:-translate-y-0.5
+               hover:bg-[#2589D8]
+               hover:shadow-[0_0_25px_rgba(37,137,216,0.35)];
+    }
+
+
+    /* =====================================================
+       ANALYSIS MODAL
+    ====================================================== */
+
+    .lims-analysis-modal {
+        @apply fixed inset-0
+            z-50
+            items-center
+            justify-center
+            overflow-y-auto
+            bg-black/70
+            p-4
+            backdrop-blur-sm;
+    }
+
+    .lims-analysis-modal-container {
+        @apply flex
+               min-h-full
+               items-start
+               justify-center
+               p-4
+               sm:p-6;
+    }
+
+    .lims-analysis-modal-card {
+        @apply my-6
+               flex
+               max-h-[90vh]
+               w-full
+               max-w-4xl
+               flex-col
+               overflow-hidden
+               rounded-2xl
+               border border-[#79C7FF]/15
+               bg-[#0A1A2F]
+               shadow-2xl;
+    }
+
+    .lims-modal-header {
+        @apply shrink-0
+               border-b border-[#79C7FF]/10
+               px-6 py-5;
+    }
+
+    .lims-modal-title {
+        @apply text-xl
+               font-bold
+               text-[#F4F8FC];
+    }
+
+    .lims-analysis-options {
+        @apply min-h-0
+               flex-1
+               overflow-y-auto
+               p-6;
+    }
+
+    .lims-analysis-type {
+        @apply mb-7;
+    }
+
+    .lims-analysis-type-title {
+        @apply mb-4
+               text-base
+               font-bold
+               text-[#79C7FF];
+    }
+
+    .lims-analysis-category {
+        @apply mb-5
+               ml-3;
+    }
+
+    .lims-analysis-category-title {
+        @apply mb-3
+               text-xs
+               font-bold
+               uppercase
+               tracking-wide
+               text-[#F4F8FC]/45;
+    }
+
+    .lims-analysis-list {
+        @apply grid
+               grid-cols-1
+               gap-2
+               md:grid-cols-2;
+    }
+
+    .lims-analysis-checkbox {
+        @apply flex
+               cursor-pointer
+               items-start
+               gap-3
+               rounded-xl
+               border border-[#79C7FF]/10
+               bg-[#07111F]/40
+               p-3
+               transition
+               hover:border-[#2589D8]/30
+               hover:bg-[#0B294D]/60;
+    }
+
+    .lims-analysis-checkbox input {
+        @apply mt-1
+               accent-[#2589D8];
+    }
+
+    .lims-analysis-name {
+        @apply text-sm
+               font-medium
+               text-[#F4F8FC]/80;
+    }
+
+    .lims-analysis-method {
+        @apply mt-1
+               text-xs
+               text-[#F4F8FC]/30;
+    }
+
+    .lims-modal-footer {
+        @apply flex
+               shrink-0
+               items-center
+               justify-between
+               gap-4
+               border-t border-[#79C7FF]/10
+               bg-[#07111F]/30
+               px-6 py-4;
+    }
+
+    .lims-selected-count {
+        @apply text-xs
+               text-[#F4F8FC]/40;
+    }
+
+    .lims-modal-actions {
+        @apply flex gap-2;
+    }
+
+    .lims-modal-cancel {
+        @apply rounded-lg
+               border border-[#79C7FF]/10
+               px-4 py-2
+               text-sm
+               text-[#F4F8FC]/60
+               transition
+               hover:bg-white/5;
+    }
+
+    .lims-modal-apply {
+        @apply rounded-lg
+               bg-[#0B5FA5]
+               px-5 py-2
+               text-sm
+               font-semibold
+               text-white
+               transition
+               hover:bg-[#2589D8];
+    }
+}
