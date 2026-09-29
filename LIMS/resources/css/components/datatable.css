@@ -1,0 +1,426 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+
+
+@source '../**/*.js';
+
+@import 'datatables.net-dt/css/dataTables.dataTables.css';
+
+@layer Table {
+    @layer Base{
+        .lims-sample-table-wrapper {
+            @apply block
+                w-full
+                min-w-0
+                max-w-full
+                overflow-x-auto
+                rounded-xl
+                border border-[#79C7FF]/10;
+        }
+
+        .lims-sample-table {
+            @apply w-full
+                min-w-[850px]
+                table-fixed
+                border-collapse
+                text-left;
+        }
+
+        .lims-sample-table thead {
+            @apply bg-[#0B5FA5]/100;
+            text-align: center;
+        }
+
+        .lims-sample-table th {
+            @apply border-b border-[#79C7FF]/10
+                px-4 py-3
+                text-[10px]
+                font-bold
+                uppercase
+                tracking-[0.12em]
+                text-[#F4F8FC]/90;
+
+                text-align: center !important;
+        }
+
+        .lims-sample-table td {
+            @apply border-b border-[#79C7FF]/10
+                p-3
+                text-sm
+                font-bold
+                text-[var(--secondary)];
+
+                text-align: center !important;
+                vertical-align: middle;
+        }
+
+        .lims-sample-table tbody tr {
+            @apply transition-colors
+                    transition-all ease-in
+                    bg-[#d8ddeb]/80
+                hover:bg-[#0B294D]/30;
+        }
+
+        .lims-sample-table tbody tr:last-child td {
+            @apply border-b-0;
+        }
+
+    }
+    
+    @layer Buttons{
+        @layer RemoveButton {
+            .lims-button-remove {
+                position: relative;
+
+                width: 100px;
+                height: 40px;
+
+                margin-left: auto;
+                margin-right: auto;
+
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+
+                overflow: hidden;
+
+                background: #e62222;
+                border: none;
+                border-radius: 10px;
+
+                box-shadow:
+                    1px 1px 3px rgba(0, 0, 0, 0.15);
+            }
+
+            .lims-button-remove,
+            .lims-button-remove span {
+                transition: 200ms;
+            }
+
+            .lims-button-remove .text {
+                transform: translateX(23px);
+                color: white;
+                font-weight: bold;
+            }
+
+            .lims-button-remove .icon {
+                position: absolute;
+                right: 0;
+
+                width: 0;
+                height: 40px;
+
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                border-left: 1px solid #c41b1b;
+
+                transition: 200ms;
+            }
+
+            .lims-button-remove svg {
+                width: 15px;
+                fill: #eee;
+            }
+
+            .lims-button-remove:hover {
+                background: #ff3636;
+            }
+
+            .lims-button-remove:hover .text {
+                color: transparent;
+            }
+
+            .lims-button-remove:hover .icon {
+                width: 100%;
+                height: 100%;
+                border-left: none;
+            }
+
+            .lims-button-remove:focus {
+                outline: none;
+            }
+
+            .lims-button-remove:active .icon svg {
+                transform: scale(0.8);
+            }
+        }
+
+        @layer ViewButton {
+            .lims-button-view {
+                position: relative;
+                width: 70px;
+                height: 35px;
+                margin-left: auto;
+                margin-right: auto;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                overflow: hidden;
+                background: var(--white)/00;
+                border: 1px solid var(--secondary);
+                border-radius: 10px;
+                box-shadow:
+                    1px 1px 3px rgba(0, 0, 0, 0.15);
+            }
+
+            .lims-button-view,
+            .lims-button-view span {
+                transition: 200ms;
+            }
+
+            .lims-button-view .text {
+                transform: translateX(20px);
+                color: var(--secondary);
+                font-weight: bold;
+            }
+
+            .lims-button-view .icon {
+                position: absolute;
+                right: 0;
+                width: 0;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-left: 1px solid var(--secondary)/00;
+                transition: 200ms;
+            }
+
+            .lims-button-view svg {
+                width: 15px;
+                fill: #eee;
+            }
+
+            .lims-button-view:hover {
+                background: var(--secondary);
+            }
+
+            .lims-button-view:hover .text {
+                color: transparent;
+            }
+
+            .lims-button-view:hover .icon {
+                width: 100%;
+                height: 100%;
+                border-left: none;
+            }
+
+            .lims-button-view:focus {
+                outline: none;
+            }
+
+            .lims-button-view:active .icon svg {
+                transform: scale(0.8);
+            }
+        }
+
+
+    }
+
+    @layer Status{
+        /* PENDING - BLUE */
+        .lims-status-pending {
+            @apply inline-flex
+                items-center
+                justify-center
+                rounded-[10px]
+                px-3 py-1.5
+                text-xs
+                font-bold;
+
+            background-color: #0B5FA5;
+            color: #FFFFFF;
+        }
+
+
+        /* PROCESSING - YELLOW */
+        .lims-status-processing {
+            @apply inline-flex
+                items-center
+                justify-center
+                rounded-[10px]
+                px-3 py-1.5
+                text-xs
+                font-bold;
+
+            background-color: #F59E0B;
+            color: #FFFFFF;
+        }
+
+
+        /* COMPLETED - GREEN */
+        .lims-status-completed {
+            @apply inline-flex
+                items-center
+                justify-center
+                rounded-[10px]
+                px-3 py-1.5
+                text-xs
+                font-bold;
+
+            background-color: #16A34A;
+            color: #FFFFFF;
+        }
+
+    }
+
+
+    @layer OtherDesign{
+        /* ===========================
+        DATATABLES 2 CUSTOM STYLE
+        =========================== */
+
+        /* TOP / BOTTOM ROW */
+        div.dt-container div.dt-layout-row {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: 1rem !important;
+        }
+
+
+        /* LENGTH / ENTRIES PER PAGE */
+        div.dt-container div.dt-length {
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.5rem !important;
+
+            color: var(--primary) !important;
+            font-size: 14px !important;
+        }
+
+        div.dt-container div.dt-length select {
+            border: 1px solid
+                color-mix(in srgb, var(--secondary) 30%, transparent) !important;
+
+            border-radius: 10px !important;
+
+            background: var(--white) !important;
+            color: var(--primary) !important;
+
+            padding: 8px 32px 8px 12px !important;
+
+            outline: none !important;
+        }
+
+
+        /* SEARCH */
+        div.dt-container div.dt-search {
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.5rem !important;
+
+            color: var(--primary) !important;
+        }
+
+        div.dt-container div.dt-search input {
+            min-width: 220px !important;
+
+            padding: 9px 12px !important;
+
+            border-radius: 10px !important;
+
+            border: 1px solid
+                color-mix(in srgb, var(--secondary) 30%, transparent) !important;
+
+            background: var(--white) !important;
+            color: var(--primary) !important;
+
+            outline: none !important;
+        }
+
+        div.dt-container div.dt-search input:focus {
+            border-color: var(--accent) !important;
+
+            box-shadow:
+                0 0 0 3px
+                color-mix(in srgb, var(--accent) 15%, transparent) !important;
+        }
+
+
+        /* INFO */
+        div.dt-container div.dt-info {
+            color: var(--primary) !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+        }
+
+
+        /* PAGINATION WRAPPER */
+        div.dt-container div.dt-paging {
+            display: flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+        }
+
+
+        /* PAGINATION BUTTONS */
+        div.dt-container .dt-paging .dt-paging-button {
+            min-width: 38px !important;
+            height: 38px !important;
+
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+
+            margin: 0 !important;
+            padding: 8px 12px !important;
+
+            border-radius: 10px !important;
+
+            border: 1px solid
+                color-mix(in srgb, var(--secondary) 20%, transparent) !important;
+
+            background: var(--light-blue) !important;
+            color: var(--secondary) !important;
+
+            font-size: 14px !important;
+            font-weight: 600 !important;
+
+            box-shadow: none !important;
+        }
+
+
+        /* HOVER */
+        div.dt-container .dt-paging .dt-paging-button:hover {
+            background: var(--accent) !important;
+            color: var(--white) !important;
+            border-color: var(--accent) !important;
+        }
+
+
+        /* ACTIVE PAGE */
+        div.dt-container .dt-paging .dt-paging-button.current,
+        div.dt-container .dt-paging .dt-paging-button.current:hover {
+            background: var(--secondary) !important;
+            color: var(--white) !important;
+            border-color: var(--secondary) !important;
+        }
+
+
+        /* DISABLED */
+        div.dt-container .dt-paging .dt-paging-button.disabled,
+        div.dt-container .dt-paging .dt-paging-button.disabled:hover {
+            opacity: 0.35 !important;
+
+            background: var(--light-blue) !important;
+            color: var(--primary) !important;
+
+            cursor: not-allowed !important;
+        }
+            
+    }
+
+
+
+
+    
+
+
+    
+}

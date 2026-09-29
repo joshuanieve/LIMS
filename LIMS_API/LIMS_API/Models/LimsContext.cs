@@ -29,13 +29,11 @@ public partial class LimsContext : DbContext
     {
         modelBuilder.Entity<LabAnalysisList>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("Lab_AnalysisList");
+            entity.HasKey(e => e.AnalysisId);
 
-            entity.Property(e => e.AnalysisId)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("AnalysisID");
+            entity.ToTable("Lab_AnalysisList");
+
+            entity.Property(e => e.AnalysisId).HasColumnName("AnalysisID");
             entity.Property(e => e.Analyte).HasMaxLength(255);
             entity.Property(e => e.Category).HasMaxLength(255);
             entity.Property(e => e.Method).HasMaxLength(255);
@@ -44,19 +42,17 @@ public partial class LimsContext : DbContext
 
         modelBuilder.Entity<LabRequest>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("Lab_Request");
+            entity.HasKey(e => e.RequestId);
+
+            entity.ToTable("Lab_Request");
 
             entity.HasIndex(e => e.RequestId, "IX_Lab_Request").IsUnique();
 
+            entity.Property(e => e.RequestId).HasColumnName("RequestID");
             entity.Property(e => e.CustomerName).HasMaxLength(255);
-            entity.Property(e => e.DivisionSection).HasMaxLength(255);
             entity.Property(e => e.EmailAddress).HasMaxLength(255);
+            entity.Property(e => e.Instruction).HasColumnType("text");
             entity.Property(e => e.LabAnalysis).HasMaxLength(255);
-            entity.Property(e => e.RequestId)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("RequestID");
             entity.Property(e => e.SampleRetrieval).HasMaxLength(255);
             entity.Property(e => e.SampleType).HasMaxLength(255);
             entity.Property(e => e.SubInfo2).HasMaxLength(255);
@@ -65,19 +61,17 @@ public partial class LimsContext : DbContext
 
         modelBuilder.Entity<LabRequestList>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("Lab_RequestList");
+            entity.HasKey(e => e.TestId);
 
+            entity.ToTable("Lab_RequestList");
+
+            entity.Property(e => e.TestId).HasColumnName("TestID");
             entity.Property(e => e.Analysis).HasMaxLength(255);
             entity.Property(e => e.CustomerSampleCode).HasMaxLength(255);
             entity.Property(e => e.LaboratoryNumber).HasMaxLength(255);
             entity.Property(e => e.PlaceCollected).HasMaxLength(255);
             entity.Property(e => e.RequestId).HasColumnName("RequestID");
             entity.Property(e => e.Sample).HasMaxLength(255);
-            entity.Property(e => e.TestId)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("TestID");
         });
 
         OnModelCreatingPartial(modelBuilder);

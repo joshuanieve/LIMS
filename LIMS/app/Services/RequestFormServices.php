@@ -20,13 +20,21 @@ class RequestFormServices
             ->json();
     }
 
-    public function createRequest(array $data)
-    {
-        return Http::post(
+    public function createRequest(array $data){
+        $response = Http::post(
             "{$this->baseUrl}/api/RequestForm",
             $data
-        )
-        ->throw()
-        ->json();
-    }
+        );
+
+        logger()->info('LIMS RequestForm API Response', [
+            'status' => $response->status(),
+            'successful' => $response->successful(),
+            'body' => $response->body(),
+            'json' => $response->json(),
+        ]);
+
+        return $response
+            ->throw()
+            ->json();
+        }
 }

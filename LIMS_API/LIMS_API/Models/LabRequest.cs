@@ -11,11 +11,13 @@ public partial class LabRequest
 
     public string? EmailAddress { get; set; }
 
-    public string? DivisionSection { get; set; }
+    public int? DivisionSection { get; set; }
 
     public DateTime? DateTime { get; set; }
 
     public string? LabAnalysis { get; set; }
+
+    public DateTime? TargetDate { get; set; }
 
     public string? SampleType { get; set; }
 
@@ -28,4 +30,12 @@ public partial class LabRequest
     public bool? SubInfo3 { get; set; }
 
     public string? SubInfo4 { get; set; }
+
+    public string? Instruction { get; set; }
+
+    public int? Status { get; set; }
+
+    public DateTime? CreatedAt { get; set; }
+
+    public DateTime? UpdatedAt { get; set; }
 }

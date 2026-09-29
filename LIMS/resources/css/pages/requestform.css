@@ -1,0 +1,829 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+
+
+@source '../**/*.js';
+
+
+@layer RequestForm {
+    
+    @layer inputs{
+        .lims-field {
+            @apply  flex-col gap-2;
+        }
+
+        .lims-field + .lims-field {
+            @apply mt-5;
+        }
+
+        .lims-form-grid .lims-field + .lims-field {
+            @apply mt-0;
+        }
+
+        .lims-field-medium {
+            @apply mt-6
+                max-w-xl;
+        }
+
+        .lims-label {
+            @apply text-xs
+                font-semibold
+                text-[var(--secondary)]/100;
+        }
+
+        .lims-textarea {
+            @apply min-h-[120px]
+                resize-y;
+        }
+
+        .lims-form-divider {
+            @apply my-7
+                border-t border-[var(--primary)]/30;
+        }
+    }
+
+    @layer radio {
+        .lims-sample-type-grid {
+            @apply grid gap-3;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+        }
+
+        .lims-sample-type-card {
+            @apply relative
+                flex
+                cursor-pointer
+                items-center
+                gap-3
+                rounded-xl
+                p-4
+                transition-all
+                duration-200;
+            min-height: 105px;
+            background-color: var(--white);
+            border: 1px solid
+                color-mix(
+                    in srgb,
+                    var(--secondary) 22%,
+                    transparent
+                );
+        }
+
+
+        .lims-sample-type-card:hover {
+            border-color: var(--accent);
+            background-color:
+                color-mix(
+                    in srgb,
+                    var(--primary) 25%,
+                    var(--white)
+                );
+            box-shadow:
+                0 6px 18px
+                color-mix(
+                    in srgb,
+                    var(--secondary) 12%,
+                    transparent
+                );
+            transform: translateY(-2px);
+        }
+
+        .lims-sample-type-icon {
+            @apply flex
+                h-11
+                w-11
+                shrink-0
+                items-center
+                justify-center
+                rounded-full
+                text-lg
+                font-semibold;
+
+            color: var(--secondary);
+            background-color:
+                color-mix(
+                    in srgb,
+                    var(--accent) 12%,
+                    transparent
+                );
+        }
+
+        .lims-sample-type-card:has(.lims-radio:checked) {
+            border: 2px solid var(--accent);
+            background-color:
+                color-mix(
+                    in srgb,
+                    var(--light-blue) 65%,
+                    var(--white)
+                );
+            box-shadow:
+                0 5px 16px
+                color-mix(
+                    in srgb,
+                    var(--accent) 15%,
+                    transparent
+                );
+        }
+
+        .lims-sample-type-card:has(.lims-radio:checked)
+        .lims-sample-type-icon {
+            color: var(--white);
+            background-color: var(--secondary);
+        }
+    }
+
+    @layer LargeOption {
+
+        .lims-option-grid {
+            @apply grid
+                grid-cols-1
+                gap-4
+                lg:grid-cols-3;
+        }
+
+        .lims-option-card {
+            @apply flex
+                cursor-pointer
+                items-center
+                gap-4
+                rounded-xl
+                p-4
+                transition-all
+                duration-200;
+
+            min-height: 110px;
+
+            background-color: var(--white);
+
+            border: 2px solid
+                color-mix(
+                    in srgb,
+                    var(--secondary) 18%,
+                    transparent
+                );
+
+            box-shadow:
+                0 3px 10px
+                color-mix(
+                    in srgb,
+                    var(--primary) 5%,
+                    transparent
+                );
+        }
+
+        /* RADIO */
+        .lims-radio {
+            @apply h-5 w-5 shrink-0 cursor-pointer;
+
+            accent-color: var(--accent);
+        }
+
+        /* ICON */
+        .lims-option-icon {
+            @apply flex
+                h-14
+                w-14
+                shrink-0
+                items-center
+                justify-center
+                rounded-full;
+
+            color: var(--accent);
+
+            background-color:
+                color-mix(
+                    in srgb,
+                    var(--accent) 10%,
+                    transparent
+                );
+        }
+
+        .lims-option-icon svg {
+            @apply h-7 w-7;
+        }
+
+
+        /* CONTENT */
+        .lims-option-content {
+            @apply min-w-0 flex-1;
+        }
+        .lims-option-title {
+            @apply block
+                text-base
+                font-semibold;
+            color: var(--primary);
+        }
+
+        .lims-option-description {
+            @apply mt-1
+                block
+                text-sm
+                leading-relaxed;
+            color:
+                color-mix(
+                    in srgb,
+                    var(--primary) 62%,
+                    transparent
+                );
+        }
+
+
+        /* HOVER */
+        .lims-option-card:hover {
+            transform: translateY(-2px);
+
+            border-color:
+                color-mix(
+                    in srgb,
+                    var(--accent) 55%,
+                    transparent
+                );
+
+            background-color:
+                color-mix(
+                    in srgb,
+                    var(--light-blue) 35%,
+                    var(--white)
+                );
+
+            box-shadow:
+                0 8px 20px
+                color-mix(
+                    in srgb,
+                    var(--secondary) 12%,
+                    transparent
+                );
+        }
+
+
+        /* CHECKED / SELECTED */
+
+        .lims-option-card:has(.lims-radio:checked) {
+            border-color: var(--accent);
+
+            background-color:
+                color-mix(
+                    in srgb,
+                    var(--light-blue) 55%,
+                    var(--white)
+                );
+
+            box-shadow:
+                0 6px 18px
+                color-mix(
+                    in srgb,
+                    var(--accent) 16%,
+                    transparent
+                );
+        }
+
+        .lims-option-card:has(.lims-radio:checked)
+        .lims-option-icon {
+            color: var(--white);
+            background-color: var(--accent);
+        }
+
+        .lims-option-card:has(.lims-radio:checked)
+        .lims-option-title {
+            color: var(--secondary);
+        }
+    }
+
+    @layer Questionnaires {
+
+        .lims-question-list {
+            @apply flex flex-col gap-4;
+        }
+
+
+        .lims-question-card {
+            @apply flex
+                items-center
+                justify-between
+                gap-6
+                rounded-xl
+                p-4
+                transition-all
+                duration-200;
+
+            background-color: var(--white);
+
+            border: 1px solid
+                color-mix(
+                    in srgb,
+                    var(--secondary) 18%,
+                    transparent
+                );
+
+            box-shadow:
+                0 3px 10px
+                color-mix(
+                    in srgb,
+                    var(--primary) 5%,
+                    transparent
+                );
+        }
+
+
+        .lims-question-card:hover {
+            border-color:
+                color-mix(
+                    in srgb,
+                    var(--accent) 45%,
+                    transparent
+                );
+
+            background-color:
+                color-mix(
+                    in srgb,
+                    var(--light-blue) 30%,
+                    var(--white)
+                );
+
+            box-shadow:
+                0 6px 16px
+                color-mix(
+                    in srgb,
+                    var(--secondary) 10%,
+                    transparent
+                );
+        }
+
+
+        .lims-question-copy {
+            @apply flex items-center gap-4;
+        }
+
+
+        .lims-question-number {
+            @apply flex
+                h-9
+                w-9
+                shrink-0
+                items-center
+                justify-center
+                rounded-lg
+                text-xs
+                font-bold;
+
+            color: var(--secondary);
+
+            background-color:
+                color-mix(
+                    in srgb,
+                    var(--accent) 12%,
+                    transparent
+                );
+        }
+
+
+        .lims-question-text {
+            @apply text-sm
+                font-semibold
+                leading-relaxed;
+
+            color: var(--primary);
+        }
+
+
+        .lims-yes-no {
+            @apply flex
+                shrink-0
+                items-center
+                gap-2;
+        }
+
+
+        .lims-answer-choice {
+            @apply flex
+                cursor-pointer
+                items-center
+                gap-2
+                rounded-lg
+                px-4
+                py-2
+                text-sm
+                font-semibold
+                transition-all
+                duration-200;
+
+            color: var(--secondary);
+
+            background-color:
+                color-mix(
+                    in srgb,
+                    var(--light-blue) 45%,
+                    var(--white)
+                );
+
+            border: 1px solid
+                color-mix(
+                    in srgb,
+                    var(--secondary) 22%,
+                    transparent
+                );
+        }
+
+
+        .lims-answer-choice:hover {
+            border-color: var(--accent);
+
+            background-color:
+                color-mix(
+                    in srgb,
+                    var(--accent) 10%,
+                    var(--white)
+                );
+        }
+
+
+        .lims-answer-choice:has(.lims-radio:checked) {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+            color: var(--white);
+
+            box-shadow:
+                0 4px 12px
+                color-mix(
+                    in srgb,
+                    var(--secondary) 18%,
+                    transparent
+                );
+        }
+
+
+        .lims-answer-choice:has(.lims-radio:checked) .lims-radio {
+            accent-color: var(--white);
+        }
+
+
+        .lims-question-detail {
+            @apply rounded-xl p-4;
+
+            background-color:
+                color-mix(
+                    in srgb,
+                    var(--light-blue) 35%,
+                    var(--white)
+                );
+
+            border: 1px dashed
+                color-mix(
+                    in srgb,
+                    var(--accent) 30%,
+                    transparent
+                );
+        }
+    }
+
+    @layer TableResource{
+        .lims-table-input {
+            @apply w-full
+                min-w-0;
+        }
+        
+        .analysis-picker, .location-picker {
+            @apply w-full
+                min-w-0
+                rounded-xl
+                border border-[#2589D8]/20
+                bg-[var(--secondary)]/80
+                px-4 py-3
+                text-left
+                text-sm
+                font-bold
+              !text-[var(--white)]
+                transition-all
+                hover:border-[#2589D8]/50
+                hover:bg-[#0B5FA5]/80;
+        }
+
+        
+
+        .lims-add-sample-button {
+            @apply mt-4
+                inline-flex
+                items-center
+                gap-2
+                rounded-xl
+                border border-[var(--secondary)]/40
+                bg-[var(--secondary)]
+                px-4 py-2.5
+                text-sm
+                font-semibold
+                text-[var(--white)]/100
+                transition-all
+                hover:-translate-y-0.5
+                hover:bg-[var(--accent)]/80
+                hover:shadow-[0_0_25px_rgba(37,137,216,0.35)];
+        }
+    }
+
+    @layer FormButton{
+        .lims-form-actions {
+            @apply flex
+                items-center
+                justify-end
+                gap-3
+                pb-8;
+        }
+
+        .lims-form-cancel {
+            @apply rounded-xl
+                border border-[var(--secondary)]/40
+                bg-[var(--secondary)]
+                px-5 py-3
+                text-sm
+                font-semibold
+                text-[var(--white)]/100
+                transition-all
+                duration-200
+                hover:-translate-y-0.5
+                hover:bg-[var(--accent)]/80
+                hover:text-[#F4F8FC];
+        }
+
+        .lims-form-submit {
+            @apply flex
+                items-center
+                gap-3
+                rounded-xl
+                border border-[var(--secondary)]/40
+                bg-[var(--secondary)]
+                px-6 py-3
+                text-sm
+                font-semibold
+                text-[var(--white)]/100
+                transition-all
+                duration-200
+                hover:-translate-y-0.5
+                hover:bg-[var(--accent)]/80
+                hover:shadow-[0_0_25px_rgba(37,137,216,0.35)];
+        }
+    }
+
+}
+
+
+
+@layer AnalysisModal{
+
+    @layer Base{
+        .lims-analysis-modal {
+            @apply fixed inset-0
+                z-50
+                items-center
+                justify-center
+                overflow-y-auto
+                bg-black/70
+                p-4
+                backdrop-blur-sm;
+                z-index: 10;
+        }
+
+        .lims-analysis-modal-container {
+            @apply flex
+                min-h-full
+                items-start
+                justify-center
+                p-4
+                sm:p-6;
+        }
+
+        .lims-analysis-modal-card {
+            @apply my-6
+                flex
+                max-h-[90vh]
+                w-full
+                max-w-4xl
+                flex-col
+                /* overflow-hidden */
+                rounded-2xl
+                border border-[#79C7FF]/15
+                shadow-2xl;
+                background: var(--semi2white)
+        }
+
+        .lims-modal-header {
+            @apply shrink-0
+                border-b border-[#79C7FF]/10
+                px-6 py-5;
+        }
+    }
+
+    @layer Header{
+        .lims-modal-title {
+            @apply text-xl
+                font-bold;
+                color: var(--secondary);
+        }
+
+        .lims-analysis-options {
+            @apply min-h-0
+                flex-1
+                overflow-y-auto
+                p-6;
+        }
+
+        .lims-analysis-type {
+            @apply mb-7;
+        }
+    }
+    
+    @layer Content{
+        .lims-analysis-type-title {
+            @apply mb-4
+                text-base
+                font-bold;
+                color: var(--secondary);
+        }
+
+        .lims-analysis-category {
+            @apply mb-5
+                ml-3;
+        }
+
+        .lims-analysis-category-title {
+            @apply mb-3
+                text-xs
+                font-bold
+                uppercase
+                tracking-wide;
+                color: var(--secondary);
+        }
+
+        .lims-analysis-list {
+            @apply grid
+                grid-cols-1
+                gap-2
+                md:grid-cols-2;
+        }
+
+        
+    }
+
+    @layer Checkbox{
+        .lims-analysis-checkbox {
+            @apply flex
+                cursor-pointer
+                items-start
+                gap-3
+                rounded-xl
+                border border-[#79C7FF]/80
+                p-3
+                transition
+                hover:border-[#2589D8]/30
+                hover:bg-[var(--primary)]/30;
+                bg: var(--white);
+        }
+
+        .lims-analysis-checkbox input {
+            @apply mt-1;
+                    color: var(--primary);
+        }
+
+        .lims-analysis-name {
+            @apply text-sm
+                font-bold;
+                color: var(--secondary);
+        }
+
+        .lims-analysis-method {
+            @apply mt-1
+                text-xs;
+                color: var(--secondary);
+        }
+
+        
+
+    }
+
+    @layer FooterContent{
+        .lims-modal-footer {
+            @apply flex
+                shrink-0
+                items-center
+                justify-between
+                gap-4
+                rounded-2xl
+                border-t border-[var(--primary)]/10
+                px-6 py-4;
+                background: var(--semi1white);
+        }
+
+        .lims-selected-count {
+            @apply text-xs
+                    font-bold;
+                color: var(--secondary);
+        }
+
+        .lims-modal-actions {
+            @apply flex gap-2;
+        }
+
+        
+
+        .lims-modal-apply {
+            @apply rounded-lg
+                border border-[var(--secondary)]/80
+                bg-[#0B5FA5]
+                px-5 py-2
+                text-sm
+                font-semibold
+                text-white
+                transition
+                hover:bg-[#2589D8];
+        }
+    }
+
+    @layer Terms{
+        /* TERMS */
+
+    .lims-view-terms {
+        @apply grid
+            grid-cols-1
+            gap-3
+            xl:grid-cols-2;
+    }
+
+
+    .lims-view-terms > div {
+        @apply flex
+            gap-3
+            rounded-xl
+            p-4;
+
+        background:
+            color-mix(
+                in srgb,
+                var(--light-blue) 30%,
+                var(--white)
+            );
+    }
+
+
+    .lims-view-terms strong {
+        @apply flex
+            h-8
+            w-8
+            shrink-0
+            items-center
+            justify-center
+            rounded-lg
+            text-xs;
+
+        color: var(--secondary);
+
+        background:
+            color-mix(
+                in srgb,
+                var(--accent) 13%,
+                transparent
+            );
+    }
+
+
+    .lims-view-terms p {
+        @apply text-xs leading-relaxed;
+
+        color:
+            color-mix(
+                in srgb,
+                var(--primary) 72%,
+                transparent
+            );
+    }
+    }
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+}

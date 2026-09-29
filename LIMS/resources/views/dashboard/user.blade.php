@@ -1,12 +1,15 @@
 @extends('layouts.app')
 
 @section('title', 'Dashboard - LIMS')
-
-@section('page-title', 'Dashboard')
+@section('PageTitle', 'Dashboard')
 
 
 @section('content')
 
+@vite([
+        'resources/css/pages/dashboard.css',
+        // 'resources/js/requestpending.js'
+    ])
 
 {{-- //////////////////////////////// WELCOME ////////////////////////////////////////// --}}
 <div class="dashboard-panelheader">
@@ -16,7 +19,7 @@
                 Welcome Back
             </p>
             <h2 class="lims-welcome-title">
-                Good day, User.
+                Good day, {{ session('user_name') ?? 'NULL' }}.
             </h2>
             <p class="lims-welcome-description">
                 View laboratory requests, track samples, monitor analyses,
@@ -209,42 +212,6 @@
                         </td>
                     </tr>
 
-                    <tr>
-                        <td>LIMS-2026-003</td>
-                        <td>Pedro Reyes</td>
-                        <td>4</td>
-                        <td>Aug 30, 2026</td>
-                        <td>
-                            <span class="lims-status lims-status-completed">
-                                Completed
-                            </span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>LIMS-2026-003</td>
-                        <td>Pedro Reyes</td>
-                        <td>4</td>
-                        <td>Aug 30, 2026</td>
-                        <td>
-                            <span class="lims-status lims-status-completed">
-                                Completed
-                            </span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>LIMS-2026-003</td>
-                        <td>Pedro Reyes</td>
-                        <td>4</td>
-                        <td>Aug 30, 2026</td>
-                        <td>
-                            <span class="lims-status lims-status-completed">
-                                Completed
-                            </span>
-                        </td>
-                    </tr>
-
                 </tbody>
 
             </table>
@@ -267,59 +234,15 @@
                 <p class="lims-activity-time">2026-09-02 09:26:15</p>
             </div>
 
-            <div class="lims-activity-item">
-                <p class="lims-activity-message">Sample has resolved the SRV-001779</p>
-                <p class="lims-activity-time">2026-09-02 09:26:15</p>
-            </div>
-
-            <div class="lims-activity-item">
-                <p class="lims-activity-message">Sample has resolved the SRV-001779</p>
-                <p class="lims-activity-time">2026-09-02 09:26:15</p>
-            </div>
-
-            <div class="lims-activity-item">
-                <p class="lims-activity-message">Sample has resolved the SRV-001779</p>
-                <p class="lims-activity-time">2026-09-02 09:26:15</p>
-            </div>
-
-            <div class="lims-activity-item">
-                <p class="lims-activity-message">Sample has resolved the SRV-001779</p>
-                <p class="lims-activity-time">2026-09-02 09:26:15</p>
-            </div>
-
-            <div class="lims-activity-item">
-                <p class="lims-activity-message">Sample has resolved the SRV-001779</p>
-                <p class="lims-activity-time">2026-09-02 09:26:15</p>
-            </div>
-
-            <div class="lims-activity-item">
-                <p class="lims-activity-message">Sample has resolved the SRV-001779</p>
-                <p class="lims-activity-time">2026-09-02 09:26:15</p>
-            </div>
-
-            <div class="lims-activity-item">
-                <p class="lims-activity-message">Sample has resolved the SRV-001779</p>
-                <p class="lims-activity-time">2026-09-02 09:26:15</p>
-            </div>
-
-            <div class="lims-activity-item">
-                <p class="lims-activity-message">Sample has resolved the SRV-001779</p>
-                <p class="lims-activity-time">2026-09-02 09:26:15</p>
-            </div>
-
-            <div class="lims-activity-item">
-                <p class="lims-activity-message">Sample has resolved the SRV-001779</p>
-                <p class="lims-activity-time">2026-09-02 09:26:15</p>
-            </div>
-
         </div>
     </section>
 </div>
 
-<div class="lims-content-additional">
+{{-- <div class="lims-content-additional">
     <div class="lims-add-content">asdasd</div>
     <div class="lims-add-content">asdasd</div>
     <div class="lims-add-content">asdasd</div>
-</div>
+</div> --}}
+
 
 @endsection

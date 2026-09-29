@@ -1,0 +1,305 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+
+
+@layer headerDesign {
+    .lims-welcome-card {
+        @apply flex w-full
+               items-center
+               justify-between
+               gap-8
+               rounded-2xl
+               bg-[#ffffff]/80
+               px-8 py-8;
+    }
+
+    .lims-welcome-content {
+        @apply min-w-0 flex-1;
+    }
+
+    .lims-welcome-label {
+        @apply mb-3
+               text-xs
+               font-bold
+               uppercase
+               tracking-[0.18em]
+               text-[#136aac];
+    }
+
+    .lims-welcome-title {
+        @apply mb-2
+               text-3xl
+               font-bold
+               leading-tight
+               text-[#136aac];
+    }
+
+    .lims-welcome-description {
+        @apply text-sm
+               text-[#136aac];
+    }
+
+    .lims-request-button {
+        @apply flex shrink-0
+               items-center
+               justify-center
+               gap-3
+               rounded-xl
+               border border-[#2589D8]/40
+               bg-[#0B5FA5]
+               px-6 py-3
+               text-sm
+               font-semibold
+               text-white
+               transition-all
+               duration-200
+               hover:bg-[#2589D8]
+               hover:-translate-y-1
+             hover:bg-[#2589D8]
+               hover:shadow-lg
+               hover:shadow-[#2589D8]/40;
+    }
+
+    .lims-request-button svg {
+        @apply transition-transform duration-200;
+    }
+
+    .lims-request-button:hover svg {
+        @apply translate-x-1;
+    }
+
+    @media (max-width: 768px) {
+
+        .lims-welcome-card {
+            @apply flex-col items-start;
+        }
+
+        .lims-request-button {
+            @apply w-full;
+        }
+
+    }
+}
+
+@layer {
+    @layer DashboardGrid {
+
+        .lims-stats-grid {
+            @apply grid grid-cols-1 gap-4
+                md:grid-cols-2
+                xl:grid-cols-4
+                mt-6;
+        }
+
+        .lims-stat-card {
+            @apply rounded-2xl
+                bg-[#ffffff]/80
+                p-5
+                transition-all
+                duration-200
+                hover:-translate-y-1
+                hover:border-[#136aac]/30
+                hover:bg-[#ffffff]/50
+                hover:shadow-[0_10px_30px_rgba(37,137,216,0.12)];
+        }
+
+        .lims-stat-icon {
+            @apply mb-5
+                flex h-10 w-10
+                items-center justify-center
+                rounded-xl
+                border border-[#136aac]/80
+                bg-[#ffffff]/15
+                text-[#136aac];
+        }
+
+        
+
+        .lims-stat-label {
+            @apply mb-1
+                text-xs
+                font-semibold
+                text-[#136aac];
+        }
+
+        .lims-stat-value {
+            @apply mb-1
+                text-3xl
+                font-bold
+                leading-none
+                text-[#136aac];
+        }
+
+        .lims-stat-description {
+            @apply mt-2
+                text-xs
+                text-[#136aac];
+        }
+
+    }
+
+    @layer DashboardContent2 {
+
+        .lims-dashboard-bottom {
+            @apply mt-6
+                grid grid-cols-1 gap-5
+                xl:grid-cols-[2fr_1fr];
+        }
+
+        .lims-panel {
+            @apply rounded-2xl
+                bg-[#ffffff]/80
+                p-6
+                h-100;
+        }
+
+        .lims-panel-header {
+            @apply mb-5
+                flex items-start
+                justify-between
+                gap-4;
+        }
+
+        .lims-panel-eyebrow {
+            @apply mb-2
+                text-[11px]
+                font-bold
+                uppercase
+                tracking-[0.18em]
+                text-[#136aac];
+        }
+
+        .lims-panel-title {
+            @apply text-xl
+                font-bold
+                text-[#136aac];
+        }
+
+        .lims-panel-link {
+            @apply text-xs
+                font-semibold
+                text-[#136aac]
+                transition
+                hover:text-white;
+        }
+
+        .lims-table-wrapper {
+            @apply w-full overflow-y-auto h-70;
+        }
+
+        .lims-dashboard-table {
+            @apply w-full
+                border-collapse
+                text-left;
+        }
+
+        .lims-dashboard-table thead {
+            @apply border-b border-[#136aac]/10;
+        }
+
+        .lims-dashboard-table th {
+            @apply px-0
+                pb-4
+                text-[11px]
+                font-bold
+                uppercase
+                tracking-wide
+                text-[#F4F8FC]/35;
+        }
+
+        .lims-dashboard-table td {
+            @apply py-4
+                text-sm
+                text-[#136aac];
+        }
+
+        .lims-dashboard-table tbody tr {
+            @apply border-b border-[#79C7FF]/10
+                transition-colors
+                duration-200
+                hover:bg-[#0B5FA5]/30;
+        }
+
+        .lims-dashboard-table tbody tr:last-child {
+            @apply border-b-0;
+        }
+
+        .lims-status {
+            @apply inline-flex
+                items-center
+                rounded-full
+                px-3 py-1
+                text-xs
+                font-semibold;
+        }
+
+        .lims-status-processing {
+            @apply bg-[#2589D8]
+                text-white;
+        }
+
+        .lims-status-pending {
+            @apply bg-amber-500
+                text-white;
+        }
+
+        .lims-status-completed {
+            @apply bg-emerald-500
+                text-white;
+        }
+
+       .lims-activity-item {
+            @apply border-b
+                border-[#79C7FF]/10
+                px-2
+                py-2;
+        }
+
+        .lims-activity-item:first-child {
+            @apply pt-1;
+        }
+
+        .lims-activity-item:last-child {
+            @apply border-b-0;
+        }
+
+        .lims-activity-message {
+            @apply text-sm
+                font-medium
+                leading-relaxed
+                text-[#136aac]/80;
+        }
+
+        .lims-activity-time {
+            @apply mt-1
+                font-mono
+                text-xs
+                text-[#136aac]/40;
+        }
+
+    }
+
+    @layer DashboardAddContent {
+
+        .lims-content-additional {
+            @apply mt-5
+                grid
+                grid-cols-1
+                gap-5
+                xl:grid-cols-2;
+        }
+
+        .lims-add-content {
+            @apply min-h-[400px]
+                min-w-0
+                rounded-xl
+                bg-[#ffffff]/80
+                p-5
+                text-[#136aac];
+        }
+
+    }
+}

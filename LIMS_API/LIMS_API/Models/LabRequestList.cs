@@ -20,4 +20,10 @@ public partial class LabRequestList
     public string? PlaceCollected { get; set; }
 
     public string? Analysis { get; set; }
+
+    public int? Status { get; set; }
+
+    public DateTime? CreatedAt { get; set; }
+
+    public DateTime? UpdatedAt { get; set; }
 }

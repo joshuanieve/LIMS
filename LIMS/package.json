@@ -17,6 +17,9 @@
         "@laravel/multiplex": "^0.4.1"
     },
     "dependencies": {
-        "sweetalert2": "^11.26.25"
+        "datatables.net-dt": "^3.0.3",
+        "sweetalert2": "^11.26.25",
+        "three": "^0.186.0",
+        "vanta": "^0.5.24"
     }
 }

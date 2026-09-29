@@ -1,0 +1,416 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+
+
+@source '../**/*.js';
+
+@layer RequestView {
+
+    .lims-request-view-card {
+        @apply max-w-6xl;
+    }
+
+
+    /* SECTION HEADER */
+
+    .lims-view-section-header {
+        @apply mb-5
+            flex
+            items-start
+            justify-between
+            gap-4
+            border-b
+            pb-4;
+
+        border-color:
+            color-mix(
+                in srgb,
+                var(--secondary) 12%,
+                transparent
+            );
+    }
+
+
+    .lims-view-step {
+        @apply flex
+            h-9
+            min-w-9
+            items-center
+            justify-center
+            rounded-lg
+            px-2
+            text-xs
+            font-bold;
+
+        color: var(--secondary);
+
+        background:
+            color-mix(
+                in srgb,
+                var(--accent) 13%,
+                transparent
+            );
+    }
+
+
+    /* REQUEST NUMBER */
+
+    .lims-request-number {
+        @apply mt-1 text-xs font-medium;
+
+        color:
+            color-mix(
+                in srgb,
+                var(--primary) 60%,
+                transparent
+            );
+    }
+
+
+    /* GRID */
+
+    .lims-view-grid {
+        @apply grid gap-4;
+    }
+
+    .lims-view-grid-2 {
+        @apply grid-cols-1 md:grid-cols-2;
+    }
+
+    .lims-view-grid-3 {
+        @apply grid-cols-1
+            md:grid-cols-2
+            xl:grid-cols-3;
+    }
+
+
+    /* FIELD */
+
+    .lims-view-field {
+        @apply flex flex-col gap-1.5;
+    }
+
+    .lims-view-label {
+        @apply text-[11px]
+            font-bold
+            uppercase
+            tracking-[0.08em];
+
+        color:
+            color-mix(
+                in srgb,
+                var(--secondary) 75%,
+                transparent
+            );
+    }
+
+    .lims-view-value {
+        @apply min-h-[44px]
+            rounded-xl
+            px-4
+            py-3
+            text-sm
+            font-semibold;
+
+        color: var(--primary);
+        background: var(--white);
+
+        border: 1px solid
+            color-mix(
+                in srgb,
+                var(--secondary) 18%,
+                transparent
+            );
+    }
+
+
+    .lims-view-value-highlight {
+        color: var(--secondary);
+
+        background:
+            color-mix(
+                in srgb,
+                var(--light-blue) 45%,
+                var(--white)
+            );
+    }
+
+
+    /* RELEASE DATE */
+
+    .lims-view-release {
+        @apply mt-5
+            flex
+            items-center
+            justify-between
+            gap-5
+            rounded-xl
+            p-4;
+
+        background:
+            color-mix(
+                in srgb,
+                var(--light-blue) 38%,
+                var(--white)
+            );
+
+        border: 1px solid
+            color-mix(
+                in srgb,
+                var(--secondary) 15%,
+                transparent
+            );
+    }
+
+
+    .lims-view-release-date {
+        @apply mt-1 block
+            text-base
+            font-bold;
+
+        color: var(--secondary);
+    }
+
+
+    .lims-view-release p {
+        @apply max-w-lg
+            text-xs
+            leading-relaxed;
+
+        color:
+            color-mix(
+                in srgb,
+                var(--primary) 60%,
+                transparent
+            );
+    }
+
+
+    /* QUESTIONS */
+
+    .lims-view-question-list {
+        @apply flex flex-col gap-3;
+    }
+
+
+    .lims-view-question {
+        @apply flex
+            items-center
+            justify-between
+            gap-6
+            rounded-xl
+            px-4
+            py-3;
+
+        background: var(--white);
+
+        border: 1px solid
+            color-mix(
+                in srgb,
+                var(--secondary) 15%,
+                transparent
+            );
+    }
+
+
+    .lims-view-question-copy {
+        @apply flex items-center gap-3
+            text-sm
+            font-semibold;
+
+        color: var(--primary);
+    }
+
+
+    .lims-view-question-number {
+        @apply flex
+            h-8
+            w-8
+            shrink-0
+            items-center
+            justify-center
+            rounded-lg
+            text-xs
+            font-bold;
+
+        color: var(--secondary);
+
+        background:
+            color-mix(
+                in srgb,
+                var(--accent) 12%,
+                transparent
+            );
+    }
+
+
+    .lims-view-answer {
+        @apply min-w-[64px]
+            rounded-lg
+            px-3
+            py-1.5
+            text-center
+            text-xs
+            font-bold;
+    }
+
+
+    .lims-view-answer.yes {
+        background: #DCFCE7;
+        color: #15803D;
+    }
+
+
+    .lims-view-answer.no {
+        background: #FEE2E2;
+        color: #B91C1C;
+    }
+
+
+    /* CONDITIONAL DETAILS */
+
+    .lims-view-extra {
+        @apply ml-11
+            flex
+            flex-col
+            gap-1.5
+            rounded-xl
+            p-4;
+
+        background:
+            color-mix(
+                in srgb,
+                var(--light-blue) 35%,
+                var(--white)
+            );
+
+        border-left: 3px solid var(--accent);
+    }
+    .lims-view-extra.hidden {
+        display: none !important;
+    }
+
+
+    /* SPECIAL INSTRUCTIONS */
+
+    .lims-view-instruction {
+        @apply mt-5;
+    }
+
+
+    .lims-view-instruction p {
+        @apply mt-2
+            min-h-[70px]
+            whitespace-pre-wrap
+            rounded-xl
+            px-4
+            py-3
+            text-sm
+            leading-relaxed;
+
+        color: var(--primary);
+        background: var(--white);
+
+        border: 1px solid
+            color-mix(
+                in srgb,
+                var(--secondary) 15%,
+                transparent
+            );
+    }
+
+
+    /* TERMS */
+
+    .lims-view-terms {
+        @apply grid
+            grid-cols-1
+            gap-3
+            xl:grid-cols-2;
+    }
+
+
+    .lims-view-terms > div {
+        @apply flex
+            gap-3
+            rounded-xl
+            p-4;
+
+        background:
+            color-mix(
+                in srgb,
+                var(--light-blue) 30%,
+                var(--white)
+            );
+    }
+
+
+    .lims-view-terms strong {
+        @apply flex
+            h-8
+            w-8
+            shrink-0
+            items-center
+            justify-center
+            rounded-lg
+            text-xs;
+
+        color: var(--secondary);
+
+        background:
+            color-mix(
+                in srgb,
+                var(--accent) 13%,
+                transparent
+            );
+    }
+
+
+    .lims-view-terms p {
+        @apply text-xs leading-relaxed;
+
+        color:
+            color-mix(
+                in srgb,
+                var(--primary) 72%,
+                transparent
+            );
+    }
+
+
+    @media (max-width: 768px) {
+
+        .lims-view-question {
+            @apply items-start;
+        }
+
+        .lims-view-release {
+            @apply flex-col items-start;
+        }
+
+        .lims-view-extra {
+            @apply ml-0;
+        }
+
+    }
+
+    .lims-view-answer {
+        @apply inline-flex min-w-[64px] items-center justify-center
+            px-3 py-1.5
+            text-xs font-semibold;
+    }
+
+    /* YES */
+    .lims-view-answer.yes {
+        @apply bg-green-500 text-green-100 ring-1 ring-green-200;
+    }
+
+    /* NO */
+    .lims-view-answer.no {
+        @apply bg-red-500 text-red-100 ring-1 ring-red-200;
+    }
+
+}

@@ -1,6 +1,11 @@
 using LIMS_API.Models;
 using LIMS_API.Repositories.AnalysisList;
 using LIMS_API.Services.AnalysisList;
+using LIMS_API.Repositories.RequestForm;
+using LIMS_API.Services.RequestForm;
+using LIMS_API.Repositories.RequestPending;
+using LIMS_API.Services.RequestPending;
+
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
@@ -25,11 +30,16 @@ builder.Services.AddDbContext<LimsContext>(options =>
     )
 );
 
+
 // Repository
 builder.Services.AddScoped<IAnalysisListRepo, AnalysisListRepo>();
+builder.Services.AddScoped<IRequestFormRepo, RequestFormRepo>();
+builder.Services.AddScoped<IRequestPendingRepo, RequestPendingRepo>();
 
 // Service
 builder.Services.AddScoped<IAnalysisListService, AnalysisListService>();
+builder.Services.AddScoped<IRequestFormService, RequestFormService>();
+builder.Services.AddScoped<IRequestPendingService, RequestPendingService>();
 
 var app = builder.Build();
 
