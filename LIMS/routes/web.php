@@ -30,7 +30,7 @@ Route::get('/requestsample/view/{id}', [RequestSampleController::class, 'view'])
 
 use App\Http\Controllers\JobRoutingController;
 Route::get('/jobrouting', [JobRoutingController::class, 'index'])->name('jobrouting.index');           // route page
-
+Route::get('/jobrouting/data', [JobRoutingController::class, 'data'])->name('jobrouting.data');        // load table
 
 
 Route::middleware('admin')->group(function () {

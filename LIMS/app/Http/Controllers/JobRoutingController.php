@@ -11,17 +11,17 @@ class JobRoutingController extends Controller
         return view('JobRouting.jobrouting');
     }
 
-    // public function data(){
-    //     $response = Http::get('http://localhost:5198/api/RequestPending');
+    public function data(){
+        $response = Http::get('http://localhost:5198/api/JobRouting');
 
-    //     if ($response->failed()) {
-    //         return response()->json([
-    //             'message' => 'Failed to retrieve pending requests.'
-    //         ], $response->status());
-    //     }
+        if ($response->failed()) {
+            return response()->json([
+                'message' => 'Failed to retrieve samples list.'
+            ], $response->status());
+        }
 
-    //     return response()->json($response->json());
-    // }
+        return response()->json($response->json());
+    }
 
     // public function view($id){
     //     $response = Http::get(

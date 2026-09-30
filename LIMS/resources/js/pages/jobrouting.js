@@ -10,9 +10,6 @@ let analysisList = [];
 async function loadAnalysisData() {
     try {
         analysisList = await fetchAnalysisList();
-
-        console.log('Analysis List:', analysisList);
-
     } catch (error) {
         console.error(
             'Failed to load analysis list:',
@@ -26,7 +23,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const tableBody = document.getElementById("JobRoutingTableBody");
 
     try {
-        const response = await fetch('/requestsample/data', {
+        const response = await fetch('/jobrouting/data', {
             method: 'GET',
             headers: {
                 'Accept': 'application/json'
@@ -38,19 +35,20 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         const requests = await response.json();
+        console.log(requests);
         tableBody.innerHTML = "";
 
         requests.forEach(request => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-                <td>${request.requestId ?? "-"}</td>
-                <td>${request.customerName ?? "-"}</td>
-                <td>${request.sampleType ?? "-"}</td>
-                <td>${request.labAnalysis ?? "-"}</td>
-                <td>${formatDate(request.dateTime)}</td>
-
-                <td>
-                    <button
+            (request.samples ?? []).forEach(sample => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${sample.laboratoryNumber ?? "-"}</td>
+                    <td>${sample.sample ?? "-"}</td>
+                    <td>${formatDate(sample.dateTimeCollected ?? "-")}</td>
+                    <td>${sample.placeCollected ?? "-"}</td>
+                    <td>${formatDate(request.dateTimeRelease)}</td>
+                    <td>
+                        <button
                         type="button"
                         data-request-id="${request.requestId}"
                         class="noselect lims-button-view remove-row"
@@ -74,9 +72,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                             </svg>
                         </span>
                     </button>
-                </td>
-            `;
-            tableBody.appendChild(row);
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
         });
 
 

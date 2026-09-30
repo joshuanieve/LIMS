@@ -7,21 +7,17 @@ namespace LIMS_API.Services.RequestPending
     {
         private readonly IRequestPendingRepo _requestPendingRepository;
 
-        public RequestPendingService(
-            IRequestPendingRepo requestPendingRepository)
-        {
+        public RequestPendingService(IRequestPendingRepo requestPendingRepository){
             _requestPendingRepository = requestPendingRepository;
         }
 
         // GET ALL REQUESTS FOR TABLE
-        public async Task<List<GetRequestPendingList>> GetRequestPendingList()
-        {
+        public async Task<List<GetRequestPendingList>> GetRequestPendingList(){
             return await _requestPendingRepository.GetRequestPendingList();
         }
 
         // GET ONE REQUEST FOR VIEWING
-        public async Task<GetRequestDetails?> GetRequestPendingById(int id)
-        {
+        public async Task<GetRequestDetails?> GetRequestPendingById(int id){
             return await _requestPendingRepository.GetRequestPendingById(id);
         }
     }

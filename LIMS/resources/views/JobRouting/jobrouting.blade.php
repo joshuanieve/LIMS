@@ -21,9 +21,9 @@
             <thead>
                 <tr>
                     <th>Laboratory No.</th>
-                    <th>Customer</th>
-                    <th>Sample Type</th>
-                    <th>Laboratory Analysis</th>
+                    <th>Sample</th>
+                    <th>Date Collected</th>
+                    <th>Place Collected</th>
                     <th>Target Release</th>
                     <th>Action</th>
                 </tr>

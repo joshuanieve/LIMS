@@ -5,6 +5,8 @@ using LIMS_API.Repositories.RequestForm;
 using LIMS_API.Services.RequestForm;
 using LIMS_API.Repositories.RequestPending;
 using LIMS_API.Services.RequestPending;
+using LIMS_API.Repositories.JobRouting;
+using LIMS_API.Services.JobRouting;
 
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
@@ -35,11 +37,13 @@ builder.Services.AddDbContext<LimsContext>(options =>
 builder.Services.AddScoped<IAnalysisListRepo, AnalysisListRepo>();
 builder.Services.AddScoped<IRequestFormRepo, RequestFormRepo>();
 builder.Services.AddScoped<IRequestPendingRepo, RequestPendingRepo>();
+builder.Services.AddScoped<IJobRoutingRepo, JobRoutingRepo>();
 
 // Service
 builder.Services.AddScoped<IAnalysisListService, AnalysisListService>();
 builder.Services.AddScoped<IRequestFormService, RequestFormService>();
 builder.Services.AddScoped<IRequestPendingService, RequestPendingService>();
+builder.Services.AddScoped<IJobRoutingService, JobRoutingService>();
 
 var app = builder.Build();
 
