@@ -7,8 +7,7 @@
 @section('content')
 
 @vite([
-        // 'resources/css/dashboard.css',
-        // 'resources/css/pages/modal-request.css',
+        'resources/css/pages/jobrouting.css',
         'resources/js/services/fetchAnalysisTable.js',
         'resources/js/pages/jobrouting.js'
     ])
@@ -30,7 +29,7 @@
             </thead>
 
             <tbody id="JobRoutingTableBody"></tbody>
-            
+
         </table>
     </div>
 </section>
@@ -41,5 +40,5 @@
 
 
 @section('modals')
-
+    @include('JobRouting.partials.modal1-route')
 @endsection

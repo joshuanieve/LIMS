@@ -112,12 +112,56 @@ let activeAnalysisRow = null;
         document.querySelectorAll('.analysis-checkbox').forEach(cb => cb.checked = false);
         const row_id = analysisButton.dataset.row;
         activeAnalysisRow = row_id;
-        
+
         load_checkboxes();
+        filterAnalysisByLabType();
 
         // Show the Tab
         analysisModal.classList.remove('hidden');
         analysisModal.classList.add('flex');
+    });
+
+    // FILTER TESTS IN THE ANALYSIS MODAL BY THE SELECTED LABORATORY
+    // (Chemical / Microbiological, chosen in tab2-laboratory-analysis).
+    // /api/AnalysisList's `type` values ("Chemical Analysis", "Biological
+    // Analysis") don't match the LabAna radio values exactly, so match by
+    // keyword instead of an exact string compare.
+    const LAB_TYPE_KEYWORDS = {
+        chemical: 'chemical',
+        microbiological: 'biological',
+    };
+
+    function getSelectedLabAnalysis() {
+        const selected = document.querySelector('input[name="LabAna"]:checked');
+        return selected ? selected.value : null;
+    }
+
+    function filterAnalysisByLabType() {
+        const selectedType = getSelectedLabAnalysis();
+        const keyword = selectedType
+            ? LAB_TYPE_KEYWORDS[selectedType.trim().toLowerCase()]
+                ?? selectedType.trim().toLowerCase()
+            : null;
+
+        document.querySelectorAll('.lims-analysis-type[data-analysis-type]').forEach(section => {
+            const matches = keyword !== null &&
+                section.dataset.analysisType.toLowerCase().includes(keyword);
+
+            section.classList.toggle('hidden', !matches);
+
+            if (!matches) {
+                section.querySelectorAll('.analysis-checkbox:checked').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+            }
+        });
+
+        document.getElementById('selectedCount').textContent =
+            `${document.querySelectorAll('.analysis-checkbox:checked').length} tests selected`;
+    }
+
+    document.querySelectorAll('input[name="LabAna"]').forEach(radio => {
+        radio.addEventListener('change', filterAnalysisByLabType);
     });
 
     function load_checkboxes(){
@@ -505,3 +549,6 @@ const ApplyLocationBUtton = document.getElementById('applyLocation');
         locationModal.classList.remove('flex');
     }
     CancelLocationButton.addEventListener('click', closeLocationModal);
+
+
+// Analysis Modal Condition

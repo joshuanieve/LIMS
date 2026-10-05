@@ -20,7 +20,7 @@
         <table id="requestTable" class="lims-sample-table">
             <thead>
                 <tr>
-                    <th>Laboratory No.</th>
+                    <th>Reference Number</th>
                     <th>Customer</th>
                     <th>Sample Type</th>
                     <th>Laboratory Analysis</th>

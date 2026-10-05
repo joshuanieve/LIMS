@@ -182,3 +182,22 @@ document.addEventListener('click', () => {
     notificationDropdown?.classList.add('hidden');
     userDropdown?.classList.add('hidden');
 });
+
+
+
+window.CloseModal = function CloseModal(modalID) {
+    const modal = document.getElementById(modalID);
+    if (!modal) return;
+    modal.classList.remove('flex');
+    modal.classList.add('hidden');
+}
+
+window.OpenModal =function OpenModal(modalID) {
+    const modal = document.getElementById(modalID);
+    if (!modal) {
+        console.error('Modal not found in the DOM.');
+        return;
+    }
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}

@@ -103,9 +103,9 @@
     </a>
 
     <a
-        href="#"
+        href="{{ route('resultforencoding.index') }}"
         class="lims-nav-link
-            {{ request()->routeIs('resultencoding.*') ? 'lims-nav-link-active' : '' }}">
+            {{ request()->routeIs('resultencoding.index') ? 'lims-nav-link-active' : '' }}">
 
         <svg
             xmlns="http://www.w3.org/2000/svg"

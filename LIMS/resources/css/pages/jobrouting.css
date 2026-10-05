@@ -1,0 +1,57 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+
+
+@source '../**/*.js';
+
+@layer JobRoutingSlip {
+
+    #RouteModal .lims-analysis-options {
+        @apply flex
+            min-h-0
+            flex-1
+            flex-col
+            gap-3
+            overflow-y-auto
+            p-6;
+    }
+
+    .lims-route-row {
+        @apply flex
+            flex-col
+            gap-3
+            rounded-2xl
+            border
+            px-4 py-3
+            transition-all
+            duration-200
+            sm:flex-row
+            sm:items-center
+            sm:justify-between;
+
+        background: var(--white);
+        border-color: color-mix(in srgb, var(--secondary) 15%, transparent);
+    }
+
+    .lims-route-row:hover {
+        border-color: color-mix(in srgb, var(--secondary) 35%, transparent);
+        box-shadow: 0 6px 18px color-mix(in srgb, var(--secondary) 10%, transparent);
+    }
+
+    .lims-route-row .lims-analysis-name {
+        @apply text-sm font-bold;
+        color: var(--ink);
+    }
+
+    .lims-route-row .lims-analysis-method {
+        @apply mt-1 text-xs;
+        color: var(--muted);
+    }
+
+    .lims-route-select {
+        @apply w-full sm:w-56;
+    }
+}

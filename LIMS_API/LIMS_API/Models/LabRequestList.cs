@@ -9,6 +9,8 @@ public partial class LabRequestList
 
     public int? RequestId { get; set; }
 
+    public DateTime? DateSubmitted { get; set; }
+
     public string? LaboratoryNumber { get; set; }
 
     public string? Sample { get; set; }

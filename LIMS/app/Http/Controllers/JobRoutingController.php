@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Http;
 class JobRoutingController extends Controller
 {
     public function index(){
-        return view('JobRouting.jobrouting');
+        return view('JobRouting.index');
     }
 
     public function data(){

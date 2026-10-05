@@ -600,15 +600,15 @@
                 max-w-4xl
                 flex-col
                 /* overflow-hidden */
-                rounded-2xl
-                border border-[#79C7FF]/15
+                rounded-3xl
+                border border-[#E7EEF9]
                 shadow-2xl;
                 background: var(--semi2white)
         }
 
         .lims-modal-header {
             @apply shrink-0
-                border-b border-[#79C7FF]/10
+                border-b border-[#EEF2FA]
                 px-6 py-5;
         }
     }
@@ -617,7 +617,7 @@
         .lims-modal-title {
             @apply text-xl
                 font-bold;
-                color: var(--secondary);
+                color: var(--ink);
         }
 
         .lims-analysis-options {
@@ -637,7 +637,7 @@
             @apply mb-4
                 text-base
                 font-bold;
-                color: var(--secondary);
+                color: var(--ink);
         }
 
         .lims-analysis-category {
@@ -670,33 +670,47 @@
                 cursor-pointer
                 items-start
                 gap-3
-                rounded-xl
-                border border-[#79C7FF]/80
+                rounded-2xl
+                border
                 p-3
-                transition
-                hover:border-[#2589D8]/30
-                hover:bg-[var(--primary)]/30;
-                bg: var(--white);
+                transition-all
+                duration-200;
+
+            background: var(--white);
+            border-color: color-mix(in srgb, var(--secondary) 18%, transparent);
+        }
+
+        .lims-analysis-checkbox:hover {
+            border-color: color-mix(in srgb, var(--secondary) 40%, transparent);
+            background: color-mix(in srgb, var(--secondary) 5%, var(--white));
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px color-mix(in srgb, var(--secondary) 10%, transparent);
+        }
+
+        .lims-analysis-checkbox:has(.analysis-checkbox:checked) {
+            border-color: var(--secondary);
+            background: color-mix(in srgb, var(--secondary) 8%, var(--white));
+            box-shadow: 0 4px 14px color-mix(in srgb, var(--secondary) 16%, transparent);
         }
 
         .lims-analysis-checkbox input {
-            @apply mt-1;
-                    color: var(--primary);
+            @apply mt-1 h-4 w-4 cursor-pointer;
+            accent-color: var(--secondary);
         }
 
         .lims-analysis-name {
             @apply text-sm
                 font-bold;
-                color: var(--secondary);
+                color: var(--ink);
         }
 
         .lims-analysis-method {
             @apply mt-1
                 text-xs;
-                color: var(--secondary);
+                color: var(--muted);
         }
 
-        
+
 
     }
 
@@ -707,9 +721,11 @@
                 items-center
                 justify-between
                 gap-4
-                rounded-2xl
-                border-t border-[var(--primary)]/10
+                rounded-b-3xl
+                border-t
                 px-6 py-4;
+
+                border-color: color-mix(in srgb, var(--primary) 10%, transparent);
                 background: var(--semi1white);
         }
 
@@ -723,18 +739,24 @@
             @apply flex gap-2;
         }
 
-        
+
 
         .lims-modal-apply {
-            @apply rounded-lg
-                border border-[var(--secondary)]/80
-                bg-[#0B5FA5]
-                px-5 py-2
+            @apply rounded-xl
+                border
+                px-5 py-2.5
                 text-sm
                 font-semibold
                 text-white
-                transition
-                hover:bg-[#2589D8];
+                transition;
+
+            background: var(--secondary);
+            border-color: var(--secondary);
+        }
+
+        .lims-modal-apply:hover {
+            background: var(--accent);
+            border-color: var(--accent);
         }
     }
 
@@ -758,7 +780,7 @@
         background:
             color-mix(
                 in srgb,
-                var(--light-blue) 30%,
+                var(--lightblue) 30%,
                 var(--white)
             );
     }

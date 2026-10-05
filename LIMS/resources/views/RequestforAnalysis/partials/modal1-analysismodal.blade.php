@@ -18,7 +18,7 @@
                 @endphp
 
                 @foreach ($groupedAnalysis as $type => $categories)
-                    <div class="lims-analysis-type">
+                    <div class="lims-analysis-type" data-analysis-type="{{ $type }}">
                         <h3 class="lims-analysis-type-title">{{ $type }}</h3>
                         @foreach ($categories as $category => $analyses)
                             <div class="lims-analysis-category">

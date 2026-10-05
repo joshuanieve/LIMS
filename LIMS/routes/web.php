@@ -20,7 +20,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 use App\Http\Controllers\RequestFormController;
 Route::get('/requestform', [RequestFormController::class, 'index'])->name('requestform.index');                             // route page
 Route::post('/requestform', [RequestFormController::class, 'storeRequestForm'])->name('requestform.storeRequestForm');      // insert form
-    
+
 
 use App\Http\Controllers\RequestSampleController;
 Route::get('/requestsample', [RequestSampleController::class, 'index'])->name('requestsample.index');           // route page
@@ -33,8 +33,13 @@ Route::get('/jobrouting', [JobRoutingController::class, 'index'])->name('jobrout
 Route::get('/jobrouting/data', [JobRoutingController::class, 'data'])->name('jobrouting.data');        // load table
 
 
+use App\Http\Controllers\ResultforEncodingController;
+Route::get('/resultforencoding', [ResultforEncodingController::class, 'index'])->name('resultforencoding.index');           // route page
+Route::get('/resultforencoding/data', [ResultforEncodingController::class, 'data'])->name('resultforencoding.data');        // load table
+
+
 Route::middleware('admin')->group(function () {
-    
+
 });
 
 Route::middleware('user')->group(function () {

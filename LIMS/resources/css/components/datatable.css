@@ -17,8 +17,8 @@
                 min-w-0
                 max-w-full
                 overflow-x-auto
-                rounded-xl
-                border border-[#79C7FF]/10;
+                rounded-2xl
+                border border-[#E7EEF9];
         }
 
         .lims-sample-table {
@@ -30,29 +30,29 @@
         }
 
         .lims-sample-table thead {
-            @apply bg-[#0B5FA5]/100;
+            background: var(--semi1white);
             text-align: center;
         }
 
         .lims-sample-table th {
-            @apply border-b border-[#79C7FF]/10
+            @apply border-b border-[#E7EEF9]
                 px-4 py-3
                 text-[10px]
                 font-bold
                 uppercase
-                tracking-[0.12em]
-                text-[#F4F8FC]/90;
+                tracking-[0.12em];
 
+                color: var(--muted);
                 text-align: center !important;
         }
 
         .lims-sample-table td {
-            @apply border-b border-[#79C7FF]/10
+            @apply border-b border-[#EEF2FA]
                 p-3
                 text-sm
-                font-bold
-                text-[var(--secondary)];
+                font-bold;
 
+                color: var(--ink);
                 text-align: center !important;
                 vertical-align: middle;
         }
@@ -60,8 +60,11 @@
         .lims-sample-table tbody tr {
             @apply transition-colors
                     transition-all ease-in
-                    bg-[#d8ddeb]/80
-                hover:bg-[#0B294D]/30;
+                    bg-[var(--white)]/100;
+        }
+
+        .lims-sample-table tbody tr:hover {
+            background: color-mix(in srgb, var(--secondary) 7%, var(--white));
         }
 
         .lims-sample-table tbody tr:last-child td {
@@ -89,7 +92,7 @@
 
                 background: #e62222;
                 border: none;
-                border-radius: 10px;
+                border-radius: 12px;
 
                 box-shadow:
                     1px 1px 3px rgba(0, 0, 0, 0.15);
@@ -163,7 +166,7 @@
                 overflow: hidden;
                 background: var(--white)/00;
                 border: 1px solid var(--secondary);
-                border-radius: 10px;
+                border-radius: 12px;
                 box-shadow:
                     1px 1px 3px rgba(0, 0, 0, 0.15);
             }
@@ -228,28 +231,28 @@
             @apply inline-flex
                 items-center
                 justify-center
-                rounded-[10px]
+                rounded-full
                 px-3 py-1.5
                 text-xs
                 font-bold;
 
-            background-color: #0B5FA5;
-            color: #FFFFFF;
+            background-color: #DBEAFE;
+            color: #1D4ED8;
         }
 
 
-        /* PROCESSING - YELLOW */
+        /* PROCESSING - AMBER */
         .lims-status-processing {
             @apply inline-flex
                 items-center
                 justify-center
-                rounded-[10px]
+                rounded-full
                 px-3 py-1.5
                 text-xs
                 font-bold;
 
-            background-color: #F59E0B;
-            color: #FFFFFF;
+            background-color: #FEF3C7;
+            color: #B45309;
         }
 
 
@@ -258,13 +261,23 @@
             @apply inline-flex
                 items-center
                 justify-center
-                rounded-[10px]
+                rounded-full
                 px-3 py-1.5
                 text-xs
                 font-bold;
 
-            background-color: #16A34A;
-            color: #FFFFFF;
+            background-color: #DCFCE7;
+            color: #15803D;
+        }
+
+        .lims-status-textcomplete {
+            color: #08823A;
+            font-weight: 600;
+        }
+
+        .lims-status-textinvalid {
+            color: #C62828;
+            font-weight: 600;
         }
 
     }
@@ -376,7 +389,7 @@
             border: 1px solid
                 color-mix(in srgb, var(--secondary) 20%, transparent) !important;
 
-            background: var(--light-blue) !important;
+            background: var(--lightblue) !important;
             color: var(--secondary) !important;
 
             font-size: 14px !important;
@@ -408,7 +421,7 @@
         div.dt-container .dt-paging .dt-paging-button.disabled:hover {
             opacity: 0.35 !important;
 
-            background: var(--light-blue) !important;
+            background: var(--lightblue) !important;
             color: var(--primary) !important;
 
             cursor: not-allowed !important;

@@ -32,3 +32,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+document.addEventListener('DOMContentLoaded', function () {
+
+    const ResultforEncodingTable = document.querySelector('#ResultforEncodingTable');
+    if (ResultforEncodingTable) {
+        new DataTable(ResultforEncodingTable, {
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            order: [[4, 'desc']]
+        });
+    }
+
+    
+});
+

@@ -17,7 +17,13 @@ public partial class LimsContext : DbContext
 
     public virtual DbSet<LabAnalysisList> LabAnalysisLists { get; set; }
 
+    public virtual DbSet<LabApproval> LabApprovals { get; set; }
+
+    public virtual DbSet<LabCounter> LabCounters { get; set; }
+
     public virtual DbSet<LabRequest> LabRequests { get; set; }
+
+    public virtual DbSet<LabRequestLabWork> LabRequestLabWorks { get; set; }
 
     public virtual DbSet<LabRequestList> LabRequestLists { get; set; }
 
@@ -40,6 +46,29 @@ public partial class LimsContext : DbContext
             entity.Property(e => e.Type).HasMaxLength(255);
         });
 
+        modelBuilder.Entity<LabApproval>(entity =>
+        {
+            entity.HasKey(e => e.ApprovalId);
+
+            entity.ToTable("Lab_Approval");
+
+            entity.Property(e => e.ApprovalId).HasColumnName("ApprovalID");
+            entity.Property(e => e.RequestId).HasColumnName("RequestID");
+            entity.Property(e => e.TestId).HasColumnName("TestID");
+            entity.Property(e => e.UserId).HasColumnName("UserID");
+        });
+
+        modelBuilder.Entity<LabCounter>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_LabCounter");
+
+            entity.ToTable("Lab_Counter");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Count).HasColumnName("count");
+            entity.Property(e => e.Year).HasColumnName("year");
+        });
+
         modelBuilder.Entity<LabRequest>(entity =>
         {
             entity.HasKey(e => e.RequestId);
@@ -57,6 +86,23 @@ public partial class LimsContext : DbContext
             entity.Property(e => e.SampleType).HasMaxLength(255);
             entity.Property(e => e.SubInfo2).HasMaxLength(255);
             entity.Property(e => e.SubInfo4).HasMaxLength(255);
+        });
+
+        modelBuilder.Entity<LabRequestLabWork>(entity =>
+        {
+            entity.HasKey(e => e.LabWorkId);
+
+            entity.ToTable("Lab_RequestLabWork");
+
+            entity.Property(e => e.LabWorkId).HasColumnName("LabWorkID");
+            entity.Property(e => e.Result)
+                .HasMaxLength(10)
+                .IsFixedLength();
+            entity.Property(e => e.TestId).HasColumnName("TestID");
+            entity.Property(e => e.Unit)
+                .HasMaxLength(10)
+                .IsFixedLength();
+            entity.Property(e => e.UserId).HasColumnName("UserID");
         });
 
         modelBuilder.Entity<LabRequestList>(entity =>
