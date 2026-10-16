@@ -78,6 +78,7 @@ public partial class LimsContext : DbContext
             entity.HasIndex(e => e.RequestId, "IX_Lab_Request").IsUnique();
 
             entity.Property(e => e.RequestId).HasColumnName("RequestID");
+            entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
             entity.Property(e => e.CustomerName).HasMaxLength(255);
             entity.Property(e => e.EmailAddress).HasMaxLength(255);
             entity.Property(e => e.Instruction).HasColumnType("text");
@@ -96,12 +97,12 @@ public partial class LimsContext : DbContext
 
             entity.Property(e => e.LabWorkId).HasColumnName("LabWorkID");
             entity.Property(e => e.Result)
-                .HasMaxLength(10)
-                .IsFixedLength();
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.TestId).HasColumnName("TestID");
             entity.Property(e => e.Unit)
-                .HasMaxLength(10)
-                .IsFixedLength();
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.UserId).HasColumnName("UserID");
         });
 

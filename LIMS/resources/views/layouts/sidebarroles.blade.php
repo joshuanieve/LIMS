@@ -1,4 +1,6 @@
 <nav class="lims-sidebar-nav" id="sidebar_content2">
+    <p class="lims-sidebar-section-label">Overview</p>
+
     <a
         href="{{ route('dashboard') }}"
         class="lims-nav-link
@@ -137,9 +139,9 @@
     </a>
 
     <a
-        href="#"
+        href="{{ route('LaboratoryRecords.index') }}"
         class="lims-nav-link
-            {{ request()->routeIs('laboratory-records.*') ? 'lims-nav-link-active' : '' }}">
+            {{ request()->routeIs('LaboratoryRecords.index') ? 'lims-nav-link-active' : '' }}">
 
         <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -161,8 +163,35 @@
         </span>
     </a>
 
+    <p class="lims-sidebar-section-label">System</p>
+
     <a
-        href="#"
+        href="{{ route('reports') }}"
+        class="lims-nav-link
+            {{ request()->routeIs('reports') ? 'lims-nav-link-active' : '' }}">
+
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="lims-nav-icon"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor">
+
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
+
+        </svg>
+
+        <span class="lims-nav-text sidebar-label">
+            Reports
+        </span>
+    </a>
+
+    <a
+        href="{{ route('logs') }}"
         class="lims-nav-link
             {{ request()->routeIs('logs') ? 'lims-nav-link-active' : '' }}">
 

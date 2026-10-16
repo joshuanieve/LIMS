@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const toggleIcon = document.getElementById('sidebarToggleIcon');
     const sidebarContent1 = document.getElementById('sidebar_content1');
     const sidebarContent2 = document.getElementById('sidebar_content2');
+    const sidebarContent3 = document.getElementById('sidebar_content3');
 
     let sidebarOpen = true;
 
@@ -22,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             sidebarContent1.style.display = '';
             sidebarContent2.style.display = '';
+            if (sidebarContent3) sidebarContent3.style.display = '';
 
             toggleIcon.classList.remove('rotate-180');
 
@@ -33,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             sidebarContent1.style.display = 'none';
             sidebarContent2.style.display = 'none';
+            if (sidebarContent3) sidebarContent3.style.display = 'none';
 
             toggleIcon.classList.add('rotate-180');
         }

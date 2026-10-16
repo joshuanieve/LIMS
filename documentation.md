@@ -65,18 +65,28 @@ sample tracks its own status independently.
 
 ### 2.4 Roles & responsibilities
 
-| Role | Responsibilities |
-|---|---|
-| **Requesting User (Client)** | Submit RFA, provide required information, track request status, receive final test report and notifications |
-| **Administrative Personnel** | Review submitted RFA, assign to the appropriate laboratory (Chemical/Microbial), ensure completeness of information, notify the concerned laboratory/section |
-| **Section Chief / Supervisor** | Assign laboratory parameters to analysts, review encoded results, approve results, monitor workload and turnaround time |
-| **Analyst** | Accept assigned parameters, conduct laboratory analysis, encode test results, upload supporting documents (if applicable) |
-| **Division Chief** | Review all results under a reference number, approve the final test report, authorize release to the client |
+As of 2026-10-15 the 5 roles have concrete `role_id` values and a dashboard each (see §6, §7) — the
+names below are what's actually used in code (`LoginController::$limsRoles`,
+`DashboardController::ROLE_*`), mapped onto the original business role from the workflow diagram.
+
+| `role_id` | Code name | Business role | Responsibilities |
+|---|---|---|---|
+| 1 | **Customer** | Requesting User (Client) | Submit RFA, provide required information, track request status, receive final test report and notifications |
+| 2 | **AdminOfficer** | Administrative Personnel | Review submitted RFA, assign to the appropriate laboratory (Chemical/Microbial), ensure completeness of information, notify the concerned laboratory/section |
+| 3 | **Analyst** | Analyst | Accept assigned parameters, conduct laboratory analysis, encode test results, upload supporting documents (if applicable) |
+| 4 | **Section Chief** | Section Chief / Supervisor | Assign laboratory parameters to analysts, review encoded results, approve results, monitor workload and turnaround time |
+| 5 | **Director Chief** | Division Chief | Review all results under a reference number, approve the final test report, authorize release to the client |
+
+**This `role_id` numbering is a local placeholder** (`LoginController`'s `$limsRoles` comment flags
+it) — it has not been confirmed against the external FFAST system's actual `Role_id` values. Update
+both `LoginController::$limsRoles` and `DashboardController::ROLE_*` together if that changes.
 
 ### 2.5 Workflow vs. current implementation — gap map
 
-The code today only implements step 1 end-to-end and a read-only view of steps 2–3; steps 4–8 and the
-5-role model are **not yet built**. See §9 for the concrete gaps.
+The code today only implements step 1 end-to-end and a read-only view of steps 2–3; steps 4–8 are
+**not yet built** (no per-parameter table/entity, no routing/encoding persistence — see §8, §9). The
+5-role model now has a dashboard each (§6), but role-based **route/sidebar access control** is still
+not implemented — see §9.
 
 ## 3. Tech Stack
 
@@ -136,12 +146,13 @@ php artisan serve
 | Module | Workflow step(s) covered | Laravel route(s) | Laravel views/JS | `LIMS_API` endpoint(s) used |
 |---|---|---|---|---|
 | Login / Auth | (cross-cutting) | `POST /ffast`, `POST /logout`, `GET /` | `welcome.blade.php` | External `UserCont`/employee APIs (not `LIMS_API`) |
-| Dashboard | (cross-cutting) | `GET /dashboard` | `dashboard/admin.blade.php`, `dashboard/user.blade.php` | none yet — stats are hard-coded placeholders in `DashboardController` |
+| Dashboard | (cross-cutting) | `GET /dashboard` | `dashboard/customer.blade.php`, `dashboard/adminofficer.blade.php`, `dashboard/analyst.blade.php`, `dashboard/sectionchief.blade.php`, `dashboard/directorchief.blade.php` — one per role (§2.4), branched in `DashboardController::index()` on `role_id` | none yet — stats are hard-coded placeholders in `DashboardController` |
 | Request for Analysis | **Step 1** (Submit RFA) | `GET/POST /requestform` | `RequestforAnalysis/requestform.blade.php` + `partials/tab1..tab7` | `GET /api/AnalysisList`, `POST /api/RequestForm` |
 | Analysis catalog list | supports Step 1 | `GET /analysislist/data` | used by `RequestforAnalysis` tabs | `GET /api/AnalysisList` |
 | Request Sample | **Steps 2–3** (review pending RFAs, read-only sample list; `LaboratoryNumber` field exists on `LabRequestList` but auto-generation isn't implemented) | `GET /requestsample`, `GET /requestsample/{id}`, `GET /requestsample/view/{id}` | `RequestSample/requestsample.blade.php` | `GET /api/RequestPending`, `GET /api/RequestPending/{id}` |
 | Job Routing | **Step 4** target (assign parameters to analysts) — table + "Job Routing Slip" modal list the checked analytes per sample with an analyst dropdown; dropdown has no data source and nothing persists yet | `GET /jobrouting`, `GET /jobrouting/data` | `JobRouting/index.blade.php` + `partials/modal1-route.blade.php` | `Http::get('http://localhost:5198/api/JobRouting')` — **note: this endpoint doesn't exist in `LIMS_API`** (no `JobRoutingController` there), so `data()` currently fails; see §9 |
-| Result for Encoding | **Steps 5–6** target (analyst accepts parameters, encodes results) — early scaffold: table + View button only, no modal/detail view wired yet | `GET /resultforencoding`, `GET /resultforencoding/data` | `ResultforEncoding/index.blade.php` | same broken `http://localhost:5198/api/JobRouting` call as Job Routing — copy-pasted, see §9 |
+| Result for Encoding | **Steps 5–6** target (analyst accepts parameters, encodes results) — "Encode Test Results" modal fully wired to real per-sample `labWorks` data (`LabRequestLabWork` in `LIMS_API`); admin-only Reassign action gated via `data-role` | `GET /resultforencoding`, `GET /resultforencoding/data` | `ResultforEncoding/index.blade.php` + `partials/modal1-results.blade.php` | same broken `http://localhost:5198/api/JobRouting` call as Job Routing for the list — copy-pasted, see §9; per-request `labWorks` come nested in that same (broken) response, not a separate endpoint |
+| Laboratory Records | Cross-cutting records/audit log — one row per RFA aggregating all its samples (RFA No., customer, sample type, lab number range, received/released dates, turnaround, status). **Entirely temporary placeholder data** (15 hard-coded rows in `LaboratoryRecordsController`) — no `LIMS_API` call, no real pagination (the "Showing 1–15 of 412" count and Previous/Next buttons are static/stubbed) | `GET /laboratory-records` | `LaboratoryRecords/index.blade.php` | none — see above |
 | *(not started)* | **Steps 7–8** (approve results per parameter, release final report) | — | — | — |
 
 ## 7. Auth Flow (as implemented today)
@@ -154,13 +165,18 @@ Login does **not** go through `LIMS_API`. `LoginController::login()`:
    (`10.0.224.35:7154`).
 4. Stores everything in the Laravel session (`logged_in`, `api_token`, `role_id`, `lims_role`,
    `fname`/`lname`/`mname`, `division_id`, etc.) — no local `users` table.
-5. `role_id` (1 = user, 2 = admin per `$limsRoles` — note this mapping looks inverted vs.
-   `DashboardController`, see §9) drives which dashboard view is shown.
+5. `role_id` (1–5, see §2.4) drives which of the 5 dashboard views `DashboardController::index()` shows.
+   `lims_role` (session string) is a separate, display/CSS-gating value from the same `$limsRoles` map
+   in `LoginController` — kept as `'admin'` for `role_id` 2 specifically (not `'adminofficer'`) so the
+   existing `data-role === 'admin'` check in `resultforencoding.js` (admin-only Reassign action) keeps
+   working unchanged.
 
-**Gap:** the business workflow (§2.4) needs 5 distinct roles (Requesting User, Administrative Personnel,
-Section Chief/Supervisor, Analyst, Division Chief) with different permissions per step. The current
-`role_id` → `user`/`admin` mapping only supports 2. This needs to be expanded before steps 2–8 can have
-real per-role access control.
+**Gap:** `role_id` now maps to 5 dashboards (§2.4, §6), but there is still no **route or sidebar**
+access control per role — `sidebarroles.blade.php` shows the same full nav to every role, and nothing
+stops e.g. an Analyst from visiting `/requestform` or `/reports` directly. `AdminMiddleware`/
+`UserMiddleware` exist but aren't registered in `bootstrap/app.php` and only know about 2 roles anyway —
+would need replacing with a role-aware middleware covering all 5 before steps 2–8 can have real
+per-role access control.
 
 ## 8. Data Model (`LIMS_API` / SQL Server, via `LimsContext`)
 
@@ -194,7 +210,8 @@ Track these here until fixed; remove the row once resolved.
   `http://localhost:5198` directly in the controller. Should be refactored to use the same config +
   dedicated Service class per the convention in `AGENTS.md`.
 - **`Dashboard` stats are hard-coded** placeholder arrays in `DashboardController`, not sourced from
-  `LIMS_API`.
+  `LIMS_API`. Each role's numbers (`$overdueRequests`, `$categoryBreakdown`, etc.) were also hand-kept
+  in sync with `ReportsController`'s - if either changes, check the other.
 - **`JobRoutingController::data()` and `ResultforEncodingController::data()` both call
   `Http::get('http://localhost:5198/api/JobRouting')`** — hard-coded (not via `config()`, unlike
   `RequestFormServices`) and pointing at an endpoint that doesn't exist in `LIMS_API` (no
@@ -202,11 +219,11 @@ Track these here until fixed; remove the row once resolved.
   will fail to load until this is pointed at a real endpoint (likely `/api/RequestPending`, same as
   `RequestSample`/old `JobRouting`, or a new purpose-built one) and moved into a Service class per
   `AGENTS.md`.
-- **Role model doesn't match the business workflow**: only `user`/`admin` exist today; the workflow
-  (§2.4) needs 5 roles (Requesting User, Administrative Personnel, Section Chief/Supervisor, Analyst,
-  Division Chief). Also verify the `role_id` mapping mismatch — `LoginController` maps
-  `1 => 'user', 2 => 'admin'`, while `DashboardController` treats `roleId === 1` as admin and
-  `roleId === 2` as user.
+- **Role-based access control still missing** (dashboards are done, gating isn't): `role_id` now drives
+  5 distinct dashboards (§2.4, §6), but every other route/page is still open to all 5 roles —
+  `sidebarroles.blade.php` has no role conditionals, and `AdminMiddleware`/`UserMiddleware` are
+  unregistered dead code that only understand 2 roles anyway. The `role_id` numbering itself is also an
+  unconfirmed local placeholder (see §2.4) — needs validating against FFAST's real `Role_id` values.
 - **No per-parameter data model yet** (steps 4–8 of the workflow): no table/entity for an individual
   analysis-on-a-sample with its own code, assigned analyst, and status (Assigned → Accepted → Ongoing →
   Completed → For Review → Approved). See §8.
@@ -221,6 +238,260 @@ Track these here until fixed; remove the row once resolved.
   reconciled only in the frontend.
 
 ## 10. Changelog
+
+- **2026-10-15** — Reference number display format changed system-wide from `RFA-2026-0000` to
+  `Ref. #0000` (drops the `RFA-` prefix and the year segment, keeps the existing 4-digit id). Updated
+  everywhere a mock reference number string is built: `DashboardController`, `ReportsController`,
+  `LogsController`, the dead/commented sample rows in `LaboratoryRecordsController`, and the (also
+  currently-unused) `formatReference()` helper duplicated in `jobrouting.js`/`resultforencoding.js`
+  (now `` `Ref. #${id.padStart(4,'0')}` ``, no year). Also on the Customer dashboard specifically: removed
+  the "Where It Is Right Now" step tracker panel and the "Recent Updates" notifications panel (and their
+  now-dead controller data `$trackerSteps`/`$myUpdates` and CSS `.lims-tracker-*`) — the Customer
+  dashboard is now just stats + My Requests.
+- **2026-10-15** — Replaced the 2-role (`admin`/`user`) dashboard split with one dashboard per each of
+  the 5 workflow roles (§2.4): **Customer**, **AdminOfficer**, **Analyst**, **Section Chief**,
+  **Director Chief** — `role_id` 1–5 respectively (`DashboardController::ROLE_*` constants,
+  `LoginController::$limsRoles`, both flagged as an unconfirmed placeholder numbering pending real
+  FFAST `Role_id` values). Deleted `dashboard/admin.blade.php` and `dashboard/user.blade.php`; added
+  `dashboard/{customer,adminofficer,analyst,sectionchief,directorchief}.blade.php`. Each shows
+  role-appropriate info instead of the old generic/duplicated content:
+  - **Customer** — "my requests" stats, a request table scoped to the client, and a new single-request
+    step tracker (`.lims-tracker-*`) showing where their latest RFA sits across the 8 workflow steps.
+  - **AdminOfficer** — carries over the admin dashboard built earlier today (system-wide stats, Recent
+    Requests/Activity, Category Breakdown, Overdue Requests, Quick Links), plus a new "Awaiting Your
+    Review" queue (Step 2).
+  - **Analyst** — "My Assigned Parameters" queue (Steps 5–6), personal turnaround vs. lab target, own
+    recent activity.
+  - **Section Chief** — two queues, "Awaiting Parameter Assignment" (Step 4) and "For Your Review"
+    (Step 7), plus Analyst Workload (same shape as the Reports page's).
+  - **Director Chief** — executive KPI cards (same 4 metrics as the Reports page), a "For Final
+    Release" queue (Step 8), Division Breakdown, Category Breakdown.
+  New shared CSS in `dashboard.css`: `.lims-queue-*` (generic action-queue row, reused by 4 of the 5
+  dashboards instead of one-off components each), `.lims-tracker-*` (Customer's stepper),
+  `.lims-dash-kpi-*` and `.lims-dash-bar-*` (duplicates of `report.css`'s KPI-card/bar-list shapes,
+  since dashboard pages don't load `report.css`). `lims_role` session value for `role_id` 2 was kept as
+  `'admin'` (not `'adminofficer'`) specifically so `resultforencoding.js`'s existing
+  `data-role === 'admin'` admin-only gate didn't need touching. See §9 for what's still missing
+  (route/sidebar access control per role).
+- **2026-10-15** — Redesigned the admin Dashboard (`dashboard/admin.blade.php`). Fixed a real bug first:
+  the file had no `@extends('layouts.app')`/`@section('content')`/`@vite(...)` at all, so it was never
+  rendering inside the app layout or picking up `dashboard.css` — it only "worked" by accident because
+  `app.css`/`datatable.css` are loaded globally. Also wired the view to data `DashboardController` was
+  already computing but silently discarding (`$stats`, `$recentRequests` were built then ignored in
+  favor of hardcoded markup, including one row duplicated 4 times in the Recent Requests table and the
+  same activity line repeated 10 times in Recent Activity). Added `$recentActivity`,
+  `$categoryBreakdown`, `$overdueRequests` (admin-only; `$overdueRequests`/`$categoryBreakdown` numbers
+  intentionally match `ReportsController`'s so the two pages agree on the same mock system state) and
+  replaced the three empty `asdasd` placeholder boxes with a 3-panel **Insights** row: Requests by
+  Category (reuses `.lims-grid-category-pill`/`.lims-grid-progress-track/fill` from the global Card Grid
+  design), Needs Attention / Overdue Requests (new `.lims-status-overdue` red variant alongside the
+  existing pending/processing/completed pill colors), and Quick Links (Boxicons-based shortcuts to
+  Request Sample, Job Routing, Result for Encoding, Laboratory Records, Reports). New CSS lives in
+  `dashboard.css`'s `DashboardInsights` layer, replacing the old unused `DashboardAddContent` layer.
+  `dashboard/user.blade.php` was left untouched — only the admin dashboard was in scope.
+- **2026-10-14** — Root-caused why the FlatTable redesign appeared to do nothing even after a hard
+  refresh and `php artisan view:clear`: `.lims-flat-table th`/`td` had `text-left !important` **inside**
+  an `@apply` directive — Tailwind v4 does not support a trailing `!important` there (it tries to parse
+  it as a utility class named `!important` and throws `Cannot apply unknown utility class`), which
+  hard-crashed the Vite dev server's compile of the entire `datatable.css` file. Because the dev server
+  keeps serving the last successfully-compiled bundle on a build error instead of nothing, the page kept
+  showing styling from *before* that edit, with no error visible in the browser — confirmed by fetching
+  `http://localhost:5173/resources/css/components/datatable.css` directly, which returned the Vite error
+  overlay's JSON payload. Fixed by moving `!important` out of the `@apply` list (there was no actual
+  competing rule forcing it in the first place — removed entirely rather than converted to plain CSS).
+  **Lesson for future CSS edits in this codebase: `@apply` cannot take a trailing `!important` in
+  Tailwind v4; if a declaration needs to win a specificity fight, write it as a separate plain CSS
+  property outside the `@apply` list instead (the established pattern already used throughout this
+  file).** After any `datatable.css`/`app.css` edit going forward, worth confirming
+  `curl http://localhost:5173/<path>` returns 200 before declaring it done, since a build error here is
+  otherwise silent to the browser.
+- **2026-10-14** — Redesigned `.lims-button-view` (datatable.css) to match the solid-blue, rounded-xl
+  button language already used by `.lims-form-cancel`/`.lims-form-submit`/`.lims-add-sample-button`
+  (requestform.css), replacing the old sliding-door hover animation (text slides in, icon reveals on
+  hover). Scope was intentionally limited to this one class — no JS or blade markup changed, the
+  existing `<span class="text">`/`<span class="icon">` structure still works, just renders as a plain
+  inline icon+label pill now.
+- **2026-10-14** — Added **Design C — List Table** (`@layer ListTable` in `datatable.css`,
+  `.lims-list-table`/`.lims-list-table-wrapper` + `.lims-list-name`/`.lims-list-ref`/`.lims-list-meta`/
+  `.lims-list-category`/`.lims-list-release`/`.lims-list-submitted`), a third independent table design
+  alongside Design A (Card Rows) and Design B (Flat Table) — minimal row dividers, a merged identity
+  cell (customer name + `#id` reference badge on one line, sample type as a subtitle), a colored
+  category pill (amber=Chemical, blue=Microbiological, via `request.labAnalysis`), and a two-line
+  Target Release cell (date, or red "Not yet" if `targetDate` is null) + muted "Submitted" subtitle.
+  Its Action column reuses `.lims-button-view` as-is. **Request Sample migrated from Design A to Design
+  C** (`RequestSample/index.blade.php`, `requestsample.js` — columns collapsed from 6 to 4: Customer /
+  Laboratory Analysis / Target Release / Action). While rebuilding this cell, fixed a pre-existing bug:
+  the old "Target Release" column actually rendered `request.dateTime` (the submission date) instead of
+  `request.targetDate` — now correctly split into Target Release (`targetDate`) and Submitted
+  (`dateTime`). **`.lims-sample-table` (Design A) is marked in `datatable.css` as no longer used by
+  Request Sample** (still used by Job Routing and Result for Encoding) so it's clear what's safe to
+  delete later and what isn't.
+- **2026-10-14** — Redesigned the Request Sample "Request Details" view modal
+  (`modal-request.blade.php`/`modal-request.css`), the last page-specific stylesheet that predated the
+  site-wide palette overhaul (2026-10-05) and had drifted from it: swapped `var(--primary)`-as-body-text
+  for `var(--ink)` (primary is for dark surfaces like the sidebar now, not text) and
+  `color-mix(var(--primary) N%)` descriptions for `var(--muted)` throughout; fixed four more instances of
+  the `--light-blue` (hyphenated, undefined) typo; removed a dead duplicate `.lims-view-answer.yes/no`
+  definition (the file defined it twice - soft pastel pills, then solid `bg-green-500`/`bg-red-500` ring
+  pills later in the same file silently winning - deleted the second, kept and cleaned the first,
+  switched to `rounded-full` to match the soft-pill convention used everywhere else). Migrated the
+  "Samples for Analysis" inner table from Design A to **Design B** (Flat Table — better fit for a dense
+  read-only table inside a modal than Card Rows' vertical spacing); added a default `color`/`text-sm` to
+  `.lims-flat-table td` in `datatable.css` since this table's rows are built with plain unwrapped text
+  (no `.lims-flat-*` typography spans), and scoped a `min-width: 640px` override for this modal's table
+  specifically (the shared 960px floor was sized for Laboratory Records' 9 wider columns).
+- **2026-10-14** — Fixed the FlatTable typography (§ above): `.lims-flat-id`'s monospace font was never
+  actually rendering — `app.css` has `body * { font-family: Poppins !important }`, which silently beats
+  any non-`!important` font-family declaration regardless of selector specificity; added `!important` to
+  fix it (same class of bug as the `--light-blue` typo fixed earlier, different mechanism). Also: split
+  dates (Received/Released) off from `.lims-flat-value` into a new `.lims-flat-date`
+  (smaller, italic) so they read distinctly from plain values like Sample Type, which keeps the original
+  class; `.lims-flat-dash` (the "–" empty-release state) matches the same smaller/italic treatment since
+  it stands in for a date. Turnaround cells now show a small colored status dot next to the note
+  (`.lims-flat-turnaround-dot`: green=on time, red=late/warning, amber=pending/in-progress — derived from
+  `warning` + `status` in the Blade loop) instead of plain stacked text.
+- **2026-10-14** — Laboratory Records: swapped the static Previous/Next pagination for the real
+  DataTables.net pagination + search used by every other list page (`new DataTable('#LaboratoryRecordsTable',
+  ...)` in `results.js`, same options as Request Sample/Job Routing/Result for Encoding — initializes
+  directly against the server-rendered rows, no fetch needed since the data is already in the DOM).
+  Removed the custom `.lims-records-pagination` bar from the blade view entirely.
+  Also added a genuinely **second, independent table design** to `datatable.css` —
+  `@layer FlatTable` (`.lims-flat-table-wrapper`/`.lims-flat-table` + typography classes
+  `.lims-flat-id`/`.lims-flat-strong`/`.lims-flat-value`/`.lims-flat-secondary`/`.lims-flat-dash`) —
+  explicitly **alongside**, not replacing, `.lims-sample-table`'s Card Rows design from 2026-10-13;
+  pages pick whichever fits. This one matches the original Laboratory Records mockup: classic bordered
+  grid, left-aligned content, blue uppercase header labels, and a 3-tier font-weight hierarchy (bold
+  identifiers/headline values — RFA No., customer name, lab number range, turnaround — medium for plain
+  values like sample type/dates, regular+muted for subtitles). `.lims-button-view` was left completely
+  unchanged, as asked. `LaboratoryRecords/index.blade.php` switched to the new classes;
+  `results.css` now just holds the Tailwind boilerplate with a comment pointing at where the real
+  design lives, since there's currently nothing page-specific left to put there.
+- **2026-10-14** — Built the Laboratory Records table from a design mockup: one row per RFA
+  (aggregating its samples), columns RFA No. / Customer (+ division) / Sample Type / Lab Numbers
+  (range + sample/analysis counts) / Received / Released / Turnaround (+ on-time/late/in-progress note)
+  / Status / Action. `LaboratoryRecordsController::index()` (previously an empty stub re-using
+  `ResultforEncoding`'s old view by copy-paste mistake) now holds **15 hard-coded placeholder records**
+  and passes them to a proper `LaboratoryRecords/index.blade.php`. New
+  `resources/css/pages/results.css` and `resources/js/pages/results.js`, both linked via the page's
+  `@vite`. Reused the shared `.lims-sample-table`/Card-Rows styling and the existing
+  `.lims-status-completed`/`-processing`/`-pending` pills (Released/For final review/In progress) and
+  `.lims-button-view` rather than inventing new ones — only added CSS for what didn't already exist:
+  the two-line cell pattern (`.lims-record-primary`/`.lims-record-secondary`, the latter switching to
+  red/bold via a `.warning` modifier for "Late by N days" notes), a left-aligned override for this
+  table specifically (the shared table is centered by default), and the static pagination bar
+  (`.lims-records-pagination*`). `results.js` only wires the Previous/Next and View button click
+  handlers as stubs (`console.log`) — **there is no real pagination or detail view yet**, both need a
+  backend endpoint first. No `LIMS_API` call exists for this module at all.
+- **2026-10-13** — "Select Analysis" modal (`modal1-analysismodal.blade.php`): genus/species test names
+  (Escherichia coli, Salmonella spp., Staphylococcus, Vibrio Cholerae, Vibrio Parahaemolyticus) now
+  render in italics, per scientific naming convention — general test names (Coliforms, Total Plate
+  Count, etc.) stay upright. Matched via a hardcoded, case-insensitive `$italicAnalytes` list in the
+  Blade loop rather than a heuristic, since the list is short and explicit was safer than guessing at a
+  "looks like a binomial name" pattern. The analyte list itself is still fully DB-driven
+  (`$analysisList` from `GET /api/AnalysisList`) — only the italic flag is a client-side lookup against
+  that hardcoded list. **If new species-named tests are added to `Lab_AnalysisList`, add them to
+  `$italicAnalytes` too** — there's no automatic detection.
+- **2026-10-13** — Fixed the sidebar's scroll behavior. Previously only the brand header + nav were
+  wrapped in `.stickysidebar { position: sticky }` — the footer user card sat outside that wrapper in
+  normal flow, and `.sidebar` itself was only `min-h-screen` with no height cap or sticky positioning of
+  its own, so on any page where the main content was taller than the viewport, scrolling down carried
+  the *entire* sidebar (header, nav, and footer alike) out of view with it. Restructured so `.sidebar`
+  itself is `position: sticky; top: 0; height: 100vh; overflow: hidden` (pinned to the viewport,
+  capped at one screen tall — `app.css`), with the brand header (`.stickysidebar`, now just
+  `flex-shrink: 0`) and the user mini-card (`.lims-sidebar-footer`) fixed in place, and
+  `<nav class="lims-sidebar-nav" id="sidebar_content2">` as the only child with
+  `overflow-y: auto; min-height: 0` — it's now the sole scrolling region, only kicking in if the
+  Overview/System link list itself is taller than the space between header and footer.
+  `sidebar.blade.php` restructured to match: `@include('layouts.sidebarroles')` moved out from inside
+  `.stickysidebar` to be its own direct flex child of `.sidebar`, sitting between the header and the
+  footer card.
+- **2026-10-13** — Fixed the card-row table redesign: it wasn't actually visible. Root cause —
+  DataTables.net-dt's own CSS has `table.dataTable { border-spacing: 0; }`; that selector (class +
+  element) beats a plain `.lims-sample-table` class selector on specificity regardless of source order,
+  so it silently overrode the `border-spacing: 0 10px` that makes rows look spaced. Added `!important` to
+  `.lims-sample-table`'s `border-collapse`/`border-spacing`, its `td` padding, and its `tr` background in
+  `datatable.css` — matching the `!important` convention already used everywhere else in that file for
+  the same reason (DataTables overrides). Also: the Laboratory No. "badge" shown in the Option A mockup
+  was never actually implemented in the row-building JS (only the row card/spacing CSS was ported) —
+  added a `.lims-labno-badge` class (blue monospace pill) and wrapped `sample.laboratoryNumber` in it in
+  both `jobrouting.js` and `resultforencoding.js` (`requestsample.js`'s outer table has no Lab No. column,
+  nothing to change there). Added top/bottom padding to `.lims-sample-table-wrapper` per request.
+- **2026-10-13** — Implemented three pieces from the "LIMS Modern Redesign Concept" design canvas
+  (https://claude.ai/artifact/LEMKGG7q91V7SBFKk2jDWC) directly into the app:
+  - **Tables → Card Rows** (`datatable.css`, shared `.lims-sample-table`): switched from a single
+    bordered grid to `border-collapse: separate; border-spacing: 0 10px`, so every row renders as its
+    own white card (shadow, hover lift, rounded corners on the first/last cell, blue inset accent on the
+    first cell). Kept the real `<table>`/`<tr>`/`<td>` structure — DataTables.net initializes against
+    this table on every page that uses it, so switching to div-based rows would have broken
+    sorting/paging/search; this is CSS-only, no JS row-building logic touched. Applies automatically to
+    **Request Sample, Job Routing, and Result for Encoding** (and anything else that reuses
+    `.lims-sample-table`) since the class is global. Did **not** touch `.lims-results-table` (the
+    Result-for-Encoding modal's internal parameter/result grid) or `.lims-dashboard-table` — those are
+    denser data-entry/widget tables, not what was shown in the Option A mockup, and weren't named in the
+    original ask ("request sample, job routing, result for encoding tables").
+  - **Sidebar**: added grouped section labels (`.lims-sidebar-section-label` — "Overview" above
+    Dashboard, "System" above Logs, in `sidebarroles.blade.php`) and a pinned user mini-card at the
+    bottom (`.lims-sidebar-footer`, avatar + name + role, in `sidebar.blade.php`) using `margin-top:
+    auto` inside `.sidebar`'s existing flex column. The footer is wired into the existing collapse
+    toggle (`sidebar_content3` added alongside `sidebar_content1`/`sidebar_content2` in `app.js`) so it
+    hides correctly when the sidebar is minimized. Logo/icon and nav items themselves were left alone —
+    only grouping/footer were new in the mockup.
+  - **Job Routing "Job Routing Slip" modal**: added the sample-info header (Laboratory No. / Sample,
+    `.lims-route-sample-info` in `jobrouting.css`) shown above the parameter rows, matching the
+    mockup's "Assign Laboratory Parameters" modal layout. Needed new data on the View button
+    (`data-lab-no`, `data-sample-name`, added in `jobrouting.js`'s row template) since the button
+    previously only carried `data-request-id`/`data-request-analysis`. Used fresh page-scoped classes
+    (`.lims-route-info-*`) rather than the `.lims-view-field`/`.lims-view-label`/`.lims-view-value`
+    classes the mockup's visual language was based on, since those live in `modal-request.css`, which
+    this page doesn't load (same reasoning as the `.lims-analysis-name` fix on 2026-10-01).
+- **2026-10-13** — "Encode Test Results" modal: replaced the per-row "more options" gear icon with a
+  dedicated **Action** column holding a "Reassign" button (person icon + label), matching the rest of
+  the app's convention of a separate Action column rather than packing controls into a data cell.
+  Reassign is **admin-only and gated for real**, not just a CSS hook: `layouts/app.blade.php`'s `<body>`
+  now carries `data-role="{{ session('lims_role') }}"`, and `applyReassignVisibility()` in
+  `resultforencoding.js` toggles Tailwind's `.hidden` on every `.lims-admin-only` element (the Action
+  `<th>` and each row's Action `<td>`) based on it, called right after each render. The Reassign button
+  itself doesn't do anything yet (no handler wired) — purely the visibility gating + styling
+  (`.lims-reassign-button` in `resultforencoding.css`, replacing the old `.lims-result-options`).
+  **Note:** `data-role` only distinguishes `admin`/`user` today — see the role-model gap in §9; once the
+  5-role model exists, swap this check for the real "Section Chief/Supervisor" permission rather than a
+  generic admin flag, since re-assigning an analyst is a Section Chief action per the workflow (§2.4), not
+  necessarily an admin one.
+- **2026-10-13** — Wired `resultforencoding.js` to actually populate the "Encode Test Results" modal,
+  replacing the 5 static reference rows added earlier the same day (now deleted from
+  `modal1-results.blade.php`, as planned). No new endpoint was needed: `GET /resultforencoding/data`
+  already returns `labWorks` nested per sample, so `viewRequest()` now looks the clicked sample up out of
+  the already-fetched `routinglist` (by `requestId` + the newly added `data-test-id` on the View button)
+  instead of making a second request. `renderResultsTable(labWorks)` builds one `<tr>` per
+  `LabRequestLabWork`: resolves `labWork.analysis` to a name/method via the existing `analysisList`,
+  pre-fills the Unit/Result inputs from `labWork.unit`/`labWork.result`, and sets `has-result` on the row
+  when `result` is non-empty. **Analyst name resolution is a placeholder**: `labWork.userId` is matched
+  against a hard-coded `analysts` array (`userId` 7/8/9 → Ana Reyes/Mark Lopez/Joy Santos), copied from
+  the same stand-in list already in `jobrouting.js` — there is no real employee/analyst API wired in
+  anywhere yet. Replace both copies together once one exists; until then keep them in sync by hand.
+- **2026-10-13** — Added 5 static reference rows to `modal1-results.blade.php`'s `<tbody>` (Ash, BOD,
+  Moisture, pH, Protein — the same classes/structure JS should emit, with `data-lab-work-id`/
+  `data-test-id`/`data-analysis-id` placeholders) covering the 3 row states: has a result
+  (`has-result` class + filled input), assigned with no result yet, and unassigned
+  (`.lims-result-unassigned` "Not assigned"). These are a hand-written template for writing the
+  `resultforencoding.js` row-generation logic against — **delete them once that JS renders real rows**,
+  they are not meant to ship.
+- **2026-10-13** — Built the "Encode Test Results" modal for the Result for Encoding module from a
+  design mockup: `ResultforEncoding/partials/modal1-results.blade.php` (new) + new page CSS
+  `resources/css/pages/resultforencoding.css`, wired into `index.blade.php`'s `@vite` (was pointing at
+  the wrong/commented-out file before) and `@section('modals')` (the include was already there, written
+  ahead of the partial existing). Table columns: No. / Parameter / Method / Unit / Result / Analyst,
+  matching `LabRequestLabWork` (`unit`, `result`, `userId`) added to `LIMS_API` since the last pass — see
+  `GetRFEDetails.cs`/`ResultforEncodingRepo.cs`, which finally closes the "no per-parameter data model"
+  gap flagged in §8/§9 on 2026-10-01. Rows with an encoded result get a green left-accent tint
+  (`.has-result`), matching the "completed" signal used elsewhere (status pills). Footer intentionally
+  left untouched — reuses the existing global `.lims-form-cancel`/`.lims-form-submit` classes as-is.
+  **Scope of this pass: markup + CSS only.** `<tbody id="resultsTableBody">` is left empty for JS to
+  populate — `resultforencoding.js` already opens the modal on the table's View button
+  (`OpenModal("ResultsModal")`) but doesn't fetch/render rows yet, and there's no Laravel route for a
+  single-request detail endpoint yet (`routes/web.php` only has `/resultforencoding` and
+  `/resultforencoding/data`, no `/resultforencoding/view/{id}`) — needed before the modal can show real
+  data.
 
 Add a dated entry each time a change is made. Newest on top.
 

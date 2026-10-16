@@ -38,6 +38,19 @@ Route::get('/resultforencoding', [ResultforEncodingController::class, 'index'])-
 Route::get('/resultforencoding/data', [ResultforEncodingController::class, 'data'])->name('resultforencoding.data');        // load table
 
 
+use App\Http\Controllers\LaboratoryRecordsController;
+Route::get('/laboratory-records', [LaboratoryRecordsController::class, 'index'])->name('LaboratoryRecords.index');           // route page
+Route::get('/laboratory-records/data', [LaboratoryRecordsController::class, 'data'])->name('LaboratoryRecords.data');        // load table
+
+
+use App\Http\Controllers\ReportsController;
+Route::get('/reports', [ReportsController::class, 'index'])->name('reports');  // route page
+
+
+use App\Http\Controllers\LogsController;
+Route::get('/logs', [LogsController::class, 'index'])->name('logs');           // route page
+
+
 Route::middleware('admin')->group(function () {
 
 });

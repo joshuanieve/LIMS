@@ -68,7 +68,7 @@
                 type="text"
                 class="lims-input"
                 placeholder="Enter division or section"
-                value="{{ session('division') ?? 'NULL' }}"
+                value="{{ session('divisionName') ?? 'NULL' }}"
                 disabled
             >
 

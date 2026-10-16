@@ -14,30 +14,19 @@ namespace LIMS_API.Repositories.RequestPending
         }
 
         // LIST FOR REQUEST SAMPLE MODULE TABLE
-        public async Task<List<GetRequestPendingList>> GetRequestPendingList()
+        public async Task<List<GetTable>> GetTable()
         {
             return await _context.LabRequests
                 .AsNoTracking()
                 .OrderBy(x => x.RequestId)
-                .Select(x => new GetRequestPendingList
+                .Select(x => new GetTable
                 {
                     RequestId = x.RequestId,
                     CustomerName = x.CustomerName,
-                    EmailAddress = x.EmailAddress,
                     DivisionSection = x.DivisionSection,
                     DateTime = x.DateTime,
-                    LabAnalysis = x.LabAnalysis,
                     TargetDate = x.TargetDate,
-                    SampleType = x.SampleType,
-                    SampleRetrieval = x.SampleRetrieval,
-                    SubInfo1 = x.SubInfo1,
-                    SubInfo2 = x.SubInfo2,
-                    SubInfo3 = x.SubInfo3,
-                    SubInfo4 = x.SubInfo4,
-                    Instruction = x.Instruction,
-
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now
+                    LabAnalysis = x.LabAnalysis
                 })
                 .ToListAsync();
         }

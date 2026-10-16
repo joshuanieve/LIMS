@@ -80,6 +80,7 @@ namespace LIMS_API.Repositories.RequestForm
                     var labRequestList = new LabRequestList
                     {
                         RequestId = requestId,
+                        DateSubmitted = DateTime.Now,
                         LaboratoryNumber = $"{year}-{lastNumber:D4}",
                         Sample = sample.Sample,
                         CustomerSampleCode = sample.CustomerSampleCode,

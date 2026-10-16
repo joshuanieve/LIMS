@@ -5,7 +5,7 @@ namespace LIMS_API.Repositories.RequestPending
 {
     public interface IRequestPendingRepo
     {
-        Task<List<GetRequestPendingList>> GetRequestPendingList();
+        Task<List<GetTable>> GetTable();
 
         Task<GetRequestDetails?> GetRequestPendingById(int id);
     }

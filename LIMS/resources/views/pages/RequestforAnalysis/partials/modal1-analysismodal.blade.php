@@ -15,6 +15,18 @@
                     $groupedAnalysis = collect($analysisList)
                         ->groupBy('type')
                         ->map(fn ($types) => $types->groupBy('category'));
+
+                    // Scientific (genus/species) names render in italics, per
+                    // convention - general test names (Coliforms, Total Plate
+                    // Count, etc.) stay upright. Matched case-insensitively
+                    // since this list is DB-driven.
+                    $italicAnalytes = [
+                        'escherichia coli',
+                        'salmonella spp.',
+                        'staphylococcus',
+                        'vibrio cholerae',
+                        'vibrio parahaemolyticus',
+                    ];
                 @endphp
 
                 @foreach ($groupedAnalysis as $type => $categories)
@@ -25,6 +37,12 @@
                                 <h4 class="lims-analysis-category-title">{{ $category }}</h4>
                                 <div class="lims-analysis-list">
                                     @foreach ($analyses as $analysis)
+                                        @php
+                                            $isScientificName = in_array(
+                                                strtolower(trim($analysis['analyte'] ?? '')),
+                                                $italicAnalytes
+                                            );
+                                        @endphp
                                         <label class="lims-analysis-checkbox">
                                             <input
                                                 type="checkbox"
@@ -33,7 +51,7 @@
                                                 data-name="{{ $analysis['analyte'] }}"
                                             >
                                             <div>
-                                                <p class="lims-analysis-name">{{ $analysis['analyte'] }}</p>
+                                                <p class="lims-analysis-name{{ $isScientificName ? ' italic' : '' }}">{{ $analysis['analyte'] }}</p>
                                                 @if (!empty($analysis['method']))
                                                     <p class="lims-analysis-method">{{ $analysis['method'] }}</p>
                                                 @endif

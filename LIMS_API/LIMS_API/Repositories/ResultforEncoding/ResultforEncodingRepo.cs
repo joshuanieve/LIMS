@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LIMS_API.Repositories.ResultforEncoding
 {
-    public class ResultforEncodingRepo : IResultforEncodingRepo
+    public class ResultEncodingRepo : IResultforEncodingRepo
     {
         private readonly LimsContext _context;
 
-        public ResultforEncodingRepo(LimsContext context)
+        public ResultEncodingRepo(LimsContext context)
         {
             _context = context;
         }

@@ -1,0 +1,120 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+
+
+@source '../**/*.js';
+
+@layer ResultsModal {
+
+    .lims-results-card {
+        @apply max-w-5xl;
+    }
+
+    .lims-results-table-wrapper {
+        @apply w-full overflow-x-auto rounded-2xl border;
+        border-color: #E7EEF9;
+    }
+
+    .lims-results-table {
+        @apply w-full border-collapse text-left;
+        min-width: 760px;
+    }
+
+    .lims-results-table thead {
+        background: var(--semi1white);
+    }
+
+    .lims-results-table th {
+        @apply border-b px-4 py-3 text-[10px] font-bold uppercase tracking-[0.12em];
+        border-color: #E7EEF9;
+        color: var(--muted);
+    }
+
+    .lims-results-table td {
+        @apply border-b px-4 py-3 align-middle;
+        border-color: #EEF2FA;
+    }
+
+    /* ROW STATE */
+    .lims-result-row {
+        background: var(--white);
+        transition: background-color .2s ease;
+    }
+
+    .lims-result-row:hover {
+        background: color-mix(in srgb, var(--secondary) 5%, var(--white));
+    }
+
+    /* A row with an already-encoded result gets a green tint + left accent,
+       same signal used elsewhere for "completed" (status pills, etc.) */
+    .lims-result-row.has-result {
+        background: color-mix(in srgb, #16A34A 7%, var(--white));
+        box-shadow: inset 3px 0 0 #16A34A;
+    }
+
+    .lims-result-row.has-result:hover {
+        background: color-mix(in srgb, #16A34A 11%, var(--white));
+    }
+
+    /* CELLS */
+    .lims-result-no {
+        @apply text-sm font-bold;
+        color: var(--secondary);
+    }
+
+    .lims-result-param {
+        @apply text-sm font-bold;
+        color: var(--ink);
+    }
+
+    .lims-result-method {
+        @apply text-xs;
+        color: var(--muted);
+    }
+
+    .lims-result-unit {
+        @apply w-20 px-3 py-2 text-sm;
+    }
+
+    .lims-result-cell {
+        @apply flex items-center gap-2;
+    }
+
+    .lims-result-input {
+        @apply w-28 px-3 py-2 text-sm;
+    }
+
+    /* ADMIN-ONLY REASSIGN ACTION */
+    .lims-reassign-button {
+        @apply inline-flex
+            shrink-0
+            items-center
+            gap-1.5
+            rounded-full
+            px-3 py-1.5
+            text-xs
+            font-semibold
+            transition;
+
+        background: color-mix(in srgb, var(--secondary) 10%, var(--white));
+        color: var(--secondary);
+    }
+
+    .lims-reassign-button:hover {
+        background: var(--secondary);
+        color: var(--white);
+    }
+
+    .lims-result-analyst {
+        @apply text-sm font-semibold;
+        color: var(--ink);
+    }
+
+    .lims-result-unassigned {
+        @apply text-sm italic;
+        color: var(--muted);
+    }
+}

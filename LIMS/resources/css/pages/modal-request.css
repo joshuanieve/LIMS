@@ -13,6 +13,14 @@
         @apply max-w-6xl;
     }
 
+    /* The shared .lims-flat-table defaults to a 960px floor sized for
+       Laboratory Records' 9 wide columns - this inner samples table only
+       has 6 narrower ones, so relax it to avoid unnecessary horizontal
+       scroll inside the modal. */
+    #RequestFormModal .lims-flat-table {
+        min-width: 640px;
+    }
+
 
     /* SECTION HEADER */
 
@@ -61,12 +69,7 @@
     .lims-request-number {
         @apply mt-1 text-xs font-medium;
 
-        color:
-            color-mix(
-                in srgb,
-                var(--primary) 60%,
-                transparent
-            );
+        color: var(--muted);
     }
 
 
@@ -115,7 +118,7 @@
             text-sm
             font-semibold;
 
-        color: var(--primary);
+        color: var(--ink);
         background: var(--white);
 
         border: 1px solid
@@ -133,7 +136,7 @@
         background:
             color-mix(
                 in srgb,
-                var(--light-blue) 45%,
+                var(--lightblue) 45%,
                 var(--white)
             );
     }
@@ -153,7 +156,7 @@
         background:
             color-mix(
                 in srgb,
-                var(--light-blue) 38%,
+                var(--lightblue) 38%,
                 var(--white)
             );
 
@@ -180,12 +183,7 @@
             text-xs
             leading-relaxed;
 
-        color:
-            color-mix(
-                in srgb,
-                var(--primary) 60%,
-                transparent
-            );
+        color: var(--muted);
     }
 
 
@@ -221,7 +219,7 @@
             text-sm
             font-semibold;
 
-        color: var(--primary);
+        color: var(--ink);
     }
 
 
@@ -248,8 +246,11 @@
 
 
     .lims-view-answer {
-        @apply min-w-[64px]
-            rounded-lg
+        @apply inline-flex
+            min-w-[64px]
+            items-center
+            justify-center
+            rounded-full
             px-3
             py-1.5
             text-center
@@ -283,7 +284,7 @@
         background:
             color-mix(
                 in srgb,
-                var(--light-blue) 35%,
+                var(--lightblue) 35%,
                 var(--white)
             );
 
@@ -311,7 +312,7 @@
             text-sm
             leading-relaxed;
 
-        color: var(--primary);
+        color: var(--ink);
         background: var(--white);
 
         border: 1px solid
@@ -342,7 +343,7 @@
         background:
             color-mix(
                 in srgb,
-                var(--light-blue) 30%,
+                var(--lightblue) 30%,
                 var(--white)
             );
     }
@@ -372,12 +373,7 @@
     .lims-view-terms p {
         @apply text-xs leading-relaxed;
 
-        color:
-            color-mix(
-                in srgb,
-                var(--primary) 72%,
-                transparent
-            );
+        color: var(--muted);
     }
 
 
@@ -395,22 +391,6 @@
             @apply ml-0;
         }
 
-    }
-
-    .lims-view-answer {
-        @apply inline-flex min-w-[64px] items-center justify-center
-            px-3 py-1.5
-            text-xs font-semibold;
-    }
-
-    /* YES */
-    .lims-view-answer.yes {
-        @apply bg-green-500 text-green-100 ring-1 ring-green-200;
-    }
-
-    /* NO */
-    .lims-view-answer.no {
-        @apply bg-red-500 text-red-100 ring-1 ring-red-200;
     }
 
 }

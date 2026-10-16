@@ -9,6 +9,41 @@
 
 @layer JobRoutingSlip {
 
+    .lims-route-sample-info {
+        @apply grid
+            grid-cols-1
+            gap-4
+            px-6 pt-6
+            sm:grid-cols-2;
+    }
+
+    .lims-route-info-field {
+        @apply flex flex-col gap-1.5;
+    }
+
+    .lims-route-info-label {
+        @apply text-[11px]
+            font-bold
+            uppercase
+            tracking-[0.08em];
+
+        color: color-mix(in srgb, var(--secondary) 75%, transparent);
+    }
+
+    .lims-route-info-value {
+        @apply flex
+            min-h-[40px]
+            items-center
+            rounded-xl
+            px-4 py-2.5
+            text-sm
+            font-semibold;
+
+        color: var(--ink);
+        background: var(--white);
+        border: 1px solid color-mix(in srgb, var(--secondary) 18%, transparent);
+    }
+
     #RouteModal .lims-analysis-options {
         @apply flex
             min-h-0
@@ -55,3 +90,6 @@
         @apply w-full sm:w-56;
     }
 }
+
+/* .lims-grid-header / .lims-grid-header-subtitle moved to app.css (global) -
+   used by Job Routing and Result for Encoding's card-grid pages now. */

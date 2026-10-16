@@ -10,33 +10,49 @@
 @import 'datatables.net-dt/css/dataTables.dataTables.css';
 
 @layer Table {
+    /* ============================================================
+       DESIGN A — CARD ROWS (.lims-sample-table)
+       STATUS as of 2026-10-14: still used by Job Routing and Result for
+       Encoding. NO LONGER used by Request Sample - that page migrated to
+       Design C (List Table, `@layer ListTable` near the bottom of this
+       file) the same day. Safe to delete only once nothing references
+       `.lims-sample-table`/`.lims-sample-table-wrapper` any more - check
+       before removing.
+       ============================================================ */
     @layer Base{
         .lims-sample-table-wrapper {
             @apply block
                 w-full
                 min-w-0
                 max-w-full
-                overflow-x-auto
-                rounded-2xl
-                border border-[#E7EEF9];
+                overflow-x-auto;
+
+            padding-top: 8px;
+            padding-bottom: 8px;
         }
 
+        /* CARD ROWS: a real <table> (DataTables needs it) styled so each row
+           reads as its own spaced card instead of a bordered grid.
+           !important: DataTables.net's own CSS has `table.dataTable { border-spacing: 0 }`,
+           which beats a plain `.lims-sample-table` class selector on specificity
+           (class+element > class alone) regardless of source order - same reason
+           the OtherDesign rules below are !important. */
         .lims-sample-table {
             @apply w-full
                 min-w-[850px]
                 table-fixed
-                border-collapse
                 text-left;
+
+            border-collapse: separate !important;
+            border-spacing: 0 10px !important;
         }
 
         .lims-sample-table thead {
-            background: var(--semi1white);
             text-align: center;
         }
 
         .lims-sample-table th {
-            @apply border-b border-[#E7EEF9]
-                px-4 py-3
+            @apply px-4 py-2
                 text-[10px]
                 font-bold
                 uppercase
@@ -47,28 +63,50 @@
         }
 
         .lims-sample-table td {
-            @apply border-b border-[#EEF2FA]
-                p-3
+            @apply p-3
                 text-sm
                 font-bold;
 
                 color: var(--ink);
                 text-align: center !important;
                 vertical-align: middle;
+                padding: 12px !important;
         }
 
         .lims-sample-table tbody tr {
-            @apply transition-colors
-                    transition-all ease-in
-                    bg-[var(--white)]/100;
+            @apply transition-all ease-in;
+
+            background: var(--white) !important;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
         }
 
         .lims-sample-table tbody tr:hover {
-            background: color-mix(in srgb, var(--secondary) 7%, var(--white));
+            box-shadow: 0 10px 24px color-mix(in srgb, var(--secondary) 16%, transparent);
+            transform: translateY(-1px);
         }
 
-        .lims-sample-table tbody tr:last-child td {
-            @apply border-b-0;
+        .lims-sample-table td:first-child {
+            border-radius: 14px 0 0 14px;
+            box-shadow: inset 3px 0 0 var(--secondary);
+        }
+
+        .lims-sample-table td:last-child {
+            border-radius: 0 14px 14px 0;
+        }
+
+        /* LABORATORY NO. BADGE (Job Routing / Result for Encoding) */
+        .lims-labno-badge {
+            @apply inline-flex
+                items-center
+                rounded-lg
+                px-3 py-1.5
+                text-[13.5px]
+                font-bold
+                tracking-[0.01em];
+
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            color: #1D4ED8;
+            background: #EFF6FF;
         }
 
     }
@@ -154,71 +192,59 @@
         }
 
         @layer ViewButton {
+            /* Matches the solid-blue, rounded-xl button language already used by
+               .lims-form-cancel / .lims-form-submit / .lims-add-sample-button
+               (requestform.css) - replaces the old sliding-door hover animation. */
             .lims-button-view {
-                position: relative;
-                width: 70px;
-                height: 35px;
-                margin-left: auto;
-                margin-right: auto;
+                @apply inline-flex
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-xl
+                    border border-[var(--secondary)]/40
+                    bg-[var(--secondary)]
+                    px-4 py-2
+                    text-sm
+                    font-semibold
+                    text-white
+                    transition-all
+                    duration-200
+                    hover:-translate-y-0.5
+                    hover:bg-[var(--accent)];
+
+                margin: 0 auto;
                 cursor: pointer;
-                display: flex;
-                align-items: center;
-                overflow: hidden;
-                background: var(--white)/00;
-                border: 1px solid var(--secondary);
-                border-radius: 12px;
-                box-shadow:
-                    1px 1px 3px rgba(0, 0, 0, 0.15);
-            }
-
-            .lims-button-view,
-            .lims-button-view span {
-                transition: 200ms;
-            }
-
-            .lims-button-view .text {
-                transform: translateX(20px);
-                color: var(--secondary);
-                font-weight: bold;
-            }
-
-            .lims-button-view .icon {
-                position: absolute;
-                right: 0;
-                width: 0;
-                height: 40px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-left: 1px solid var(--secondary)/00;
-                transition: 200ms;
-            }
-
-            .lims-button-view svg {
-                width: 15px;
-                fill: #eee;
+                box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.15);
             }
 
             .lims-button-view:hover {
-                background: var(--secondary);
+                box-shadow: 0 0 20px color-mix(in srgb, var(--accent) 35%, transparent);
             }
 
-            .lims-button-view:hover .text {
-                color: transparent;
+            .lims-button-view .text {
+                color: inherit;
+                font-weight: inherit;
             }
 
-            .lims-button-view:hover .icon {
-                width: 100%;
-                height: 100%;
-                border-left: none;
+            .lims-button-view .icon {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .lims-button-view svg {
+                width: 14px;
+                height: 14px;
+                fill: none;
+                stroke: currentColor;
             }
 
             .lims-button-view:focus {
                 outline: none;
             }
 
-            .lims-button-view:active .icon svg {
-                transform: scale(0.8);
+            .lims-button-view:active {
+                transform: scale(0.97);
             }
         }
 
@@ -426,14 +452,613 @@
 
             cursor: not-allowed !important;
         }
-            
+
     }
 
 
 
 
-    
 
 
-    
+
+
+}
+
+
+/* ================================================================
+   DESIGN B — FLAT TABLE
+   A second, independent table style living alongside .lims-sample-table's
+   Card Rows above - this one is NOT a replacement for it. Classic bordered
+   grid, left-aligned, header labels in brand blue, mixed font-weight
+   hierarchy (bold identifiers/headline values, medium plain values,
+   regular muted subtitles). Pick whichever of the two fits a given page;
+   first used by Laboratory Records.
+   ================================================================ */
+@layer FlatTable {
+
+    .lims-flat-table-wrapper {
+        @apply block
+            w-full
+            min-w-0
+            max-w-full
+            overflow-x-auto
+            rounded-2xl
+            border;
+
+        border-color: #E7EEF9;
+    }
+
+    .lims-flat-table {
+        @apply w-full
+            min-w-[960px]
+            border-collapse
+            text-left;
+    }
+
+    .lims-flat-table thead {
+        background: var(--semi1white);
+    }
+
+    .lims-flat-table th {
+        @apply border-b
+            px-5 py-3.5
+            text-[10.5px]
+            font-bold
+            uppercase
+            tracking-[0.1em]
+            text-left;
+
+        border-color: #E7EEF9;
+        color: var(--secondary);
+    }
+
+    .lims-flat-table td {
+        @apply border-b
+            px-5 py-3.5
+            text-left
+            text-sm;
+
+        border-color: #EEF2FA;
+        color: var(--ink);
+        vertical-align: middle;
+    }
+
+    .lims-flat-table tbody tr {
+        @apply transition-colors;
+        background: var(--white) !important;
+    }
+
+    .lims-flat-table tbody tr:hover {
+        background: color-mix(in srgb, var(--secondary) 5%, var(--white)) !important;
+    }
+
+    .lims-flat-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* TYPOGRAPHY HIERARCHY (reusable by any page on the flat table) */
+
+    /* Identifier (RFA No., etc.) - bold, monospace, blue.
+       !important on font-family: app.css has `body * { font-family: Poppins !important }`,
+       which silently wins over a plain (non-important) declaration regardless of
+       selector specificity - this is why the monospace font wasn't showing. */
+    .lims-flat-id {
+        @apply text-sm font-bold;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important;
+        color: var(--secondary);
+    }
+
+    /* Headline value (customer name, lab number range, turnaround count) - bold */
+    .lims-flat-strong {
+        @apply text-sm font-bold;
+        color: var(--ink);
+    }
+
+    /* Plain value (sample type) - medium weight, one step lighter than strong */
+    .lims-flat-value {
+        @apply text-sm font-medium;
+        color: var(--ink);
+    }
+
+    /* Dates (Received / Released) - smaller and italic, distinct from a plain value */
+    .lims-flat-date {
+        @apply text-xs font-medium italic;
+        color: var(--ink);
+    }
+
+    /* Subtitle line under a headline/plain value - regular weight, muted, smaller */
+    .lims-flat-secondary {
+        @apply mt-0.5 text-xs font-normal;
+        color: var(--muted);
+    }
+
+    .lims-flat-secondary.warning {
+        color: #B91C1C;
+        font-weight: 700;
+    }
+
+    .lims-flat-dash {
+        @apply text-xs font-medium italic;
+        color: var(--muted);
+    }
+
+    /* TURNAROUND: status dot + note, instead of plain stacked text */
+    .lims-flat-turnaround-note {
+        @apply mt-1 flex items-center gap-1.5 text-xs font-normal;
+        color: var(--muted);
+    }
+
+    .lims-flat-turnaround-note.warning {
+        color: #B91C1C;
+        font-weight: 700;
+    }
+
+    .lims-flat-turnaround-dot {
+        @apply inline-block h-1.5 w-1.5 shrink-0 rounded-full;
+    }
+
+    .lims-flat-turnaround-dot.on-time {
+        background: #16A34A;
+    }
+
+    .lims-flat-turnaround-dot.warning {
+        background: #DC2626;
+    }
+
+    .lims-flat-turnaround-dot.pending {
+        background: #D97706;
+    }
+}
+
+
+/* ================================================================
+   DESIGN C — LIST TABLE
+   A third, independent table style - sits alongside Design A (Card Rows)
+   and Design B (Flat Table) above, not replacing either. Minimal row
+   dividers, a merged identity cell (name + reference badge on one line,
+   sample type as a subtitle), a colored category pill, and a two-line
+   release-date cell. Its Action column reuses the existing
+   `.lims-button-view` as-is - no separate action button style here.
+   First used by Request Sample (migrated off Design A on 2026-10-14).
+   ================================================================ */
+@layer ListTable {
+
+    .lims-list-table-wrapper {
+        @apply block
+            w-full
+            min-w-0
+            max-w-full
+            overflow-x-auto
+            rounded-2xl
+            border;
+
+        border-color: #E7EEF9;
+    }
+
+    .lims-list-table {
+        @apply w-full
+            min-w-[760px]
+            border-collapse
+            text-left;
+    }
+
+    .lims-list-table thead {
+        background: var(--semi1white);
+    }
+
+    .lims-list-table th {
+        @apply border-b
+            px-5 py-3
+            text-[10.5px]
+            font-bold
+            uppercase
+            tracking-[0.1em]
+            text-left;
+
+        border-color: #E7EEF9;
+        color: var(--secondary);
+    }
+
+    .lims-list-table td {
+        @apply border-b
+            px-5 py-3.5
+            text-left
+            align-middle;
+
+        border-color: #F3F5FA;
+    }
+
+    .lims-list-table tbody tr {
+        @apply transition-colors;
+        background: var(--white);
+    }
+
+    .lims-list-table tbody tr:hover {
+        background: color-mix(in srgb, var(--secondary) 4%, var(--white));
+    }
+
+    .lims-list-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* IDENTITY CELL: name + reference badge inline, sample type subtitle below */
+    .lims-list-identity-row {
+        @apply flex flex-wrap items-center gap-2;
+    }
+
+    .lims-list-name {
+        @apply text-sm font-bold;
+        color: var(--ink);
+    }
+
+    .lims-list-ref {
+        @apply text-xs font-bold;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        color: var(--secondary);
+    }
+
+    .lims-list-meta {
+        @apply mt-0.5 text-xs font-normal;
+        color: var(--muted);
+    }
+
+    /* CATEGORY PILL (Laboratory Analysis) */
+    .lims-list-category {
+        @apply inline-flex
+            items-center
+            gap-1.5
+            rounded-full
+            px-3 py-1.5
+            text-xs
+            font-bold;
+    }
+
+    .lims-list-category svg {
+        @apply h-3.5 w-3.5;
+    }
+
+    .lims-list-category.chemical {
+        background: #FEF3C7;
+        color: #B45309;
+    }
+
+    .lims-list-category.microbiological {
+        background: #DBEAFE;
+        color: #1D4ED8;
+    }
+
+    /* TARGET RELEASE: date (or "Not yet") + submitted subtitle */
+    .lims-list-release {
+        @apply text-sm font-bold;
+        color: var(--ink);
+    }
+
+    .lims-list-release.pending {
+        color: #DC2626;
+    }
+
+    .lims-list-submitted {
+        @apply mt-0.5 text-xs font-normal;
+        color: var(--muted);
+    }
+}
+
+
+/* ================================================================
+   DESIGN D — CARD GRID
+   A fourth, independent table style - one card per row instead of a
+   table row. Still a genuine <table> (DataTables needs the real DOM
+   structure for its search/pagination to work) with exactly one <th>/
+   <td> column; CSS turns <tbody> into a 3-column grid and each <tr>
+   into a block-level grid item holding one whole card. The header row
+   is visually hidden since there is nothing to label per-column.
+   First used by Job Routing.
+   ================================================================ */
+@layer CardGrid {
+
+    .lims-card-grid-wrapper {
+        @apply block w-full;
+    }
+
+    .lims-card-grid-table {
+        @apply w-full border-collapse;
+    }
+
+    .lims-card-grid-table thead {
+        @apply sr-only;
+    }
+
+    .lims-card-grid-table tbody {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    /* Fade-in on every redraw (page change, search) - toggled via the
+       DataTable's drawCallback in jobrouting.js, not CSS-only, since
+       there's no selector for "just redrawn". */
+    @keyframes lims-grid-fade-in {
+        from {
+            opacity: 0;
+            transform: translateY(6px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .lims-card-grid-table tbody.lims-grid-fade-in tr {
+        animation: lims-grid-fade-in 0.28s ease both;
+    }
+
+    .lims-card-grid-table tbody.lims-grid-fade-in tr:nth-child(2) { animation-delay: 0.03s; }
+    .lims-card-grid-table tbody.lims-grid-fade-in tr:nth-child(3) { animation-delay: 0.06s; }
+    .lims-card-grid-table tbody.lims-grid-fade-in tr:nth-child(4) { animation-delay: 0.09s; }
+    .lims-card-grid-table tbody.lims-grid-fade-in tr:nth-child(5) { animation-delay: 0.12s; }
+    .lims-card-grid-table tbody.lims-grid-fade-in tr:nth-child(6) { animation-delay: 0.15s; }
+    .lims-card-grid-table tbody.lims-grid-fade-in tr:nth-child(7) { animation-delay: 0.18s; }
+    .lims-card-grid-table tbody.lims-grid-fade-in tr:nth-child(8) { animation-delay: 0.21s; }
+    .lims-card-grid-table tbody.lims-grid-fade-in tr:nth-child(9) { animation-delay: 0.24s; }
+
+    @media (max-width: 1100px) {
+        .lims-card-grid-table tbody {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 680px) {
+        .lims-card-grid-table tbody {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+
+    .lims-card-grid-table tbody tr {
+        display: block;
+    }
+
+    .lims-card-grid-table tbody td {
+        display: block;
+        padding: 0;
+        border: none;
+    }
+
+    /* THE CARD ITSELF */
+    .lims-grid-card {
+        @apply flex
+            h-full
+            flex-col
+            gap-3
+            rounded-2xl
+            border
+            p-4
+            transition-all
+            duration-200;
+
+        background: var(--white);
+        border-color: color-mix(in srgb, var(--secondary) 14%, transparent);
+    }
+
+    .lims-grid-card:hover {
+        border-color: color-mix(in srgb, var(--secondary) 35%, transparent);
+        box-shadow: 0 10px 24px color-mix(in srgb, var(--secondary) 12%, transparent);
+    }
+
+    .lims-grid-card-top {
+        @apply flex items-start justify-between gap-3;
+    }
+
+    .lims-grid-card-labno {
+        @apply text-sm font-bold;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        color: var(--secondary);
+    }
+
+    .lims-grid-card-target {
+        @apply text-right;
+    }
+
+    .lims-grid-card-target-label {
+        @apply text-[10px] font-bold uppercase tracking-[0.08em];
+        color: var(--muted);
+    }
+
+    .lims-grid-card-target-date {
+        @apply text-xs font-bold;
+        color: var(--ink);
+    }
+
+    .lims-grid-card-days-left {
+        @apply text-[11px] font-medium;
+        color: var(--muted);
+    }
+
+    .lims-grid-card-days-left.not-set {
+        color: #DC2626;
+        font-weight: 700;
+    }
+
+    .lims-grid-card-sample-name {
+        @apply text-base font-bold leading-snug;
+        color: var(--ink);
+    }
+
+    .lims-grid-card-meta {
+        @apply text-xs font-normal leading-relaxed;
+        color: var(--muted);
+    }
+
+    .lims-grid-card-categories {
+        @apply mt-auto flex flex-wrap items-center gap-1.5 pt-1;
+    }
+
+    /* reuses the same pill colors as Design C's .lims-list-category */
+    .lims-grid-category-pill {
+        @apply inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-bold;
+    }
+
+    .lims-grid-category-pill.chemical {
+        background: #FEF3C7;
+        color: #B45309;
+    }
+
+    .lims-grid-category-pill.microbiological {
+        background: #DBEAFE;
+        color: #1D4ED8;
+    }
+
+    .lims-grid-card-actions {
+        @apply flex items-center gap-2 pt-1;
+    }
+
+    .lims-grid-card-actions .lims-button-view,
+    .lims-grid-cancel-button,
+    .lims-grid-outline-button {
+        @apply flex-1;
+    }
+
+    /* "Cancel Test" - neutral, not the blue solid Route/View button */
+    .lims-grid-cancel-button {
+        @apply inline-flex
+            items-center
+            justify-center
+            rounded-xl
+            border
+            px-4 py-2
+            text-sm
+            font-semibold
+            transition-all
+            duration-200;
+
+        border-color: color-mix(in srgb, var(--muted) 35%, transparent);
+        color: var(--ink);
+        background: var(--white);
+    }
+
+    .lims-grid-cancel-button:hover {
+        border-color: #DC2626;
+        color: #DC2626;
+        background: color-mix(in srgb, #DC2626 6%, var(--white));
+    }
+
+    /* OUTLINE BUTTON ("View", shown instead of the solid Encode/Route
+       button once a card is completed) */
+    .lims-grid-outline-button {
+        @apply inline-flex
+            items-center
+            justify-center
+            gap-2
+            rounded-xl
+            border
+            px-4 py-2
+            text-sm
+            font-semibold
+            transition-all
+            duration-200;
+
+        border-color: var(--secondary);
+        color: var(--secondary);
+        background: var(--white);
+    }
+
+    .lims-grid-outline-button:hover {
+        background: color-mix(in srgb, var(--secondary) 8%, var(--white));
+    }
+
+    /* STATUS PILL (top-right of a card - Result for Encoding) */
+    .lims-grid-status-pill {
+        @apply inline-flex
+            shrink-0
+            items-center
+            whitespace-nowrap
+            rounded-full
+            px-2.5 py-1
+            text-[10.5px]
+            font-bold;
+    }
+
+    .lims-grid-status-pill.not-started {
+        background: #F1F5F9;
+        color: #475569;
+    }
+
+    .lims-grid-status-pill.in-progress {
+        background: #DBEAFE;
+        color: #1D4ED8;
+    }
+
+    .lims-grid-status-pill.completed {
+        background: #DCFCE7;
+        color: #15803D;
+    }
+
+    .lims-grid-status-pill.overdue {
+        background: #FEE2E2;
+        color: #B91C1C;
+    }
+
+    /* RFA REFERENCE CHIP (below the sample name - Result for Encoding) */
+    .lims-grid-rfa-chip {
+        @apply inline-flex
+            w-fit
+            items-center
+            rounded-lg
+            border
+            px-2.5 py-1
+            text-[11px]
+            font-bold;
+
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        border-color: color-mix(in srgb, var(--secondary) 35%, transparent);
+        color: var(--secondary);
+    }
+
+    /* PROGRESS BAR ("Analyses encoded") */
+    .lims-grid-progress-head {
+        @apply flex items-center justify-between;
+    }
+
+    .lims-grid-progress-label {
+        @apply text-[11px] font-semibold;
+        color: var(--muted);
+    }
+
+    .lims-grid-progress-count {
+        @apply text-[11px] font-bold;
+        color: var(--ink);
+    }
+
+    .lims-grid-progress-track {
+        @apply mt-1.5 h-1.5 w-full overflow-hidden rounded-full;
+        background: #EEF2FA;
+    }
+
+    .lims-grid-progress-fill {
+        @apply h-full rounded-full transition-all duration-300;
+        background: var(--secondary);
+    }
+
+    .lims-grid-progress-fill.complete {
+        background: #16A34A;
+    }
+
+    .lims-grid-progress-fill.overdue {
+        background: #DC2626;
+    }
+
+    /* DUE-DATE colour variants, pairing with .lims-grid-card-target-date /
+       .lims-grid-card-days-left already defined above for Job Routing */
+    .lims-grid-card-target-date.overdue {
+        color: #DC2626;
+    }
+
+    .lims-grid-card-days-left.overdue {
+        color: #DC2626;
+        font-weight: 700;
+    }
+
+    .lims-grid-card-days-left.ready {
+        color: #15803D;
+        font-weight: 700;
+    }
 }

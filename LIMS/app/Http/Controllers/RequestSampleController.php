@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Http;
 class RequestSampleController extends Controller
 {
     public function index(){
-        return view('RequestSample.index');
+        return view('pages.RequestSample.index');
     }
 
     public function data(){

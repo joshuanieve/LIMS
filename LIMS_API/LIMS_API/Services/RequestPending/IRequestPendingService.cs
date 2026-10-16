@@ -4,7 +4,7 @@ namespace LIMS_API.Services.RequestPending
 {
     public interface IRequestPendingService
     {
-        Task<List<GetRequestPendingList>> GetRequestPendingList();
+        Task<List<GetTable>> GetTable();
         Task<GetRequestDetails?> GetRequestPendingById(int id);
     }
 }

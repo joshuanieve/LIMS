@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Http;
 class ResultforEncodingController extends Controller
 {
     public function index(){
-        return view('ResultforEncoding.index');
+        return view('pages.ResultforEncoding.index');
     }
 
     public function data(){

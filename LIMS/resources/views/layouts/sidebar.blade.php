@@ -1,8 +1,9 @@
-
 {{-- SIDEBAR --}}
 <div
     id="limsSidebar"
     class="sidebar relative w-72 transition-all duration-300">
+
+    {{-- FIXED: brand header (never scrolls) --}}
     <div class="stickysidebar">
         <div> {{--  SIDEBAR CONTAINER --}}
             <div class="lims-sidebar-header" id="sidebar_content1">
@@ -50,38 +51,54 @@
 
             </div>
         </div>
+    </div>
 
-        <button
-            id="sidebarToggle"
-            type="button"
-            class="absolute -right-3 top-8 z-50
-                flex h-7 w-7 items-center justify-center
-                rounded-full
-                border border-[#2589D8]/30
-                bg-[#0A1A2F]
-                text-[#79C7FF]
-                shadow-lg
-                transition-all duration-300
-                hover:bg-[#0B5FA5]
-                hover:text-white">
+    <button
+        id="sidebarToggle"
+        type="button"
+        class="absolute -right-3 top-8 z-50
+            flex h-7 w-7 items-center justify-center
+            rounded-full
+            border border-[#2589D8]/30
+            bg-[#0A1A2F]
+            text-[#79C7FF]
+            shadow-lg
+            transition-all duration-300
+            hover:bg-[#0B5FA5]
+            hover:text-white">
 
-            <svg
-                id="sidebarToggleIcon"
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 transition-transform duration-300"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor">
+        <svg
+            id="sidebarToggleIcon"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4 transition-transform duration-300"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor">
 
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M15 19l-7-7 7-7" />
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7" />
 
-            </svg>
-        </button>
+        </svg>
+    </button>
 
-        @include('layouts.sidebarroles')
+    {{-- SCROLLABLE: only the Overview / System nav links --}}
+    @include('layouts.sidebarroles')
+
+    {{-- FIXED: pinned user mini-card (never scrolls) --}}
+    <div class="lims-sidebar-footer" id="sidebar_content3">
+        <div class="lims-sidebar-user-avatar">U</div>
+
+        <div class="lims-sidebar-user-info">
+            <span class="lims-sidebar-user-name">
+                {{ session('user_name') ?? 'User' }}
+            </span>
+
+            <span class="lims-sidebar-user-role">
+                {{ session('lims_role') ?? '-' }}
+            </span>
+        </div>
     </div>
 </div>

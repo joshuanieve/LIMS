@@ -19,7 +19,7 @@ class RequestFormController extends Controller
     {
         $analysisList = $this->requestFormServices->getAnalysisList();
 
-        return view('RequestforAnalysis.index', compact('analysisList'));
+        return view('pages.RequestforAnalysis.index', compact('analysisList'));
 
         // return view('requestform');
     }

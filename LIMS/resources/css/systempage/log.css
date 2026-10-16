@@ -1,0 +1,262 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+
+
+@source '../**/*.js';
+
+/*
+   Logs page - list + change-detail layout. Data is temporary/hardcoded
+   (LogsController) until a real audit-log API exists; the structure and
+   interactivity (click a row, see its detail) are real.
+*/
+@layer LogsPage {
+
+    .lims-logs-top {
+        @apply mb-6 flex flex-wrap items-start justify-between gap-4;
+    }
+
+    .lims-logs-top .lims-grid-header {
+        @apply mb-0;
+    }
+
+    .lims-logs-search {
+        @apply flex items-center gap-2 rounded-full border px-4 py-2.5;
+        border-color: color-mix(in srgb, var(--secondary) 20%, transparent);
+        background: var(--white);
+        color: var(--muted);
+    }
+
+    .lims-logs-search input {
+        @apply w-56 border-none bg-transparent text-sm outline-none;
+        color: var(--ink);
+    }
+
+    .lims-logs-search input::placeholder {
+        color: var(--muted);
+    }
+
+    /* LAYOUT: list (fixed-ish width) + detail (fills the rest) */
+    .lims-logs-layout {
+        @apply flex flex-col gap-5 lg:flex-row;
+        align-items: flex-start;
+    }
+
+    .lims-logs-list-panel,
+    .lims-logs-detail-panel {
+        @apply rounded-2xl border;
+        background: var(--white);
+        border-color: #E7EEF9;
+    }
+
+    .lims-logs-list-panel {
+        @apply flex w-full shrink-0 flex-col overflow-hidden lg:w-[360px];
+    }
+
+    .lims-logs-items {
+        @apply overflow-y-auto;
+        max-height: 560px;
+    }
+
+    .lims-logs-detail-panel {
+        @apply min-w-0 flex-1 p-6;
+    }
+
+    /* LIST ITEMS */
+    .lims-logs-item {
+        @apply flex
+            w-full
+            items-start
+            gap-3
+            border-b
+            px-4 py-3.5
+            text-left
+            transition-colors
+            duration-150;
+
+        border-color: #F1F5FB;
+        background: var(--white);
+        cursor: pointer;
+    }
+
+    .lims-logs-item:last-child {
+        border-bottom: none;
+    }
+
+    .lims-logs-item:hover {
+        background: color-mix(in srgb, var(--secondary) 4%, var(--white));
+    }
+
+    .lims-logs-item.active {
+        background: color-mix(in srgb, var(--secondary) 8%, var(--white));
+        box-shadow: inset 3px 0 0 var(--secondary);
+    }
+
+    .lims-logs-icon {
+        @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-full;
+    }
+
+    .lims-logs-icon.success { background: #DCFCE7; color: #15803D; }
+    .lims-logs-icon.edit { background: #FEF3C7; color: #B45309; }
+    .lims-logs-icon.info { background: #DBEAFE; color: #1D4ED8; }
+    .lims-logs-icon.warning { background: #FEE2E2; color: #B91C1C; }
+    .lims-logs-icon.neutral { background: #F1F5F9; color: #475569; }
+
+    .lims-logs-item-body {
+        @apply min-w-0 flex-1;
+    }
+
+    .lims-logs-item-title {
+        @apply truncate text-[13px] font-bold;
+        color: var(--ink);
+    }
+
+    .lims-logs-item-meta {
+        @apply mt-0.5 truncate text-xs font-normal;
+        color: var(--muted);
+    }
+
+    .lims-logs-item-time {
+        @apply shrink-0 text-[11px] font-medium;
+        color: var(--muted);
+    }
+
+    /* PAGINATION (bottom of the list panel, outside the scrolling area) */
+    .lims-logs-pagination {
+        @apply flex shrink-0 items-center justify-between gap-3 border-t px-4 py-3 text-xs font-medium;
+        border-color: #F1F5FB;
+        color: var(--muted);
+    }
+
+    .lims-logs-pagination-actions {
+        @apply flex items-center gap-2;
+    }
+
+    .lims-logs-page-button {
+        @apply rounded-lg border px-3 py-1.5 text-xs font-semibold transition;
+        border-color: color-mix(in srgb, var(--secondary) 25%, transparent);
+        color: var(--secondary);
+        background: var(--white);
+    }
+
+    .lims-logs-page-button:hover:not(:disabled) {
+        background: var(--secondary);
+        color: var(--white);
+    }
+
+    .lims-logs-page-button:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+
+    /* DETAIL PANEL */
+    .lims-logs-detail-header {
+        @apply flex items-start gap-3 border-b pb-5;
+        border-color: #F1F5FB;
+    }
+
+    .lims-logs-detail-icon {
+        @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-full;
+    }
+
+    .lims-logs-detail-title {
+        @apply text-lg font-bold;
+        color: var(--ink);
+    }
+
+    .lims-logs-detail-time {
+        @apply mt-0.5 text-xs font-medium;
+        color: var(--muted);
+    }
+
+    .lims-logs-detail-grid {
+        @apply mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2;
+    }
+
+    .lims-logs-detail-field {
+        @apply flex flex-col gap-1;
+    }
+
+    .lims-logs-detail-label {
+        @apply text-[10.5px] font-bold uppercase tracking-[0.08em];
+        color: var(--secondary);
+    }
+
+    .lims-logs-detail-value {
+        @apply text-sm font-bold;
+        color: var(--ink);
+    }
+
+    .lims-logs-detail-value.link {
+        color: var(--secondary);
+    }
+
+    .lims-logs-changes {
+        @apply mt-6;
+    }
+
+    .lims-logs-changes-title {
+        @apply mb-3 text-[10.5px] font-bold uppercase tracking-[0.08em];
+        color: var(--muted);
+    }
+
+    .lims-logs-changes-table {
+        @apply w-full border-collapse overflow-hidden rounded-xl border text-left text-sm;
+        border-color: #EEF2FA;
+    }
+
+    .lims-logs-changes-table th {
+        @apply border-b px-3 py-2 text-[10px] font-bold uppercase tracking-[0.08em];
+        background: var(--semi1white);
+        border-color: #EEF2FA;
+        color: var(--muted);
+    }
+
+    .lims-logs-changes-table td {
+        @apply border-b px-3 py-2.5;
+        border-color: #F3F5FA;
+        color: var(--ink);
+    }
+
+    .lims-logs-changes-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .lims-logs-changes-table td.field {
+        @apply font-bold;
+        color: var(--secondary);
+    }
+
+    .lims-logs-changes-table td.highlight {
+        background: color-mix(in srgb, var(--secondary) 10%, transparent);
+        font-weight: 700;
+    }
+
+    .lims-logs-reason {
+        @apply mt-5 rounded-xl p-4 text-xs italic leading-relaxed;
+        background: var(--semi1white);
+        color: var(--muted);
+    }
+
+    .lims-logs-detail-actions {
+        @apply mt-6 flex flex-wrap items-center gap-2;
+    }
+
+    /* EMPTY / FALLBACK STATES (unused once data loads, kept for safety) */
+    .lims-logs-empty {
+        @apply flex
+            min-h-[200px]
+            items-center
+            justify-center
+            rounded-2xl
+            border
+            border-dashed
+            text-sm
+            font-medium;
+
+        border-color: color-mix(in srgb, var(--secondary) 20%, transparent);
+        color: var(--muted);
+    }
+}

@@ -1,15 +1,16 @@
 using LIMS_API.Models;
 using LIMS_API.Repositories.AnalysisList;
-using LIMS_API.Services.AnalysisList;
-using LIMS_API.Repositories.RequestForm;
-using LIMS_API.Services.RequestForm;
-using LIMS_API.Repositories.RequestPending;
-using LIMS_API.Services.RequestPending;
 using LIMS_API.Repositories.JobRouting;
-using LIMS_API.Services.JobRouting;
+using LIMS_API.Repositories.RequestForm;
+using LIMS_API.Repositories.RequestPending;
 using LIMS_API.Repositories.ResultforEncoding;
+using LIMS_API.Repositories.Results;
+using LIMS_API.Services.AnalysisList;
+using LIMS_API.Services.JobRouting;
+using LIMS_API.Services.RequestForm;
+using LIMS_API.Services.RequestPending;
 using LIMS_API.Services.ResultforEncoding;
-
+using LIMS_API.Services.Results;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
@@ -40,8 +41,8 @@ builder.Services.AddScoped<IAnalysisListRepo, AnalysisListRepo>();
 builder.Services.AddScoped<IRequestFormRepo, RequestFormRepo>();
 builder.Services.AddScoped<IRequestPendingRepo, RequestPendingRepo>();
 builder.Services.AddScoped<IJobRoutingRepo, JobRoutingRepo>();
-builder.Services.AddScoped<IJobRoutingRepo, JobRoutingRepo>();
-builder.Services.AddScoped<IResultforEncodingRepo, ResultforEncodingRepo>();
+builder.Services.AddScoped<IResultforEncodingRepo, ResultEncodingRepo>();
+builder.Services.AddScoped<IResultsRepo, ResultsRepo>();
 
 // Service
 builder.Services.AddScoped<IAnalysisListService, AnalysisListService>();
@@ -49,6 +50,7 @@ builder.Services.AddScoped<IRequestFormService, RequestFormService>();
 builder.Services.AddScoped<IRequestPendingService, RequestPendingService>();
 builder.Services.AddScoped<IJobRoutingService, JobRoutingService>();
 builder.Services.AddScoped<IResultforEncodingService, ResultforEncodingService>();
+builder.Services.AddScoped<IResultsService, ResultsService>();
 
 var app = builder.Build();
 

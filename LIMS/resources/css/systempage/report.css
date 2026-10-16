@@ -1,0 +1,230 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+
+
+@source '../**/*.js';
+
+/*
+   Reports page - no aggregation/reporting API exists yet (LogsController's
+   sibling: ReportsController holds temporary hardcoded numbers). The period
+   toggle and Export button are UI-only for now (see report.js). Reuses
+   .lims-grid-category-pill / .lims-grid-progress-track / .lims-grid-progress-fill
+   / .lims-grid-outline-button from datatable.css's Card Grid design rather
+   than inventing parallel components.
+*/
+@layer ReportsPage {
+
+    .lims-reports-top {
+        @apply mb-6 flex flex-wrap items-start justify-between gap-4;
+    }
+
+    .lims-reports-top .lims-grid-header {
+        @apply mb-0;
+    }
+
+    .lims-reports-controls {
+        @apply flex flex-wrap items-center gap-3;
+    }
+
+    .lims-reports-period {
+        @apply inline-flex items-center gap-1 rounded-full border p-1;
+        border-color: color-mix(in srgb, var(--secondary) 20%, transparent);
+        background: var(--white);
+    }
+
+    .lims-reports-period-button {
+        @apply rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all duration-200;
+        color: var(--muted);
+        background: transparent;
+    }
+
+    .lims-reports-period-button.active {
+        background: var(--secondary);
+        color: var(--white);
+    }
+
+    /* KPI CARDS */
+    .lims-reports-kpi-grid {
+        @apply grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4;
+    }
+
+    .lims-reports-kpi-card {
+        @apply rounded-2xl border p-5;
+        background: var(--white);
+        border-color: #E7EEF9;
+    }
+
+    .lims-reports-kpi-label {
+        @apply text-xs font-semibold;
+        color: var(--muted);
+    }
+
+    .lims-reports-kpi-value {
+        @apply mt-1.5 text-[26px] font-bold leading-none;
+        color: var(--ink);
+    }
+
+    .lims-reports-kpi-note {
+        @apply mt-2 text-[11px] font-bold;
+        color: var(--muted);
+    }
+
+    .lims-reports-kpi-note.up { color: #15803D; }
+    .lims-reports-kpi-note.down { color: #B91C1C; }
+    .lims-reports-kpi-note.flat { color: var(--muted); }
+
+    /* BOTTOM PANELS */
+    .lims-reports-bottom {
+        @apply mt-6 grid grid-cols-1 gap-5 xl:grid-cols-2;
+    }
+
+    .lims-reports-panel {
+        @apply rounded-2xl border p-6;
+        background: var(--white);
+        border-color: #E7EEF9;
+    }
+
+    .lims-reports-panel-header {
+        @apply mb-4;
+    }
+
+    .lims-reports-panel-wide {
+        @apply mt-6 mb-5;
+    }
+
+    /* PIPELINE FUNNEL */
+    .lims-reports-pipeline {
+        @apply flex flex-wrap items-stretch gap-2;
+    }
+
+    .lims-reports-pipeline-stage {
+        @apply min-w-35 flex-1 rounded-xl p-4 text-center;
+        background: #F6F9FE;
+    }
+
+    .lims-reports-pipeline-stage-marker {
+        @apply border border-dashed;
+        background: transparent;
+        border-color: #C9D6E8;
+    }
+
+    .lims-reports-pipeline-stage-marker .lims-reports-pipeline-count {
+        color: #C9D6E8;
+    }
+
+    .lims-reports-pipeline-count {
+        @apply text-2xl font-bold leading-none;
+        color: var(--secondary);
+    }
+
+    .lims-reports-pipeline-label {
+        @apply mt-1.5 text-xs font-bold;
+        color: var(--ink);
+    }
+
+    .lims-reports-pipeline-hint {
+        @apply mt-1 text-[11px] font-medium;
+        color: var(--muted);
+    }
+
+    .lims-reports-pipeline-arrow {
+        @apply flex shrink-0 items-center justify-center;
+        color: #C9D6E8;
+    }
+
+    /* OVERDUE REQUESTS */
+    .lims-reports-overdue-list {
+        @apply flex flex-col gap-2.5;
+    }
+
+    .lims-reports-overdue-row {
+        @apply grid grid-cols-2 items-center gap-3 rounded-xl p-3.5 sm:grid-cols-4;
+        background: #FBFBFD;
+    }
+
+    .lims-reports-overdue-customer {
+        @apply text-sm font-semibold;
+        color: var(--ink);
+    }
+
+    .lims-reports-overdue-type {
+        @apply text-xs font-semibold;
+        color: var(--muted);
+    }
+
+    .lims-reports-overdue-badge {
+        @apply justify-self-start rounded-full px-3 py-1 text-[11px] font-bold sm:justify-self-end;
+        background: #FEE2E2;
+        color: #B91C1C;
+    }
+
+    .lims-reports-overdue-empty {
+        @apply text-sm font-medium;
+        color: var(--muted);
+    }
+
+    /* CATEGORY BREAKDOWN */
+    .lims-reports-category-list {
+        @apply flex flex-col gap-4;
+    }
+
+    .lims-reports-category-head {
+        @apply mb-1.5 flex items-center justify-between;
+    }
+
+    .lims-reports-category-count {
+        @apply text-xs font-semibold;
+        color: var(--muted);
+    }
+
+    /* TURNAROUND BAR LIST */
+    .lims-reports-bar-list {
+        @apply flex flex-col gap-3;
+    }
+
+    .lims-reports-bar-row {
+        @apply flex items-center gap-3;
+    }
+
+    .lims-reports-bar-label {
+        @apply w-36 shrink-0 truncate text-xs font-semibold;
+        color: var(--ink);
+    }
+
+    .lims-reports-bar-track {
+        @apply h-2 min-w-0 flex-1 overflow-hidden rounded-full;
+        background: #EEF2FA;
+    }
+
+    .lims-reports-bar-fill {
+        @apply h-full rounded-full;
+        background: var(--secondary);
+    }
+
+    .lims-reports-bar-value {
+        @apply w-10 shrink-0 text-right text-xs font-bold;
+        color: var(--muted);
+    }
+
+    /* ANALYST WORKLOAD */
+    .lims-reports-analyst-list {
+        @apply flex flex-col gap-4;
+    }
+
+    .lims-reports-analyst-head {
+        @apply mb-1.5 flex items-center justify-between;
+    }
+
+    .lims-reports-analyst-name {
+        @apply text-sm font-bold;
+        color: var(--ink);
+    }
+
+    .lims-reports-analyst-count {
+        @apply text-xs font-semibold;
+        color: var(--muted);
+    }
+}

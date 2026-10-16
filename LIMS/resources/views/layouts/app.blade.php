@@ -20,7 +20,7 @@
     ])
 </head>
 
-<body class="font">
+<body class="font" data-role="{{ session('lims_role') }}">
     {{-- Loader --}}
     <div id="loadingOverlay" class="loading-overlay"><div class="loader"></div></div>
 

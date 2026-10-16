@@ -17,6 +17,17 @@
                 </button>
             </div>
 
+            <div class="lims-route-sample-info">
+                <div class="lims-route-info-field">
+                    <span class="lims-route-info-label">Laboratory No.</span>
+                    <span id="routeLaboratoryNumber" class="lims-route-info-value">-</span>
+                </div>
+
+                <div class="lims-route-info-field">
+                    <span class="lims-route-info-label">Sample</span>
+                    <span id="routeSample" class="lims-route-info-value">-</span>
+                </div>
+            </div>
 
             <div class="lims-analysis-options">
 

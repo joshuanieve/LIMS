@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard - LIMS')
+@section('title', 'Job Routing - LIMS')
 @section('PageTitle', 'Job Routing')
 
 
@@ -15,21 +15,15 @@
 
 
 <section class="lims-form-card">
-    <div class="lims-sample-table-wrapper">
-        <table id="JobRoutingTable" class="lims-sample-table">
+    <div class="lims-card-grid-wrapper">
+        <table id="JobRoutingTable" class="lims-card-grid-table">
             <thead>
                 <tr>
-                    <th>Laboratory No.</th>
                     <th>Sample</th>
-                    <th>Date Collected</th>
-                    <th>Place Collected</th>
-                    <th>Target Release</th>
-                    <th>Action</th>
                 </tr>
             </thead>
 
             <tbody id="JobRoutingTableBody"></tbody>
-
         </table>
     </div>
 </section>
@@ -40,5 +34,5 @@
 
 
 @section('modals')
-    @include('JobRouting.partials.modal1-route')
+    @include('pages.JobRouting.partials.modal1-route')
 @endsection

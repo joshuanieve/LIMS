@@ -71,12 +71,19 @@ class LoginController extends Controller
                         'name' => $dataProfile['firstname'] ?? 'Unknown User',
                     ]);
 
+                    // TEMPORARY mapping - the 5 LIMS workflow roles (documentation.md §2.4) onto the
+                    // external FFAST system's Role_id. Not yet confirmed against FFAST's real role
+                    // table; 'admin' is kept as the AdminOfficer string (instead of 'adminofficer')
+                    // so existing `data-role === 'admin'` gates (e.g. resultforencoding.js) keep working.
                     $limsRoles = [
-                        1 => 'user',
+                        1 => 'customer',
                         2 => 'admin',
+                        3 => 'analyst',
+                        4 => 'sectionchief',
+                        5 => 'directorchief',
                     ];
                     $roleId = $payload['Role_id'] ?? null;
-                    $limsRole = $limsRoles[$roleId] ?? 'user';
+                    $limsRole = $limsRoles[$roleId] ?? 'customer';
 
                     $request->session()->put('lims_role', $limsRole);
                     $request->session()->put('fname', $dataProfile['firstname'] ?? 'Unknown User');

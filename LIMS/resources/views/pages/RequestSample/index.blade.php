@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard - LIMS')
+@section('title', 'Requests Sample - LIMS')
 @section('PageTitle', 'Requests Sample')
 
 
@@ -16,13 +16,11 @@
 
 
 <section class="lims-form-card">
-    <div class="lims-sample-table-wrapper">
-        <table id="requestTable" class="lims-sample-table">
+    <div class="lims-list-table-wrapper">
+        <table id="requestTable" class="lims-list-table">
             <thead>
                 <tr>
-                    <th>Reference Number</th>
                     <th>Customer</th>
-                    <th>Sample Type</th>
                     <th>Laboratory Analysis</th>
                     <th>Target Release</th>
                     <th>Action</th>
@@ -30,7 +28,7 @@
             </thead>
 
             <tbody id="requestTableBody"></tbody>
-            
+
         </table>
     </div>
 </section>
@@ -41,5 +39,5 @@
 
 
 @section('modals')
-    @include('RequestSample.partials.modal-request')
+    @include('pages.RequestSample.partials.modal-request')
 @endsection

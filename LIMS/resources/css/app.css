@@ -372,12 +372,17 @@ body * {
         background: var(--primary);
         border-right: 2px solid var(--secondary);
         box-shadow: 1px 0 5px var(--black);
+
+        /* Pin the whole sidebar to the viewport so it never scrolls away
+           with tall page content - only the nav list inside it scrolls. */
+        position: sticky !important;
+        height: 100vh;
+        overflow: hidden;
     }
 
+    /* Brand header: fixed, never scrolls */
     .stickysidebar{
-        position: sticky;
-        top: 0;
-        z-index: 40;
+        flex-shrink: 0;
     }
 
     .lims-sidebar-header {
@@ -396,8 +401,11 @@ body * {
         color: var(--white);
     }
 
+    /* Overview / System nav links: the only part of the sidebar that scrolls */
     .lims-sidebar-nav {
         @apply flex flex-1 flex-col gap-1 py-6;
+        min-height: 0;
+        overflow-y: auto;
     }
 
     .lims-nav-link {
@@ -475,7 +483,67 @@ body * {
     } */
 
 
-    
+    /* SECTION GROUP LABELS ("Overview" / "System") */
+    .lims-sidebar-section-label {
+        @apply mb-2.5
+            px-4
+            text-[10px]
+            font-bold
+            uppercase
+            tracking-[0.12em];
+
+        color: color-mix(in srgb, var(--lightblue) 70%, transparent);
+    }
+
+    .lims-sidebar-section-label:not(:first-child) {
+        @apply mt-5;
+    }
+
+    /* PINNED USER MINI-CARD AT THE BOTTOM OF THE SIDEBAR */
+    .lims-sidebar-footer {
+        @apply mt-auto
+            flex
+            items-center
+            gap-2.5
+            rounded-2xl
+            p-3;
+
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .lims-sidebar-user-avatar {
+        @apply flex
+            h-9 w-9
+            shrink-0
+            items-center
+            justify-center
+            rounded-full
+            text-[13px]
+            font-bold;
+
+        background: var(--secondary);
+        color: var(--white);
+    }
+
+    .lims-sidebar-user-info {
+        @apply flex
+            min-w-0
+            flex-col;
+    }
+
+    .lims-sidebar-user-name {
+        @apply truncate
+            text-[12.5px]
+            font-semibold
+            text-white;
+    }
+
+    .lims-sidebar-user-role {
+        @apply text-[10.5px]
+            capitalize;
+
+        color: var(--lightblue);
+    }
 
 }
 
@@ -612,6 +680,34 @@ body * {
         width: 100%;
         min-height: 100%;
         padding: 2.4%;
+
+        /* Every page is a fresh full page-load in this app (no SPA
+           navigation), so a plain CSS animation here just plays once on
+           every visit automatically - no JS needed. Dashboard notices it
+           most since it has the most content, but this covers every page
+           since .dashboard-content is the shared content wrapper in
+           layouts/app.blade.php. */
+        animation: lims-page-fade-in 0.45s ease both;
+    }
+
+    @keyframes lims-page-fade-in {
+        from {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Generic, JS-toggled fade for a DataTable's <tbody> on every redraw
+       (page change, search). Unlike .lims-page-fade-in above, this one
+       needs re-triggering (remove class, force reflow, re-add) since the
+       element already exists in the DOM - see the drawCallback pattern in
+       jobrouting.js/resultforencoding.js/requestsample.js/results.js. */
+    .lims-fade-in {
+        animation: lims-page-fade-in 0.25s ease both;
     }
 
     .dashboard-panelheader{
@@ -964,6 +1060,21 @@ body * {
             font-bold;
 
         color: var(--secondary);
+    }
+
+    /* Page header for a card-grid page (eyebrow + title + dynamic subtitle) -
+       used by Job Routing and Result for Encoding. */
+    .lims-grid-header {
+        @apply mb-6;
+    }
+
+    .lims-grid-header .lims-modal-title {
+        @apply mt-1;
+    }
+
+    .lims-grid-header-subtitle {
+        @apply mt-1 text-xs font-medium;
+        color: var(--muted);
     }
 
 

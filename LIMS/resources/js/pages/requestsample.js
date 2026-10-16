@@ -39,13 +39,40 @@ document.addEventListener("DOMContentLoaded", async function () {
         tableBody.innerHTML = "";
 
         requests.forEach(request => {
+            const isChemical = (request.labAnalysis ?? '').trim().toLowerCase() === 'chemical';
+
+            const categoryIcon = isChemical
+                ? '<path d="M9 3h6M10 3v6l-5 9a2 2 0 001.74 3h10.52A2 2 0 0019 18l-5-9V3M8 15h8"/>'
+                : '<circle cx="12" cy="12" r="8"/><circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="14" cy="9" r="1" fill="currentColor"/><circle cx="13" cy="14" r="1" fill="currentColor"/>';
+
+            const categoryClass = isChemical ? 'chemical' : 'microbiological';
+
             const row = document.createElement("tr");
             row.innerHTML = `
-                <td>${request.requestId ?? "-"}</td>
-                <td>${request.customerName ?? "-"}</td>
-                <td>${request.sampleType ?? "-"}</td>
-                <td>${request.labAnalysis ?? "-"}</td>
-                <td>${formatDate(request.dateTime)}</td>
+                <td>
+                    <div class="lims-list-identity-row">
+                        <span class="lims-list-name">${request.customerName ?? "-"}</span>
+                        <span class="lims-list-ref">#${request.requestId}</span>
+                    </div>
+                    <p class="lims-list-meta">${request.sampleType ?? "-"}</p>
+                </td>
+
+                <td>
+                    <span class="lims-list-category ${categoryClass}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            ${categoryIcon}
+                        </svg>
+                        ${request.labAnalysis ?? "-"}
+                    </span>
+                </td>
+
+                <td>
+                    ${request.targetDate
+                        ? `<p class="lims-list-release">${formatDate(request.targetDate)}</p>`
+                        : `<p class="lims-list-release pending">Not yet</p>`
+                    }
+                    <p class="lims-list-submitted">Submitted ${formatDate(request.dateTime)}</p>
+                </td>
 
                 <td>
                     <button
@@ -85,7 +112,15 @@ document.addEventListener("DOMContentLoaded", async function () {
             ordering: true,
             searching: true,
             paging: true,
-            info: true
+            info: true,
+            // Fade the rows in on every redraw (page change, search) -
+            // restart the CSS animation by removing the class, forcing a
+            // reflow, then re-adding it.
+            drawCallback: function () {
+                tableBody.classList.remove('lims-fade-in');
+                void tableBody.offsetWidth;
+                tableBody.classList.add('lims-fade-in');
+            }
         });
 
 
@@ -93,7 +128,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         console.error("Failed to load pending requests:", error);
         tableBody.innerHTML = `
             <tr>
-                <td colspan="7">
+                <td colspan="4">
                     Failed to load requests.
                 </td>
             </tr>

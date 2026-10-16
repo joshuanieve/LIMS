@@ -12,8 +12,8 @@ namespace LIMS_API.Services.RequestPending
         }
 
         // GET ALL REQUESTS FOR TABLE
-        public async Task<List<GetRequestPendingList>> GetRequestPendingList(){
-            return await _requestPendingRepository.GetRequestPendingList();
+        public async Task<List<GetTable>> GetTable(){
+            return await _requestPendingRepository.GetTable();
         }
 
         // GET ONE REQUEST FOR VIEWING

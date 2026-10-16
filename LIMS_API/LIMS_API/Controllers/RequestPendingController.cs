@@ -18,8 +18,8 @@ namespace LIMS_API.Controllers
         }
 
         [HttpGet] // GET THE TABLE DATA
-        public async Task<IActionResult> GetAnalysisList(){
-            var result = await _RPService.GetRequestPendingList();
+        public async Task<IActionResult> GetTable(){
+            var result = await _RPService.GetTable();
             return Ok(result);
         }
 

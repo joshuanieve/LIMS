@@ -255,8 +255,8 @@
                         <span class="lims-view-step">04</span>
                     </div>
 
-                    <div class="lims-sample-table-wrapper">
-                        <table class="lims-sample-table">
+                    <div class="lims-flat-table-wrapper">
+                        <table class="lims-flat-table">
                             <thead>
                                 <tr>
                                     <th>Laboratory No.</th>

@@ -7,6 +7,8 @@ public partial class LabRequest
 {
     public int RequestId { get; set; }
 
+    public int? CustomerId { get; set; }
+
     public string? CustomerName { get; set; }
 
     public string? EmailAddress { get; set; }
@@ -34,6 +36,10 @@ public partial class LabRequest
     public string? Instruction { get; set; }
 
     public int? Status { get; set; }
+
+    public DateTime? ReleaseDate { get; set; }
+
+    public bool? Arta { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 

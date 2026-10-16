@@ -286,6 +286,12 @@
             color: #15803D;
         }
 
+        /* OVERDUE - RED */
+        .lims-status-overdue {
+            background: #FEE2E2;
+            color: #B91C1C;
+        }
+
        .lims-activity-item {
             @apply border-b
                 border-[#EEF2FA]
@@ -317,24 +323,190 @@
 
     }
 
-    @layer DashboardAddContent {
+    @layer DashboardQueue {
 
-        .lims-content-additional {
+        /* Generic action-queue panel, reused by AdminOfficer's "Awaiting
+           Review", Analyst's "My Assignments", Section Chief's two queues,
+           and Director Chief's "For Final Release" - one component instead
+           of a one-off per role. */
+        .lims-queue-panel {
+            @apply mt-6 h-auto;
+        }
+
+        .lims-queue-list {
+            @apply flex flex-col gap-2.5;
+        }
+
+        .lims-queue-row {
+            @apply flex flex-wrap items-center justify-between gap-3 rounded-xl p-4;
+            background: #FBFBFD;
+        }
+
+        .lims-queue-row-title {
+            @apply text-sm font-bold;
+            color: var(--ink);
+        }
+
+        .lims-queue-row-meta {
+            @apply mt-1 text-xs font-medium;
+            color: var(--muted);
+        }
+
+        .lims-queue-empty {
+            @apply text-sm font-medium;
+            color: var(--muted);
+        }
+    }
+
+    @layer DashboardKpi {
+
+        /* Executive KPI cards (Director Chief dashboard) - same shape as
+           Reports' .lims-reports-kpi-card, duplicated here since dashboard
+           pages don't load report.css. */
+        .lims-dash-kpi-grid {
+            @apply mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4;
+        }
+
+        .lims-dash-kpi-card {
+            @apply rounded-3xl p-5;
+            background: rgba(255,255,255,0.8);
+            border: 1px solid #E7EEF9;
+        }
+
+        .lims-dash-kpi-label {
+            @apply text-xs font-semibold;
+            color: var(--muted);
+        }
+
+        .lims-dash-kpi-value {
+            @apply mt-1.5 text-[26px] font-bold leading-none;
+            color: var(--ink);
+        }
+
+        .lims-dash-kpi-note {
+            @apply mt-2 text-[11px] font-bold;
+            color: var(--muted);
+        }
+
+        .lims-dash-kpi-note.up { color: #15803D; }
+        .lims-dash-kpi-note.down { color: #B91C1C; }
+        .lims-dash-kpi-note.flat { color: var(--muted); }
+    }
+
+    @layer DashboardBarList {
+
+        /* Labelled horizontal bar list (Analyst turnaround, Director Chief
+           division breakdown) - same shape as Reports' .lims-reports-bar-*,
+           duplicated here since dashboard pages don't load report.css. */
+        .lims-dash-bar-list {
+            @apply flex flex-col gap-3;
+        }
+
+        .lims-dash-bar-row {
+            @apply flex items-center gap-3;
+        }
+
+        .lims-dash-bar-label {
+            @apply w-36 shrink-0 truncate text-xs font-semibold;
+            color: var(--ink);
+        }
+
+        .lims-dash-bar-track {
+            @apply h-2 min-w-0 flex-1 overflow-hidden rounded-full;
+            background: #EEF2FA;
+        }
+
+        .lims-dash-bar-fill {
+            @apply h-full rounded-full;
+            background: var(--secondary);
+        }
+
+        .lims-dash-bar-value {
+            @apply w-10 shrink-0 text-right text-xs font-bold;
+            color: var(--muted);
+        }
+    }
+
+    @layer DashboardInsights {
+
+        .lims-dashboard-insights {
             @apply mt-5
                 grid
                 grid-cols-1
                 gap-5
-                xl:grid-cols-2;
+                lg:grid-cols-3;
         }
 
-        .lims-add-content {
-            @apply min-h-[400px]
-                min-w-0
-                rounded-3xl
-                bg-[#ffffff]/80
-                border border-[#E7EEF9]
-                p-5;
+        .lims-dashboard-insights-2col {
+            @apply lg:grid-cols-2;
+        }
+
+        .lims-insight-panel {
+            @apply h-auto min-h-0;
+        }
+
+        /* CATEGORY BREAKDOWN */
+        .lims-insight-category-list {
+            @apply flex flex-col gap-4;
+        }
+
+        .lims-insight-category-head {
+            @apply mb-1.5 flex items-center justify-between;
+        }
+
+        .lims-insight-category-count {
+            @apply text-xs font-semibold;
+            color: var(--muted);
+        }
+
+        /* NEEDS ATTENTION */
+        .lims-insight-overdue-list {
+            @apply flex flex-col gap-3;
+        }
+
+        .lims-insight-overdue-row {
+            @apply flex items-center justify-between gap-3 rounded-xl p-3;
+            background: #FBFBFD;
+        }
+
+        .lims-insight-overdue-rfa {
+            @apply text-sm font-bold;
+            color: var(--secondary);
+        }
+
+        .lims-insight-overdue-customer {
+            @apply mt-0.5 text-xs font-medium;
+            color: var(--muted);
+        }
+
+        .lims-insight-empty {
+            @apply text-sm font-medium;
+            color: var(--muted);
+        }
+
+        /* QUICK LINKS */
+        .lims-insight-quicklink-grid {
+            @apply grid grid-cols-2 gap-3;
+        }
+
+        .lims-insight-quicklink {
+            @apply flex flex-col items-center justify-center gap-2
+                rounded-xl p-4 text-center
+                text-xs font-semibold
+                transition-all duration-200
+                hover:-translate-y-0.5;
+            background: #F6F9FE;
             color: var(--ink);
+        }
+
+        .lims-insight-quicklink:hover {
+            background: color-mix(in srgb, var(--secondary) 12%, var(--white));
+            color: var(--secondary);
+        }
+
+        .lims-insight-quicklink i {
+            @apply text-xl;
+            color: var(--secondary);
         }
 
     }

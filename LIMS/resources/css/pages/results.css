@@ -1,0 +1,16 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+
+
+@source '../**/*.js';
+
+/*
+   The Laboratory Records table design itself lives in
+   resources/css/components/datatable.css (`@layer FlatTable`, classes
+   `.lims-flat-*`) since it's meant to be reusable by other pages too, not
+   a one-off look. Add page-specific tweaks here only if this page needs
+   something no other page using the flat table does.
+*/
