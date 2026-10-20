@@ -76,19 +76,20 @@ class LoginController extends Controller
                     // table; 'admin' is kept as the AdminOfficer string (instead of 'adminofficer')
                     // so existing `data-role === 'admin'` gates (e.g. resultforencoding.js) keep working.
                     $limsRoles = [
-                        1 => 'customer',
+                        1 => 'User',
                         2 => 'admin',
                         3 => 'analyst',
                         4 => 'sectionchief',
                         5 => 'directorchief',
                     ];
                     $roleId = $payload['Role_id'] ?? null;
-                    $limsRole = $limsRoles[$roleId] ?? 'customer';
+                    $limsRole = $limsRoles[$roleId] ?? 'User';
 
                     $request->session()->put('lims_role', $limsRole);
                     $request->session()->put('fname', $dataProfile['firstname'] ?? 'Unknown User');
                     $request->session()->put('lname', $dataProfile['surname'] ?? 'Unknown User');
                     $request->session()->put('mname', $dataProfile['middlename'] ?? 'Unknown User');
+                    $request->session()->put('CustomerID', $dataProfile['empNo'] ?? 'Unknown User');
 
                     // EMPLOYEE LIST
                     $employeeEndpoint = 'http://10.0.224.35:7154/api/employee/getEmployeeList';
@@ -116,6 +117,7 @@ class LoginController extends Controller
                             $request->session()->put( 'employment_type', $employee['type'] ?? null);
                         }
                     }
+                    // dd($responseEmployeeProfile->json());
 
 
 

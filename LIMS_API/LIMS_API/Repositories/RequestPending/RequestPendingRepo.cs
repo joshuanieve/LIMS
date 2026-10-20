@@ -24,7 +24,7 @@ namespace LIMS_API.Repositories.RequestPending
                     RequestId = x.RequestId,
                     CustomerName = x.CustomerName,
                     DivisionSection = x.DivisionSection,
-                    DateTime = x.DateTime,
+                    DateSubmitted = x.DateSubmitted,
                     TargetDate = x.TargetDate,
                     LabAnalysis = x.LabAnalysis
                 })
@@ -42,7 +42,7 @@ namespace LIMS_API.Repositories.RequestPending
                     CustomerName = x.CustomerName,
                     EmailAddress = x.EmailAddress,
                     DivisionSection = x.DivisionSection,
-                    DateTime = x.DateTime,
+                    DateTime = x.DateSubmitted,
                     LabAnalysis = x.LabAnalysis,
                     DateTimeRelease = x.TargetDate,
                     SampleType = x.SampleType,

@@ -19,7 +19,7 @@ namespace LIMS_API.Services.RequestForm
             }
 
             foreach (var sample in request.Samples){
-                if (string.IsNullOrWhiteSpace(sample.Testarray)){
+                if (string.IsNullOrWhiteSpace(sample.Analysis)){
                     throw new Exception("Every sample must have at least one analysis.");
                 }
             }

@@ -31,7 +31,7 @@ namespace LIMS_API.Entities.ResultforEncoding
         public int? Analysis { get; set; }
         public string? Unit { get; set; }
         public string? Result { get; set; }
-        public int? UserId { get; set; }
+        public int? AssignedTo { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }

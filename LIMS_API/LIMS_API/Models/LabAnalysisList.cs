@@ -14,4 +14,6 @@ public partial class LabAnalysisList
     public string? Analyte { get; set; }
 
     public string? Method { get; set; }
+
+    public virtual ICollection<LabRequestLabWork> LabRequestLabWorks { get; set; } = new List<LabRequestLabWork>();
 }

@@ -23,7 +23,7 @@ namespace LIMS_API.Repositories.JobRouting
                     CustomerName = x.CustomerName,
                     EmailAddress = x.EmailAddress,
                     DivisionSection = x.DivisionSection,
-                    DateTime = x.DateTime,
+                    DateSubmitted = x.DateSubmitted,
                     LabAnalysis = x.LabAnalysis,
                     DateTimeRelease = x.TargetDate,
 

@@ -13,7 +13,7 @@ public partial class LabApproval
 
     public int? UserId { get; set; }
 
-    public int? Step { get; set; }
+    public string? Type { get; set; }
 
     public DateTime? SignedAt { get; set; }
 

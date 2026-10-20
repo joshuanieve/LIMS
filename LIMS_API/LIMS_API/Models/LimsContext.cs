@@ -55,6 +55,9 @@ public partial class LimsContext : DbContext
             entity.Property(e => e.ApprovalId).HasColumnName("ApprovalID");
             entity.Property(e => e.RequestId).HasColumnName("RequestID");
             entity.Property(e => e.TestId).HasColumnName("TestID");
+            entity.Property(e => e.Type)
+                .HasMaxLength(255)
+                .IsUnicode(false);
             entity.Property(e => e.UserId).HasColumnName("UserID");
         });
 
@@ -75,16 +78,21 @@ public partial class LimsContext : DbContext
 
             entity.ToTable("Lab_Request");
 
-            entity.HasIndex(e => e.RequestId, "IX_Lab_Request").IsUnique();
+            entity.HasIndex(e => e.CustomerId, "Index_CustomerID");
+
+            entity.HasIndex(e => e.ReceivedAt, "Index_ReceivedAt");
+
+            entity.HasIndex(e => e.Status, "Index_Status");
 
             entity.Property(e => e.RequestId).HasColumnName("RequestID");
             entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
             entity.Property(e => e.CustomerName).HasMaxLength(255);
             entity.Property(e => e.EmailAddress).HasMaxLength(255);
-            entity.Property(e => e.Instruction).HasColumnType("text");
             entity.Property(e => e.LabAnalysis).HasMaxLength(255);
             entity.Property(e => e.SampleRetrieval).HasMaxLength(255);
+            entity.Property(e => e.SampleSpecify).HasMaxLength(255);
             entity.Property(e => e.SampleType).HasMaxLength(255);
+            entity.Property(e => e.Status).HasDefaultValue(0, "DF_Lab_Request_Status");
             entity.Property(e => e.SubInfo2).HasMaxLength(255);
             entity.Property(e => e.SubInfo4).HasMaxLength(255);
         });
@@ -95,30 +103,60 @@ public partial class LimsContext : DbContext
 
             entity.ToTable("Lab_RequestLabWork");
 
+            entity.HasIndex(e => e.Analysis, "Index_Analysis");
+
+            entity.HasIndex(e => e.AssignedTo, "Index_AssignedTo");
+
+            entity.HasIndex(e => e.TestId, "Index_TestID");
+
             entity.Property(e => e.LabWorkId).HasColumnName("LabWorkID");
-            entity.Property(e => e.Result)
-                .HasMaxLength(50)
-                .IsUnicode(false);
+            entity.Property(e => e.AnalysisSpecify).HasMaxLength(255);
+            entity.Property(e => e.Result).HasMaxLength(50);
             entity.Property(e => e.TestId).HasColumnName("TestID");
-            entity.Property(e => e.Unit)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.UserId).HasColumnName("UserID");
+            entity.Property(e => e.Unit).HasMaxLength(50);
+
+            entity.HasOne(d => d.AnalysisNavigation).WithMany(p => p.LabRequestLabWorks)
+                .HasForeignKey(d => d.Analysis)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("Foreign_AnalysisList_Analysis");
+
+            entity.HasOne(d => d.Test).WithMany(p => p.LabRequestLabWorks)
+                .HasForeignKey(d => d.TestId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("Foreign_RequestList_TestID");
         });
 
         modelBuilder.Entity<LabRequestList>(entity =>
         {
-            entity.HasKey(e => e.TestId);
+            entity.HasKey(e => e.TestId).HasName("PrimaryKey_TestID");
 
             entity.ToTable("Lab_RequestList");
 
+            entity.HasIndex(e => e.LaboratoryNumber, "Index_LaboratoryNumber")
+                .IsUnique()
+                .HasFilter("([LaboratoryNumber] IS NOT NULL)");
+
+            entity.HasIndex(e => e.RequestId, "Index_RequestID");
+
+            entity.HasIndex(e => e.Status, "Index_Status");
+
             entity.Property(e => e.TestId).HasColumnName("TestID");
             entity.Property(e => e.Analysis).HasMaxLength(255);
+            entity.Property(e => e.AnalysisOthers).HasMaxLength(255);
             entity.Property(e => e.CustomerSampleCode).HasMaxLength(255);
             entity.Property(e => e.LaboratoryNumber).HasMaxLength(255);
+            entity.Property(e => e.PlaceCode)
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.PlaceCollected).HasMaxLength(255);
             entity.Property(e => e.RequestId).HasColumnName("RequestID");
             entity.Property(e => e.Sample).HasMaxLength(255);
+            entity.Property(e => e.Status).HasDefaultValue(0, "DF_Lab_RequestList_Status");
+
+            entity.HasOne(d => d.Request).WithMany(p => p.LabRequestLists)
+                .HasForeignKey(d => d.RequestId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("Foreign_Requests_RequestID");
         });
 
         OnModelCreatingPartial(modelBuilder);

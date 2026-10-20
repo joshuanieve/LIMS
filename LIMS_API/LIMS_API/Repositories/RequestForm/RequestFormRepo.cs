@@ -28,11 +28,12 @@ namespace LIMS_API.Repositories.RequestForm
                     CustomerName = request.CustomerName,
                     EmailAddress = request.EmailAddress,
                     DivisionSection = request.DivisionSection,
-                    DateTime = now,
-                    TargetDate = request.DateTimeRelease,
+                    DateSubmitted = now,
                     LabAnalysis = request.LabAna,
-                    SampleType = request.SamType != "Others"
-                        ? request.SamType
+                    TargetDate = request.DateTimeRelease,
+                    SampleType = request.SamType,
+                    SampleSpecify = request.SamType == "Others"
+                        ? null
                         : request.SamTypeSpecify,
                     SampleRetrieval = request.SampRet,
                     SubInfo1 = request.Subinfo1,
@@ -47,7 +48,7 @@ namespace LIMS_API.Repositories.RequestForm
                         ? request.Subinfo4Specify
                         : null,
                     Instruction = request.Instruction,
-                    Status = 0,
+                    Status = 1,
 
                     CreatedAt = now,
                     UpdatedAt = now
@@ -74,19 +75,19 @@ namespace LIMS_API.Repositories.RequestForm
                 int lastNumber = result.FirstOrDefault();
 
                 // INSERT ALL SAMPLES
-                foreach (var sample in request.Samples)
+                foreach (var sample in request.samples)
                 {
                     lastNumber++;
                     var labRequestList = new LabRequestList
                     {
                         RequestId = requestId,
-                        DateSubmitted = DateTime.Now,
                         LaboratoryNumber = $"{year}-{lastNumber:D4}",
                         Sample = sample.Sample,
                         CustomerSampleCode = sample.CustomerSampleCode,
-                        DateTimeCollected = sample.DateCollected,
+                        DateTimeCollected = sample.DateTimeCollected,
                         PlaceCollected = sample.PlaceCollected,
-                        Analysis = sample.Testarray,
+                        Analysis = sample.Analysis,
+                        Status = 1,
 
                         CreatedAt = DateTime.Now,
                         UpdatedAt = DateTime.Now

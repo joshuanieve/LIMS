@@ -51,28 +51,28 @@ class RequestFormController extends Controller
         ], [
 
             // LABORATORY INFORMATION
-            'LabAna.required' =>'Please select a laboratory analysis.',
-            'DateTimeRelease.required' => 'Please enter the expected release date.',
-            'DateTimeRelease.date' => 'Please enter a valid release date.',
+            'LabAna.required' => 'Laboratory Analysis: Please select a laboratory analysis.',
+            'DateTimeRelease.required' => 'Laboratory Analysis: Please enter the expected release date.',
+            'DateTimeRelease.date' => 'Laboratory Analysis: Please enter a valid release date.',
 
             // SAMPLE INFORMATION
-            'SamType.required' => 'Please select a sample type.',
-            'SampRet.required' => 'Please select a sample retrieval option.',
+            'SamType.required' => 'Sample Information: Please select a sample type.',
+            'SampRet.required' => 'Sample Information: Please select a sample retrieval option.',
 
             // SUBMISSION INFORMATION
-            'Subinfo1.required' => 'Please answer Submission Information 1.',
-            'Subinfo2.required' => 'Please answer Submission Information 2.',
-            'Subinfo3.required' => 'Please answer Submission Information 3.',
-            'Subinfo4.required' => 'Please answer Submission Information 4.',
+            'Subinfo1.required' => 'Submission Information: Please answer question 1.',
+            'Subinfo2.required' => 'Submission Information: Please answer question 2.',
+            'Subinfo3.required' => 'Submission Information: Please answer question 3.',
+            'Subinfo4.required' => 'Submission Information: Please answer question 4.',
 
             // SAMPLE TABLE
-            'samples.required' => 'Please add at least one sample.',
-            'samples.*.sample.required' => 'Please enter the test sample name.',
-            'samples.*.customer_sample_code.required' => 'Please enter the customer sample code.',
-            'samples.*.date_collected.required' => 'Please enter the date collected.',
-            'samples.*.date_collected.date' => 'Please enter a valid collection date.',
-            'samples.*.place_collected.required' => 'Please enter the place collected.',
-            'samples.*.testarray.required' => 'Please select at least one analysis for each sample.',
+            'samples.required' => 'Sample Information: Please add at least one sample.',
+            'samples.*.sample.required' => 'Sample Information: Please enter the test sample name.',
+            'samples.*.customer_sample_code.required' => 'Sample Information: Please enter the customer sample code.',
+            'samples.*.date_collected.required' => 'Sample Information: Please enter the date collected.',
+            'samples.*.date_collected.date' => 'Sample Information: Please enter a valid collection date.',
+            'samples.*.place_collected.required' => 'Sample Information: Please enter the place collected.',
+            'samples.*.testarray.required' => 'Sample Information: Please select at least one analysis for each sample.',
         ]);
 
         // CONVERT YES OR NO TO TRUE OR FALSE TO MATCH BOOLEAN IN BACKEND
@@ -89,7 +89,7 @@ class RequestFormController extends Controller
                 'customerSampleCode' => $sample['customer_sample_code'],
                 'dateCollected' => $sample['date_collected'],
                 'placeCollected' => $sample['place_collected'],
-                'testarray' => $sample['testarray'],
+                'analysis' => $sample['testarray'],
             ];
         })
         ->values()
@@ -103,6 +103,7 @@ class RequestFormController extends Controller
             ? strtoupper(substr($middleName, 0, 1)) . '.'
             : '';
 
+        $validated['CustomerID'] = session('CustomerID');
         $validated['CustomerName'] = trim(
             $lastName . ', ' .
             $firstName . ' ' .
@@ -111,7 +112,8 @@ class RequestFormController extends Controller
 
         $validated['EmailAddress'] = session('user_email');
         $validated['DivisionSection'] = session('division_id');
-
+        
+        // dd($validated);
         try {
             $result = $this->requestFormServices->createRequest($validated);
 

@@ -43,7 +43,7 @@ namespace LIMS_API.Repositories.ResultforEncoding
                                     Analysis = a.Analysis,
                                     Unit = a.Unit,
                                     Result = a.Result,
-                                    UserId = a.UserId,
+                                    AssignedTo = a.AssignedTo,
 
                                 })
                                 .ToList()

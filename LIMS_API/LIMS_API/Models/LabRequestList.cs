@@ -7,9 +7,7 @@ public partial class LabRequestList
 {
     public int TestId { get; set; }
 
-    public int? RequestId { get; set; }
-
-    public DateTime? DateSubmitted { get; set; }
+    public int RequestId { get; set; }
 
     public string? LaboratoryNumber { get; set; }
 
@@ -23,9 +21,21 @@ public partial class LabRequestList
 
     public string? Analysis { get; set; }
 
+    public string? AnalysisOthers { get; set; }
+
     public int? Status { get; set; }
+
+    public int? RoutedBy { get; set; }
+
+    public DateTime? RoutedAt { get; set; }
+
+    public string? PlaceCode { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
+
+    public virtual ICollection<LabRequestLabWork> LabRequestLabWorks { get; set; } = new List<LabRequestLabWork>();
+
+    public virtual LabRequest Request { get; set; } = null!;
 }

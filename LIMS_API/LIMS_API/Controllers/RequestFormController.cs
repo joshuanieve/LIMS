@@ -19,14 +19,10 @@ namespace LIMS_API.Controllers
         public async Task<IActionResult> CreateRequestForm(
             [FromBody] CreateRequestForm request){
             try{
-                var requestId =
-                    await _requestFormService
-                        .CreateRequestForm(request);
+                var requestId = await _requestFormService.CreateRequestForm(request);
 
                 return Ok(new{
-                    message =
-                        "Laboratory request created successfully.",
-                    requestId = requestId
+                    message ="Laboratory request created successfully.",requestId = requestId
                 });
             }
             catch (Exception ex){

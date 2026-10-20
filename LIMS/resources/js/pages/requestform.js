@@ -264,55 +264,53 @@ cancelButton.addEventListener('click', function (event) {
 
 async function CreateRequest() {
     showLoading();
+
     const requestForm = document.getElementById('requestForm');
     const formData = new FormData(requestForm);
 
+    let response;
     try {
-        const response = await fetch('/requestform', {
+        response = await fetch('/requestform', {
             method: 'POST',
             body: formData,
-            headers: {
-                'Accept': 'application/json'
-            }
+            headers: { 'Accept': 'application/json' }
         });
-
-        const result = await response.json();
-        hideLoading();
-        // LARAVEL VALIDATION ERROR
-        if (response.status === 422) {
-            const errors = result.errors;
-            const firstError = Object.values(errors)[0][0];
-            window.swal_error(
-                'Incomplete Information',
-                firstError
-            );
-            return;
-        }
-
-        // OTHER SERVER / API ERROR
-        if (!response.ok) {
-            window.swal_error(
-                'Submission Failed',
-                result.message ||
-                'Unable to submit laboratory request.'
-            );
-            return;
-        }
-        
-        // SUCCESS
-        await window.swal_success(
-            'Request Submitted',
-            result.message
-        );
-
-        window.location.reload();
     } catch (error) {
+        hideLoading();
         console.error('Request Form Error:', error);
-        window.swal_error(
-            'Submission Failed',
-            error.message
-        );
+        window.swal_error('Submission Failed', 'Unable to reach the server. Please try again.');
+        return;
     }
+
+    hideLoading();   // the request is done, success or not
+
+    // read the body safely, even if it isn't JSON (e.g. a dd() page or a crash page)
+    const text = await response.text();
+    let result;
+    try {
+        result = JSON.parse(text);
+    } catch {
+        console.error('Non-JSON response:', text);
+        window.swal_error('Submission Failed', 'The server returned an unexpected response.');
+        return;
+    }
+
+    // LARAVEL VALIDATION ERROR
+    if (response.status === 422) {
+        const firstError = Object.values(result.errors)[0][0];
+        window.swal_error('Incomplete Information', firstError);
+        return;
+    }
+
+    // OTHER SERVER / API ERROR
+    if (!response.ok) {
+        window.swal_error('Submission Failed', result.message || 'Unable to submit laboratory request.');
+        return;
+    }
+
+    // SUCCESS
+    await window.swal_success('Request Submitted', result.message);
+    window.location.reload();
 }
 
 

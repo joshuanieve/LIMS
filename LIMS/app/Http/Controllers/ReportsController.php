@@ -38,19 +38,20 @@ class ReportsController extends Controller
         ];
         $maxTurnaroundDays = max(array_column($sampleTypeTurnaround, 'days'));
 
-        // Pipeline funnel: all 8 workflow steps, shown left to right. Steps 1
-        // and 3 are instantaneous (submission / auto-generated lab number)
-        // rather than a queue a request sits in, so they're included for
-        // completeness but carry no count. Counts on the remaining 5 stages
-        // sum to 47 (the "Requests This Month" KPI above).
+        // Pipeline funnel: all 8 workflow steps, shown left to right. Request
+        // Submitted and Lab Number Generated are instantaneous (not a queue a
+        // request sits in) so they carry no step number and no count. The
+        // remaining 5 stages are numbered 1-6 for this funnel specifically
+        // (In Progress spans two) and their counts sum to 47 (the "Requests
+        // This Month" KPI above).
         $pipelineStages = [
-            ['label' => 'Request Submitted', 'count' => null, 'hint' => 'Step 1 · RFA received, reference number issued'],
-            ['label' => 'Pending Review', 'count' => 6, 'hint' => 'Step 2 · awaiting Admin review'],
-            ['label' => 'Lab Number Generated', 'count' => null, 'hint' => 'Step 3 · sample numbering'],
-            ['label' => 'Routed to Analyst', 'count' => 9, 'hint' => 'Step 4 · parameters assigned'],
-            ['label' => 'In Progress', 'count' => 14, 'hint' => 'Steps 5–6 · being encoded'],
-            ['label' => 'For Final Review', 'count' => 8, 'hint' => 'Step 7 · Section Chief review'],
-            ['label' => 'Released', 'count' => 10, 'hint' => 'Step 8 · report sent to client'],
+            ['label' => 'Request Submitted', 'count' => null, 'hint' => 'RFA received, reference number issued'],
+            ['label' => 'Pending Review', 'count' => 6, 'hint' => 'Step 1 · awaiting Admin review'],
+            ['label' => 'Lab Number Generated', 'count' => null, 'hint' => 'Sample numbering'],
+            ['label' => 'Routed to Analyst', 'count' => 9, 'hint' => 'Step 2 · parameters assigned'],
+            ['label' => 'In Progress', 'count' => 14, 'hint' => 'Steps 3-4 · being encoded'],
+            ['label' => 'For Final Review', 'count' => 8, 'hint' => 'Step 5 · Section Chief review'],
+            ['label' => 'Released', 'count' => 10, 'hint' => 'Step 6 · report sent to client'],
         ];
         $pipelineTotal = array_sum(array_filter(array_column($pipelineStages, 'count')));
 
