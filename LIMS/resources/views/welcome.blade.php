@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FFAST Login</title>
+    <title>LIMS Login</title>
     @vite('resources/css/app.css')
 </head>
 
@@ -47,7 +47,7 @@
                     </div>
 
                     <div class="mb-6">
-                        <img src="{{ asset('images/ffast-logo.png') }}" alt="LIMS Logo"
+                        <img src="{{ asset('images/lims-logo.png') }}" alt="LIMS Logo"
                             class="h-24 mb-4 mx-auto drop-shadow-md">
                         <p class="text-lg uppercase tracking-[0.1em] text-cyan-600 font-semibold mb-1">
                             LIMS Portal

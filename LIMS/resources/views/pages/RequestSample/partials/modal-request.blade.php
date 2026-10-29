@@ -280,8 +280,11 @@
                  FOOTER
             ====================================================== --}}
             <div class="lims-modal-footer">
-                <button type="button" id="closeRequestModalFooter" class="lims-modal-cancel">
+                <button type="button" id="closeRequestModalFooter" class="lims-modal-cancel mr-auto">
                     Close
+                </button>
+                <button type="button" id="acceptRequestButton" class="lims-form-submit">
+                    Accept Request
                 </button>
             </div>
 

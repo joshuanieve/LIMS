@@ -27,6 +27,10 @@ public partial class LimsContext : DbContext
 
     public virtual DbSet<LabRequestList> LabRequestLists { get; set; }
 
+    public virtual DbSet<SysAuditLog> SysAuditLogs { get; set; }
+
+    public virtual DbSet<SysAuditLogsChange> SysAuditLogsChanges { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Server=10.0.224.92;Database=LIMS;User Id=sa;Password=Srvr_VmNsap2026!;TrustServerCertificate=True;");
@@ -157,6 +161,47 @@ public partial class LimsContext : DbContext
                 .HasForeignKey(d => d.RequestId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Foreign_Requests_RequestID");
+        });
+
+        modelBuilder.Entity<SysAuditLog>(entity =>
+        {
+            entity.HasKey(e => e.LogId);
+
+            entity.ToTable("Sys_AuditLogs");
+
+            entity.HasIndex(e => e.CreatedAt, "Index_CreatedAt");
+
+            entity.HasIndex(e => e.RequestId, "Index_RequestID");
+
+            entity.HasIndex(e => e.UserId, "Index_UserID");
+
+            entity.Property(e => e.LogId).HasColumnName("LogID");
+            entity.Property(e => e.Action).HasMaxLength(150);
+            entity.Property(e => e.LabNumber).HasMaxLength(50);
+            entity.Property(e => e.LabWorkId).HasColumnName("LabWorkID");
+            entity.Property(e => e.Module).HasMaxLength(150);
+            entity.Property(e => e.RequestId).HasColumnName("RequestID");
+            entity.Property(e => e.TestId).HasColumnName("TestID");
+            entity.Property(e => e.UserId).HasColumnName("UserID");
+            entity.Property(e => e.UserName).HasMaxLength(150);
+        });
+
+        modelBuilder.Entity<SysAuditLogsChange>(entity =>
+        {
+            entity.HasKey(e => e.ChangeId);
+
+            entity.ToTable("Sys_AuditLogsChanges");
+
+            entity.HasIndex(e => e.LogId, "Index_LogID");
+
+            entity.Property(e => e.ChangeId).HasColumnName("ChangeID");
+            entity.Property(e => e.FieldName).HasMaxLength(100);
+            entity.Property(e => e.LogId).HasColumnName("LogID");
+
+            entity.HasOne(d => d.Log).WithMany(p => p.SysAuditLogsChanges)
+                .HasForeignKey(d => d.LogId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("Foreign_AuditLogs_LogID");
         });
 
         OnModelCreatingPartial(modelBuilder);

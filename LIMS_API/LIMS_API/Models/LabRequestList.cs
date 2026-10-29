@@ -19,6 +19,8 @@ public partial class LabRequestList
 
     public string? PlaceCollected { get; set; }
 
+    public string? PlaceCode { get; set; }
+
     public string? Analysis { get; set; }
 
     public string? AnalysisOthers { get; set; }
@@ -28,8 +30,6 @@ public partial class LabRequestList
     public int? RoutedBy { get; set; }
 
     public DateTime? RoutedAt { get; set; }
-
-    public string? PlaceCode { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 

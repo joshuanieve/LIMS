@@ -907,6 +907,11 @@
         color: #1D4ED8;
     }
 
+    .lims-grid-category-pill.other {
+        background: #F1F5F9;
+        color: #475569;
+    }
+
     .lims-grid-card-actions {
         @apply flex items-center gap-2 pt-1;
     }

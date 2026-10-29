@@ -5,6 +5,10 @@ import {
     getAnalysisNames
 } from '../services/fetchAnalysisTable.js';
 
+let requestTable = null;    // the DataTable
+let selectedRow = null;     // the <tr> whose View button was clicked
+let RequestID = null;
+
 let analysisList = [];
 
 async function loadAnalysisData() {
@@ -24,6 +28,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const tableBody = document.getElementById("requestTableBody");
 
     try {
+        showLoading('Loading sample requests…');
         const response = await fetch('/requestsample/data', {
             method: 'GET',
             headers: {
@@ -106,7 +111,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         // Initialize DataTables AFTER rows are populated
-        new DataTable('#requestTable', {
+        requestTable = new DataTable('#requestTable', {
+            order: [],
             pageLength: 10,
             lengthMenu: [10, 25, 50, 100],
             ordering: true,
@@ -133,6 +139,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 </td>
             </tr>
         `;
+    } finally {
+        hideLoading();
     }
 
 });
@@ -141,9 +149,80 @@ document.addEventListener("DOMContentLoaded", async function () {
 // MODAL VIEW
 const closeRequestModal = document.getElementById('closeRequestModal');
 const closeRequestModalFooter = document.getElementById('closeRequestModalFooter');
+const acceptRequestButton = document.getElementById('acceptRequestButton');
 
 closeRequestModal.addEventListener('click', closeRequestFormModal);
 closeRequestModalFooter.addEventListener('click', closeRequestFormModal);
+
+// ACCEPT REQUEST
+
+acceptRequestButton?.addEventListener('click', async function () {
+    if (!RequestID) {
+        window.swal_error('Accept Failed', 'Invalid request selected.');
+        return;
+    }
+
+    const confirmed = await window.swal_confirm(
+        'Accept this request?',
+        'Accepting this request will send it to the Section Chief for routing. Do you wish to continue?'
+    );
+    if (!confirmed) return;
+
+    showLoading('Accepting request…');
+    acceptRequestButton.disabled = true;
+
+    let response;
+    try {
+        response = await fetch(`/requestsample/${RequestID}/accept`, {          // ← matches web.php
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        });
+    } catch (error) {
+        hideLoading();
+        acceptRequestButton.disabled = false;
+        console.error('Accept Request Error:', error);
+        window.swal_error('Accept Failed', 'Unable to reach the server. Please try again.');
+        return;
+    }
+
+    hideLoading();
+    acceptRequestButton.disabled = false;
+
+    let result = {};
+    try {
+        result = await response.json();
+    } catch {
+        // response wasn't JSON; the fallback message below covers it
+    }
+
+    if (!response.ok) {
+        console.error('Accept failed with status', response.status, result);
+        const message = response.status === 419
+            ? 'Your session expired. Please refresh the page and try again.'
+            : result.message || 'Unable to accept this request. Please try again.';
+        window.swal_error('Accept Failed', message);
+        return;
+    }
+
+    window.swal_toast(result.message || 'Request accepted.');
+    CloseModal('RequestFormModal');   // your modal's ID
+    
+
+    // remove the accepted request from the table, staying on the same page
+    if (requestTable && selectedRow) {
+        requestTable.row(selectedRow).remove().draw(false);
+    }
+
+    RequestID = null;
+    selectedRow = null;
+});
+
+
+
+
 
 function openRequestFormModal() {
     const modal = document.getElementById('RequestFormModal');
@@ -155,6 +234,10 @@ function openRequestFormModal() {
 
     modal.classList.remove('hidden');
     modal.classList.add('flex');
+
+    modal.classList.remove('lims-fade-in');
+    void modal.offsetWidth;
+    modal.classList.add('lims-fade-in');
 }
 
 function closeRequestFormModal() {
@@ -162,8 +245,13 @@ function closeRequestFormModal() {
 
     if (!modal) return;
 
-    modal.classList.remove('flex');
-    modal.classList.add('hidden');
+    modal.classList.remove('lims-fade-in');
+    modal.classList.add('lims-fade-out');
+
+    setTimeout(() => {
+        modal.classList.remove('flex', 'lims-fade-out');
+        modal.classList.add('hidden');
+    }, 200);
 }
 
 
@@ -181,6 +269,7 @@ function viewRequest(event) {
     const button = event.target.closest('.lims-button-view');
     if (!button) return;
     const requestId = button.dataset.requestId;
+    selectedRow = button.closest('tr');
 
     openRequestFormModal();
     fetchRequestFormData(requestId);
@@ -198,7 +287,9 @@ async function fetchRequestFormData(id) {
         if (!response.ok) {throw new Error(`HTTP error: ${response.status}`);}
         const result = await response.json();
 
-        // console.log(result);
+        console.log(result);
+
+        RequestID = result.requestId;
 
         setText('viewCustomerName', result.customerName);
         setText('viewEmailAddress', result.emailAddress);
@@ -251,11 +342,11 @@ async function fetchRequestFormData(id) {
         const tbody = document.getElementById('viewSamplesTableBody');
         tbody.innerHTML = '';
         result.samples.forEach(sample => {
-            const analysisNames =
-                getAnalysisNames(
-                    sample.analysis,
-                    analysisList
-                );
+            const analysisNames = getAnalysisNames(sample.analysis, analysisList);
+
+            const allAnalyses = [analysisNames, sample.analysisOthers ? `Others: ${sample.analysisOthers}` : '']
+                .filter(text => text && text !== '-')
+                .join(', ') || '-';
 
             const row = document.createElement('tr');
 
@@ -265,7 +356,7 @@ async function fetchRequestFormData(id) {
                 <td>${sample.customerSampleCode ?? '-'}</td>
                 <td>${formatDate(sample.dateTimeCollected) ?? '-'}</td>
                 <td>${sample.placeCollected ?? '-'}</td>
-                <td>${analysisNames}</td>
+                <td>${allAnalyses}</td>
             `;
 
             tbody.appendChild(row);

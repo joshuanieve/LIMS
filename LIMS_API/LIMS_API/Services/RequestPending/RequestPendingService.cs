@@ -20,5 +20,11 @@ namespace LIMS_API.Services.RequestPending
         public async Task<GetRequestDetails?> GetRequestPendingById(int id){
             return await _requestPendingRepository.GetRequestPendingById(id);
         }
+
+        // ACCEPT REQUEST
+        public async Task<AcceptResult> AcceptRequest(int requestId, int userId, string userName)
+        {
+            return await _requestPendingRepository.AcceptRequest(requestId, userId, userName);
+        }
     }
 }

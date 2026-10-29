@@ -11,7 +11,7 @@ import 'datatables.net-dt/css/dataTables.dataTables.css';
 document.addEventListener('DOMContentLoaded', async function () {
     // LOAD TABLE
     try {
-        showLoading();
+        showLoading('Loading laboratory records…');
         const response = await fetch('/laboratory-records/data', {
             method: 'GET',
             headers: {
@@ -58,7 +58,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             const analysisCount = list.reduce((total, s) => {
                 const ids = String(s.analysis ?? '').split(',').filter(id => id.trim());
-                return total + ids.length;
+                const others = String(s.analysisOthers ?? '').split(',').filter(name => name.trim());
+                return total + ids.length + others.length;
             }, 0);
 
             return `${sampleCount} ${sampleCount === 1 ? 'sample' : 'samples'} · ${analysisCount} ${analysisCount === 1 ? 'analysis' : 'analyses'}`;

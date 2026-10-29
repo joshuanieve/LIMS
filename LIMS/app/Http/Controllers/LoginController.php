@@ -30,7 +30,9 @@ class LoginController extends Controller
         try {            // API call to the external system
             $url = 'http://10.0.224.35:7152/api/UserCont/login/'
             // $url = 'http://localhost:5105/api/UserCont/login/'
-                . rawurlencode($request->email) . ',' . rawurlencode($request->password) . ',' . rawurlencode("FFAST");
+                . rawurlencode($request->email) . ',' . 
+                rawurlencode($request->password) . ',' . 
+                rawurlencode("LIMS");
             $response = $client->post($url, [
                 'verify' => false,
                 'headers' => [
@@ -75,13 +77,19 @@ class LoginController extends Controller
                     // external FFAST system's Role_id. Not yet confirmed against FFAST's real role
                     // table; 'admin' is kept as the AdminOfficer string (instead of 'adminofficer')
                     // so existing `data-role === 'admin'` gates (e.g. resultforencoding.js) keep working.
+
+
+
+
                     $limsRoles = [
-                        1 => 'User',
-                        2 => 'admin',
-                        3 => 'analyst',
-                        4 => 'sectionchief',
-                        5 => 'directorchief',
+                        1 => 'Admin',
+                        2 => 'User',
+                        3 => 'AdminOfficer',
+                        4 => 'Analyst',
+                        5 => 'SectionChief',
+                        6 => 'DirectorChief',
                     ];
+                    
                     $roleId = $payload['Role_id'] ?? null;
                     $limsRole = $limsRoles[$roleId] ?? 'User';
 
@@ -118,6 +126,13 @@ class LoginController extends Controller
                         }
                     }
                     // dd($responseEmployeeProfile->json());
+
+                    // dd(
+                    //     $limsRoles,
+                    //     $roleId,
+                    //     $limsRole,
+                    //     session()->all()
+                    // );
 
 
 

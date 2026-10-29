@@ -5,12 +5,14 @@ using LIMS_API.Repositories.RequestForm;
 using LIMS_API.Repositories.RequestPending;
 using LIMS_API.Repositories.ResultforEncoding;
 using LIMS_API.Repositories.Results;
+using LIMS_API.Repositories.SystemAuditLogs;
 using LIMS_API.Services.AnalysisList;
 using LIMS_API.Services.JobRouting;
 using LIMS_API.Services.RequestForm;
 using LIMS_API.Services.RequestPending;
 using LIMS_API.Services.ResultforEncoding;
 using LIMS_API.Services.Results;
+using LIMS_API.Services.SystemAuditLogs;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
@@ -43,6 +45,7 @@ builder.Services.AddScoped<IRequestPendingRepo, RequestPendingRepo>();
 builder.Services.AddScoped<IJobRoutingRepo, JobRoutingRepo>();
 builder.Services.AddScoped<IResultforEncodingRepo, ResultEncodingRepo>();
 builder.Services.AddScoped<IResultsRepo, ResultsRepo>();
+builder.Services.AddScoped<ISystemAuditLogsRepo, SystemAuditLogsRepo>();
 
 // Service
 builder.Services.AddScoped<IAnalysisListService, AnalysisListService>();
@@ -51,6 +54,9 @@ builder.Services.AddScoped<IRequestPendingService, RequestPendingService>();
 builder.Services.AddScoped<IJobRoutingService, JobRoutingService>();
 builder.Services.AddScoped<IResultforEncodingService, ResultforEncodingService>();
 builder.Services.AddScoped<IResultsService, ResultsService>();
+builder.Services.AddScoped<ISystemAuditLogsService, SystemAuditLogsService>();
+
+
 
 var app = builder.Build();
 

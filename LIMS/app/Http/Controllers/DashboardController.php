@@ -9,11 +9,12 @@ class DashboardController extends Controller
     // TEMPORARY role_id -> dashboard mapping, matching LoginController's $limsRoles
     // and documentation.md §2.4. Not yet confirmed against the external FFAST
     // system's real Role_id values - update both places together if that changes.
-    private const ROLE_CUSTOMER = 1;
-    private const ROLE_ADMIN_OFFICER = 2;
-    private const ROLE_ANALYST = 3;
-    private const ROLE_SECTION_CHIEF = 4;
-    private const ROLE_DIRECTOR_CHIEF = 5;
+    private const ROLE_SUPERADMIN = 1;
+    private const ROLE_USER = 2;
+    private const ROLE_ADMIN_OFFICER = 3;
+    private const ROLE_ANALYST = 4;
+    private const ROLE_SECTION_CHIEF = 5;
+    private const ROLE_DIRECTOR_CHIEF = 6;
 
     public function index(Request $request)
     {
@@ -23,11 +24,12 @@ class DashboardController extends Controller
         }
 
         $roleId = (int) $request->session()->get('role_id');
-
-        $roleId = 1;
+        // echo $roleId;
+        // $roleId = 2;
 
         return match ($roleId) {
-            self::ROLE_CUSTOMER => $this->customerView($request),
+            self::ROLE_SUPERADMIN => $this->directorChiefView($request),
+            self::ROLE_USER => $this->customerView($request),
             self::ROLE_ADMIN_OFFICER => $this->adminOfficerView($request),
             self::ROLE_ANALYST => $this->analystView($request),
             self::ROLE_SECTION_CHIEF => $this->sectionChiefView($request),
@@ -123,8 +125,19 @@ class DashboardController extends Controller
             ['rfaNo' => 'Ref. #0418', 'customer' => 'Reyes, Ana C.', 'sampleType' => 'Feeds', 'daysOverdue' => 2],
         ];
 
+        // Same shape/numbers as ReportsController and the Director Chief
+        // dashboard, so every page agrees on the same mock system state.
+        $divisionBreakdown = [
+            ['label' => 'Fisheries Resource Management', 'count' => 15],
+            ['label' => 'Aquaculture Division', 'count' => 12],
+            ['label' => 'Post-Harvest Division', 'count' => 11],
+            ['label' => 'Island Fisheries Division', 'count' => 9],
+        ];
+        $maxDivisionCount = max(array_column($divisionBreakdown, 'count'));
+
         return view('dashboard.adminofficer', compact(
-            'stats', 'pendingReview', 'recentRequests', 'recentActivity', 'categoryBreakdown', 'overdueRequests'
+            'stats', 'pendingReview', 'recentRequests', 'recentActivity', 'categoryBreakdown', 'overdueRequests',
+            'divisionBreakdown', 'maxDivisionCount'
         ));
     }
 
@@ -149,11 +162,30 @@ class DashboardController extends Controller
             ['parameter' => 'Coliforms, Fecal', 'code' => 'MB-002', 'labNo' => 'LAB-2026-0124', 'sampleType' => 'Water', 'assignedDate' => 'Oct 10, 2026', 'status' => 'Ongoing'],
         ];
 
-        $myTurnaround = [
-            ['label' => 'My Average', 'days' => 7.6],
-            ['label' => 'Lab Target', 'days' => 8.0],
+        // Per-parameter turnaround for the analyst's last 10 completed
+        // results - replaces the old 2-row average-vs-target bar list with
+        // the actual entries behind that average, each flagged on-time/late
+        // against the 8-day lab target.
+        $turnaroundSummary = [
+            'average' => 7.5,
+            'periodDays' => 30,
+            'target' => 8,
+            'onTime' => 7,
+            'totalCount' => 10,
         ];
-        $maxTurnaroundDays = max(array_column($myTurnaround, 'days'));
+
+        $turnaroundEntries = [
+            ['labNo' => '2026-0121', 'parameter' => 'pH', 'days' => 6.4, 'onTime' => true],
+            ['labNo' => '2026-0119', 'parameter' => 'Moisture', 'days' => 7.1, 'onTime' => true],
+            ['labNo' => '2026-0118', 'parameter' => 'BOD', 'days' => 9.2, 'onTime' => false],
+            ['labNo' => '2026-0115', 'parameter' => 'Protein', 'days' => 7.8, 'onTime' => true],
+            ['labNo' => '2026-0113', 'parameter' => 'Total Plate Count', 'days' => 8.0, 'onTime' => true],
+            ['labNo' => '2026-0110', 'parameter' => 'Ash', 'days' => 6.9, 'onTime' => true],
+            ['labNo' => '2026-0108', 'parameter' => 'Histamine', 'days' => 8.6, 'onTime' => false],
+            ['labNo' => '2026-0105', 'parameter' => 'pH', 'days' => 5.8, 'onTime' => true],
+            ['labNo' => '2026-0102', 'parameter' => 'Coliforms, Fecal', 'days' => 7.4, 'onTime' => true],
+            ['labNo' => '2026-0099', 'parameter' => 'Moisture', 'days' => 8.3, 'onTime' => false],
+        ];
 
         $recentActivity = [
             ['message' => 'Accepted parameter BOD for LAB-2026-0129', 'time' => 'Oct 13, 2026 · 4:50 PM'],
@@ -163,7 +195,7 @@ class DashboardController extends Controller
         ];
 
         return view('dashboard.analyst', compact(
-            'stats', 'myAssignments', 'myTurnaround', 'maxTurnaroundDays', 'recentActivity'
+            'stats', 'myAssignments', 'turnaroundSummary', 'turnaroundEntries', 'recentActivity'
         ));
     }
 
@@ -181,23 +213,35 @@ class DashboardController extends Controller
             'approvedThisMonth' => 31,
         ];
 
+        // A sample can carry both Chemical and Microbiological analyses at
+        // once, so each queue entry lists one pill per category present
+        // rather than a single category field.
         $awaitingAssignment = [
-            ['labNo' => 'LAB-2026-0134', 'sampleType' => 'Water', 'category' => 'Chemical', 'receivedDate' => 'Oct 15, 2026'],
-            ['labNo' => 'LAB-2026-0132', 'sampleType' => 'Feeds', 'category' => 'Microbiological', 'receivedDate' => 'Oct 14, 2026'],
-            ['labNo' => 'LAB-2026-0130', 'sampleType' => 'Sediments', 'category' => 'Chemical', 'receivedDate' => 'Oct 13, 2026'],
+            ['labNo' => '2026-0134', 'sampleType' => 'Water', 'receivedDate' => 'Oct 15, 2026', 'analysesCount' => 6, 'categories' => [
+                ['label' => 'chemical', 'count' => 3],
+                ['label' => 'micro', 'count' => 3],
+            ]],
+            ['labNo' => '2026-0132', 'sampleType' => 'Feeds', 'receivedDate' => 'Oct 14, 2026', 'analysesCount' => 2, 'categories' => [
+                ['label' => 'micro', 'count' => 2],
+            ]],
+            ['labNo' => '2026-0130', 'sampleType' => 'Sediments', 'receivedDate' => 'Oct 13, 2026', 'analysesCount' => 5, 'categories' => [
+                ['label' => 'chemical', 'count' => 5],
+            ]],
         ];
 
         $awaitingReview = [
-            ['parameter' => 'pH', 'labNo' => 'LAB-2026-0121', 'analyst' => 'Ana Reyes', 'encodedDate' => 'Oct 14, 2026'],
-            ['parameter' => 'Moisture', 'labNo' => 'LAB-2026-0119', 'analyst' => 'Mark Lopez', 'encodedDate' => 'Oct 13, 2026'],
-            ['parameter' => 'Coliforms, Fecal', 'labNo' => 'LAB-2026-0115', 'analyst' => 'Joy Santos', 'encodedDate' => 'Oct 12, 2026'],
+            ['parameter' => 'pH', 'labNo' => '2026-0121', 'analyst' => 'Ana Reyes', 'encodedDate' => 'Oct 14, 2026'],
+            ['parameter' => 'Moisture', 'labNo' => '2026-0119', 'analyst' => 'Mark Lopez', 'encodedDate' => 'Oct 13, 2026'],
+            ['parameter' => 'Coliforms, Fecal', 'labNo' => '2026-0115', 'analyst' => 'Joy Santos', 'encodedDate' => 'Oct 12, 2026'],
         ];
 
+        // 'overdue' is a subset called out separately from 'pending' (the
+        // remainder of assigned - completed - overdue) in the workload list.
         $analystWorkload = [
-            ['name' => 'Ana Reyes', 'assigned' => 14, 'completed' => 12],
-            ['name' => 'Mark Lopez', 'assigned' => 11, 'completed' => 7],
-            ['name' => 'Joy Santos', 'assigned' => 9, 'completed' => 9],
-            ['name' => 'Ramon Villanueva', 'assigned' => 6, 'completed' => 3],
+            ['name' => 'Ana Reyes', 'assigned' => 14, 'completed' => 12, 'overdue' => 0],
+            ['name' => 'Mark Lopez', 'assigned' => 11, 'completed' => 7, 'overdue' => 1],
+            ['name' => 'Joy Santos', 'assigned' => 9, 'completed' => 9, 'overdue' => 0],
+            ['name' => 'Ramon Villanueva', 'assigned' => 6, 'completed' => 3, 'overdue' => 0],
         ];
 
         return view('dashboard.sectionchief', compact(

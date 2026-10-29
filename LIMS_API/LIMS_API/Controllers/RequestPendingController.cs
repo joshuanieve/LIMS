@@ -1,4 +1,5 @@
 ﻿
+using LIMS_API.Entities.RequestPending;
 using LIMS_API.Services.RequestPending;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,6 +24,7 @@ namespace LIMS_API.Controllers
             return Ok(result);
         }
 
+
         [HttpGet("{id}")] // GET DATA FOR VIEWING
         public async Task<IActionResult> GetRequestPendingById(int id)
         {
@@ -36,6 +38,20 @@ namespace LIMS_API.Controllers
             }
 
             return Ok(result);
+        }
+
+
+        [HttpPost("{id}/accept")] // ACCEPT A PENDING REQUEST
+        public async Task<IActionResult> AcceptRequest(int id, [FromBody] AcceptRequestDto dto)
+        {
+            var result = await _RPService.AcceptRequest(id, dto.UserId, dto.UserName);
+
+            return result switch
+            {
+                AcceptResult.NotFound => NotFound(new { message = "Request not found." }),
+                AcceptResult.AlreadyAccepted => Conflict(new { message = "This request has already been accepted." }),
+                _ => Ok(new { message = "Request accepted." })
+            };
         }
     }
 }

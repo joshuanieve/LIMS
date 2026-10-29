@@ -214,11 +214,11 @@ Track these here until fixed; remove the row once resolved.
   in sync with `ReportsController`'s - if either changes, check the other.
 - **`JobRoutingController::data()` and `ResultforEncodingController::data()` both call
   `Http::get('http://localhost:5198/api/JobRouting')`** — hard-coded (not via `config()`, unlike
-  `RequestFormServices`) and pointing at an endpoint that doesn't exist in `LIMS_API` (no
-  `JobRoutingController` there, only `AnalysisList`/`RequestForm`/`RequestPending`). Both pages' tables
-  will fail to load until this is pointed at a real endpoint (likely `/api/RequestPending`, same as
-  `RequestSample`/old `JobRouting`, or a new purpose-built one) and moved into a Service class per
-  `AGENTS.md`.
+  `RequestFormServices`) instead of going through a dedicated `App\Services\*Services` class per
+  `AGENTS.md`. (Previously this note also said the endpoint didn't exist in `LIMS_API` at all — stale:
+  `LIMS_API/LIMS_API/Controllers/JobRoutingController.cs` exists with a working
+  `JobRoutingService`/`JobRoutingRepo`, confirmed 2026-10-27 while adding `AnalysisOthers` to its
+  response shape.)
 - **Role-based access control still missing** (dashboards are done, gating isn't): `role_id` now drives
   5 distinct dashboards (§2.4, §6), but every other route/page is still open to all 5 roles —
   `sidebarroles.blade.php` has no role conditionals, and `AdminMiddleware`/`UserMiddleware` are
@@ -239,6 +239,193 @@ Track these here until fixed; remove the row once resolved.
 
 ## 10. Changelog
 
+- **2026-10-29** — Replaced the global loading overlay with an animated DNA-helix loader. New files:
+  `resources/views/partials/lims-loader.blade.php` (markup, included once in `layouts/app.blade.php`
+  right before `</body>`) and `resources/css/lims-loader.css` (added to that layout's `@vite([...])`
+  list). Removed the old `#loadingOverlay`/`.loader` markup from `app.blade.php` and the whole `@layer
+  Loader { ... }` block (old spinner + `.loading-overlay` full-screen styles) from `app.css` — nothing
+  else referenced those selectors. `window.showLoading`/`window.hideLoading` in `app.js` were rewritten
+  to target the new `#limsLoader`/`#limsLoaderText` element IDs; the public API is unchanged (still
+  `showLoading([message])` / `hideLoading()`, overlay `z-index: 1050` stays below SweetAlert2's 1060) so
+  no page calling them needed to change — except that the three existing call sites now pass a
+  message appropriate to what they're waiting on: `requestform.js`'s `CreateRequest()` →
+  `'Submitting your request…'`, `requestsample.js`'s Accept handler → `'Accepting request…'`,
+  `results.js`'s Laboratory Records table load → `'Loading laboratory records…'`.
+
+- **2026-10-29** — Gave the DNA loader a fade in/out, same remove-class/reflow/re-add re-trigger
+  pattern as `OpenModal`/`CloseModal` (`app.js`). Added `.lims-loader-fade-in`/`.lims-loader-fade-out`
+  keyframes (opacity only — unlike modals' `.lims-fade-in`/`.lims-fade-out`, no `translateY`, since this
+  is a full-screen overlay, not a card sliding in) plus a `prefers-reduced-motion` override to
+  `lims-loader.css`. `showLoading()` now re-triggers `.lims-loader-fade-in` on every call;
+  `hideLoading()` swaps to `.lims-loader-fade-out` and waits `LOADER_FADE_OUT_MS` (200ms, matching the
+  CSS animation-duration) before clearing `.is-visible`, so `display:none` doesn't cut the animation
+  off instantly.
+
+- **2026-10-29** — Result for Encoding, Job Routing, and Request Sample's table-load fetches
+  (`resultforencoding.js`, `jobrouting.js`, `requestsample.js` — each on `DOMContentLoaded`) had no
+  loader at all, unlike `results.js`'s Laboratory Records load. Added `showLoading(message)` before each
+  fetch and a `finally { hideLoading(); }` (new, these blocks only had `try`/`catch` before) so the
+  loader clears whether the load succeeds or fails: `'Loading results for encoding…'`,
+  `'Loading samples to route…'`, `'Loading sample requests…'` respectively.
+  off instantly.
+
+- **2026-10-28** — Laboratory Records' "N samples · N analyses" count had the same
+  `AnalysisOthers`-dropped-by-the-backend gap as Job Routing (see 2026-10-27 entry below): `GetResultsTable`
+  (`LIMS_API/LIMS_API/Entities/Results/GetResultsTable.cs`, the `GetRFEListDetails` nested class) and
+  `ResultsRepo.cs`'s `.Select(...)` projection never read `LabRequestList.AnalysisOthers`, so a sample with
+  e.g. 30 catalog analyses + 1 free-text "other" analysis showed `30 analyses` instead of `31`. Added
+  `AnalysisOthers` to both. Frontend fix in `results.js`'s `formatSampleMeta()`: the analysis count now
+  adds the comma-split length of `s.analysisOthers` on top of the existing `s.analysis` ID count.
+  **LIMS_API needs a restart/rebuild for this to take effect**, same caveat as the Job Routing fix.
+
+- **2026-10-27** — Job Routing now surfaces "Others" (the free-text custom analyses typed in Request for
+  Analysis's `AnalysisOthers` field, separate from the checkbox-selected catalog analyses since that
+  field split). This required a real backend fix, not just a frontend change: `GetJobRoutingLists`
+  (`LIMS_API/LIMS_API/Entities/JobRouting/GetJobRoutingLists.cs`) and `JobRoutingRepo.cs`'s `.Select(...)`
+  projection never read `LabRequestList.AnalysisOthers` at all, even though it's already persisted
+  correctly end-to-end from the form (verified: `RequestFormController` → `RequestFormRepo` →
+  `LabRequestList.AnalysisOthers` column, and already exposed on the `RequestPending` detail endpoint —
+  JobRouting's endpoint was the one gap). Added `AnalysisOthers` to both. On the frontend
+  (`jobrouting.js`): each sample card now shows a 3rd pill ("N other", new neutral-gray
+  `.lims-grid-category-pill.other` style) alongside the existing chemical/microbiological counts when
+  `analysisOthers` is non-empty, and the Route modal now lists each custom analysis as its own row
+  (labeled "Custom analysis (not in catalog)" in place of a method, with a synthetic `other:<name>`
+  select id since there's no real `analysisId` for free text) so Section Chief can still assign an
+  analyst to it. Added an `escapeHtml()` helper in `jobrouting.js` for this, since unlike the numeric
+  `analysis` IDs used everywhere else in that file, `analysisOthers` is untrusted free text going into
+  both an HTML attribute and `innerHTML`.
+  **Needs a LIMS_API restart/rebuild to take effect** — the running process was holding the output `.exe`
+  locked when this was built, so the change hasn't been picked up by a live `dotnet run`/`dotnet watch`
+  session yet.
+- **2026-10-26** — `window.swal_confirm` gained a 5th optional `icon` param (default `'question'`) and
+  Job Routing's "Cancel Test" prompt (`jobrouting.js`) was switched from an inline `window.Swal.fire(...)`
+  call (with `showCancelButton: true`) to use it (passing `'warning'` for the icon, matching what that
+  inline call used) — this was the only other Yes/No confirm dialog in the codebase not already going
+  through the shared helper; Request Sample's "Accept Request" flow already used it.
+- **2026-10-26** — Added a matching fade-out to every modal's close, same 5 modals as the fade-in below.
+  New `.lims-fade-out` keyframe in `app.css` (reverse of `.lims-fade-in`, 0.2s). Since closing still has
+  to end in `display:none` (the `hidden` class) and that would otherwise cut the animation off instantly,
+  every close path now: swaps `lims-fade-in` for `lims-fade-out`, then after a 200ms `setTimeout`
+  (matching the CSS duration - `MODAL_FADE_OUT_MS` in `app.js`) removes `flex`/`lims-fade-out` and adds
+  `hidden`. Patched in `window.CloseModal` (app.js, covers Job Routing/Result for Encoding) and in each
+  one-off close function: `requestform.js`'s `closeAnalysisModal()`/`closeLocationModal()` (the analysis
+  modal's inline duplicate close path was also consolidated to call `closeAnalysisModal()` instead of
+  repeating the toggle) and `requestsample.js`'s `closeRequestFormModal()`.
+- **2026-10-26** — Added a fade-in effect to every modal in the app on open, reusing the existing
+  `.lims-fade-in` class (same keyframe already used for DataTable redraws and Logs panel selection) with
+  the established remove/reflow/re-add trigger pattern. Patched in `window.OpenModal` (app.js) - covers
+  Job Routing's route modal and Result for Encoding's results modal, both of which call it - plus the 3
+  modals that toggle `hidden`/`flex` directly instead of going through that shared helper: Request for
+  Analysis's analysis and location modals (`requestform.js`) and Request Sample's view modal
+  (`requestsample.js`). All 5 modals in the app now fade in consistently.
+- **2026-10-26** — Added `window.swal_toast(title, icon?)` to `app.js` (toast: true, position: top-end,
+  auto-dismiss) and switched Request Sample's "Accept Request" confirm flow to use it instead of a
+  blocking `swal_error` modal — confirming now shows a small "Success" toast in the top-right corner
+  instead of a full alert dialog. Still a placeholder: no accept/approve endpoint exists on `LIMS_API`
+  for this step yet, so nothing is actually persisted.
+- **2026-10-26** — Added `window.swal_confirm(title, message, confirmText?, cancelText?)` to `app.js`
+  next to `swal_success`/`swal_error` (resolves to `true`/`false`) — the first Yes/No confirm variant in
+  the shared alert helpers, per AGENTS.md's "add new alert variants as a `window.swal_*` helper, don't
+  call `Swal.fire` inline" rule. Wired it into Request Sample's new "Accept Request" button: clicking it
+  now asks "Accepting this Request will proceed to Section Chief Routing, do you wish to continue?"
+  before doing anything.
+- **2026-10-26** — Request Sample's view modal footer: added an "Accept Request" button
+  (`.lims-form-submit`, same primary-action style used in other modal footers) and floated the existing
+  Close button to the opposite side (`mr-auto` on `.lims-modal-cancel`) instead of both buttons grouping
+  together via the global `.lims-modal-footer`'s `justify-end` — scoped to this one modal, not a change
+  to that shared class.
+- **2026-10-26** — Redesigned Director Chief's dashboard hero to match the other 4 roles: welcome card
+  (left) + the 4 KPI cards as a compact 2x2 grid (right, `.lims-directorchief-hero-kpis`) sharing one
+  row, instead of the KPI row running full-width below the welcome card. Reused the existing
+  `.lims-dash-kpi-card` component with a compact modifier (smaller padding/value text, same pattern as
+  `.lims-hero-stat-card` elsewhere) rather than introducing a new card style.
+- **2026-10-26** — Generalized Section Chief's welcome-card summary badges (`.lims-sc-welcome-badge*` →
+  `.lims-welcome-badge*`, no longer role-prefixed) and added the same 2-badge pattern to the Analyst and
+  AdminOfficer welcome cards: Analyst shows `$stats['pendingAcceptance']`/`$stats['inProgress']`
+  ("N parameters waiting for acceptance" / "N parameters in progress"); AdminOfficer shows
+  `count($pendingReview)`/`count($overdueRequests)` ("N requests awaiting review" / "N requests
+  overdue"). Also removed Section Chief's bordered label box (`.lims-sc-welcome-label-box`, dropped
+  after a closer reference screenshot showed no border there) and enlarged the badge dots from
+  `h-1.5 w-1.5` to `h-2.5 w-2.5` to match.
+- **2026-10-26** — Redesigned the Section Chief dashboard to match a supplied mockup:
+  - **Hero**: welcome card + 2x2 stats share one row (`.lims-sectionchief-hero`, 2 columns this time - no
+    3rd slot, unlike AdminOfficer/Analyst). Welcome card gained a bordered label box
+    (`.lims-sc-welcome-label-box`) and two small summary pills under the description
+    (`.lims-sc-welcome-badge`, blue/amber dot + count, e.g. "5 samples need an analyst") computed
+    straight from the existing `$stats` values - no new controller data needed for those.
+  - **Analyst Workload** moved up to right after the hero (was previously the last section) and was
+    redesigned from a plain label+bar+count list into `.lims-workload-row`: an initials avatar
+    (`.lims-workload-avatar`), the analyst's name in secondary blue, a progress bar (green when 100%
+    complete, via the same `.complete` modifier pattern as the Reports/other dashboards' progress bars),
+    and a stats string that breaks out completed/pending/overdue separately - overdue shown in bold red
+    only when present. New controller field: `$analystWorkload[]['overdue']` (pending is now derived as
+    `assigned - completed - overdue` in the view, not stored).
+  - **Awaiting Parameter Assignment** queue rows now show one category pill per analysis type present
+    on the sample instead of a single category (a sample can be both Chemical and Microbiological at
+    once) - `$awaitingAssignment` restructured from a single `category` string to a `categories[]` array
+    of `{label, count}`, rendered via new `.lims-queue-row-pills` (stacks pills vertically) reusing the
+    existing `.lims-grid-category-pill` chemical/microbiological classes.
+  - **Awaiting Parameter Assignment** and **For Your Review** moved from two separate full-width queue
+    panels into one even 2-column row, same pattern as AdminOfficer/Analyst.
+- **2026-10-26** — Redesigned the Analyst and AdminOfficer dashboards' hero sections to match supplied
+  mockups, continuing the pattern started on the Customer dashboard (welcome card + stats sharing one
+  row instead of stats running full-width below):
+  - **AdminOfficer**: hero is now 3 columns (welcome | 2x2 stats | Quick Links), with Quick Links moved
+    up from the old bottom Insights row into its own white card (`.lims-admin-hero-quicklinks`,
+    `rounded-3xl`/white-80/bordered, matching `.lims-panel`'s look) beside the stats. Added a new
+    "Requests per Division" panel (reuses `.lims-dash-bar-list`, same `$divisionBreakdown` data as
+    Reports/Director Chief) paired with the existing Category Breakdown panel, and reorganized Awaiting
+    Review/Overdue Requests and Recent Requests/Activity into even 2-column rows
+    (`.lims-dashboard-insights.lims-dashboard-insights-2col`) instead of one 2fr/1fr row plus a
+    standalone full-width queue panel.
+  - **Analyst**: hero is now 3 columns (welcome | 2x2 stats | My Turnaround). Replaced the old 2-row
+    "My Average vs. Lab Target" bar list with a real per-parameter turnaround widget
+    (`.lims-turnaround-*`): a summary block (average days over the last 30, target, on-time ratio) plus
+    a scrollable list of the analyst's last 10 completed parameters, each with a green/red dot for
+    on-time vs. late against the 8-day target. New controller data: `$turnaroundSummary`,
+    `$turnaroundEntries` (replacing `$myTurnaround`/`$maxTurnaroundDays`). My Assigned Parameters and
+    Recent Activity moved from a full-width queue panel + 2fr/1fr row into an even 2-column row, same
+    pattern as AdminOfficer.
+  - New shared CSS: `.lims-hero-stat-card` (renamed from the Customer-only `.lims-customer-stat-card`
+    once AdminOfficer and Analyst needed the identical compact stat-card treatment too).
+  - **Lesson learned mid-build and worth keeping in mind for any future per-role CSS override**: a
+    `.lims-admin-hero-quicklinks .lims-insight-quicklink` override placed in a `@layer` declared
+    *earlier* in the file than the layer holding the base `.lims-insight-quicklink` rule is silently
+    dead — CSS cascade layers prioritize by declaration order, not specificity, so a later-declared
+    layer's rule always wins regardless of how specific an earlier-declared layer's selector is. Had to
+    diagnose and fix this once already on this file; new cross-component overrides should double check
+    which layer the base rule lives in and declare after it (or go unlayered, which unconditionally
+    beats any `@layer`-wrapped rule).
+- **2026-10-26** — Redesigned the Customer dashboard's top section to match a supplied mockup: the
+  welcome card and the 4 stat cards now share one row (welcome ~62% width, stats as a compact 2x2 grid
+  ~38% width) instead of the stat grid running full-width below the welcome card. New CSS is scoped to
+  `.lims-customer-hero*` (`dashboard.css`'s `DashboardCustomerHero` layer) so the other 4 role
+  dashboards keep their existing full-width 4-across stat grid. Also reordered the stat cards to match
+  the mockup (My Total Requests, Completed, In Progress, Total Samples Submitted) and added
+  `.lims-table-ref` (bold, secondary-blue) to color the Request No. column in the My Requests table,
+  matching the mockup's styling.
+- **2026-10-22** — Removed the "reason" block (the italic note under the changes table, e.g. "Value
+  below detection limit after re-run.") from the Logs detail panel — dropped `d.reason` rendering in
+  `log.js`, the now-unused `.lims-logs-reason` CSS, and the `'reason'` key from all 25 mock entries in
+  `LogsController`. (While removing that key with a PowerShell `Set-Content -Encoding utf8` pass, it
+  mojibake'd the file's `·`/`–` characters — re-wrote the file via a UTF-8-safe path instead. Lesson:
+  don't use PowerShell `Get-Content`/`Set-Content` for in-place edits on files with non-ASCII characters
+  in this repo; use Edit/Write instead.)
+- **2026-10-22** — Logs page detail panel cleanup: removed the IP address field entirely (from both
+  `LogsController`'s 25 mock entries and `log.js`'s rendered field list); merged the separate "Record"
+  (lab number) and "Request" (reference number) rows into a single "Record" line — sample-level events
+  now show `Ref. #0411 2026-5982`, request-level events (no lab number) show just `Ref. #0412`; and the
+  left-hand list now shows each entry's date stacked above its time (`.lims-logs-item-date`/
+  `-item-clock` in `log.css`) instead of time only, using a new top-level `date` field added to every
+  mock entry (`Oct 13, 2026` for ids 1-6, `Oct 12, 2026` for ids 7-25, matching the only date anchor the
+  old data already had). The detail panel's header timestamp is now always derived as
+  `${log.date} · ${log.time}` instead of the one-off `detail.timestamp` override entry #3 used to carry
+  — removed that now-redundant field.
+- **2026-10-16** — Reports page Pipeline Funnel: renumbered the "Step N" hints shown per stage. Request
+  Submitted and Lab Number Generated (the two instantaneous, uncounted stages) now show no step number;
+  the 5 countable stages are renumbered 1-6 for this funnel specifically (Pending Review=1, Routed to
+  Analyst=2, In Progress=3-4, For Final Review=5, Released=6) rather than reusing the business
+  workflow's full 1-8 step numbers from §2.1.
 - **2026-10-15** — Reference number display format changed system-wide from `RFA-2026-0000` to
   `Ref. #0000` (drops the `RFA-` prefix and the year segment, keeps the existing 4-digit id). Updated
   everywhere a mock reference number string is built: `DashboardController`, `ReportsController`,

@@ -67,6 +67,32 @@ window.swal_error = function (title, message) {
     });
 };
 
+// Resolves to true/false depending on whether the user confirmed.
+window.swal_confirm = function (title, message, confirmButtonText = 'Yes', cancelButtonText = 'No', icon = 'question') {
+    return Swal.fire({
+        icon: icon,
+        title: title,
+        text: message,
+        showCancelButton: true,
+        confirmButtonText: confirmButtonText,
+        cancelButtonText: cancelButtonText,
+        reverseButtons: true
+    }).then((result) => result.isConfirmed);
+};
+
+// Small, non-blocking, auto-dismissing notification - top-right corner.
+window.swal_toast = function (title, icon = 'success') {
+    return Swal.fire({
+        icon: icon,
+        title: title,
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 2500,
+        timerProgressBar: true
+    });
+};
+
 
 
 const requestsDropdownButton = document.getElementById('requestsDropdownButton');
@@ -93,26 +119,33 @@ if (requestsDropdownButton) {
 
 
 
-window.showLoading = function () {
-    const overlay = document.getElementById('loadingOverlay');
+// Matches .lims-loader-fade-out's animation-duration in lims-loader.css.
+const LOADER_FADE_OUT_MS = 200;
 
-    if (!overlay) {
-        console.log('loadingOverlay not found');
-        return;
-    }
+window.showLoading = function (message = 'Processing request…') {
+    const loader = document.getElementById('limsLoader');
+    if (!loader) return;
 
-    overlay.classList.add('show');
+    document.getElementById('limsLoaderText').textContent = message;
+    loader.classList.add('is-visible');
+    loader.setAttribute('aria-hidden', 'false');
+
+    loader.classList.remove('lims-loader-fade-out', 'lims-loader-fade-in');
+    void loader.offsetWidth;
+    loader.classList.add('lims-loader-fade-in');
 };
 
 window.hideLoading = function () {
-    const overlay = document.getElementById('loadingOverlay');
+    const loader = document.getElementById('limsLoader');
+    if (!loader) return;
 
-    if (!overlay) {
-        console.log('loadingOverlay not found');
-        return;
-    }
+    loader.classList.remove('lims-loader-fade-in');
+    loader.classList.add('lims-loader-fade-out');
+    loader.setAttribute('aria-hidden', 'true');
 
-    overlay.classList.remove('show');
+    setTimeout(() => {
+        loader.classList.remove('is-visible', 'lims-loader-fade-out');
+    }, LOADER_FADE_OUT_MS);
 };
 
 
@@ -188,11 +221,20 @@ document.addEventListener('click', () => {
 
 
 
+// Matches .lims-fade-out's animation-duration in app.css.
+const MODAL_FADE_OUT_MS = 200;
+
 window.CloseModal = function CloseModal(modalID) {
     const modal = document.getElementById(modalID);
     if (!modal) return;
-    modal.classList.remove('flex');
-    modal.classList.add('hidden');
+
+    modal.classList.remove('lims-fade-in');
+    modal.classList.add('lims-fade-out');
+
+    setTimeout(() => {
+        modal.classList.remove('flex', 'lims-fade-out');
+        modal.classList.add('hidden');
+    }, MODAL_FADE_OUT_MS);
 }
 
 window.OpenModal =function OpenModal(modalID) {
@@ -203,4 +245,10 @@ window.OpenModal =function OpenModal(modalID) {
     }
     modal.classList.remove('hidden');
     modal.classList.add('flex');
+
+    // Re-trigger the fade every open (remove, force reflow, re-add) - same
+    // pattern used for DataTable redraws/Logs panel selection elsewhere.
+    modal.classList.remove('lims-fade-in');
+    void modal.offsetWidth;
+    modal.classList.add('lims-fade-in');
 }

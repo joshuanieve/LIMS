@@ -8,9 +8,9 @@
 
 @vite(['resources/css/pages/dashboard.css'])
 
-{{-- //////////////////////////////// WELCOME ////////////////////////////////////////// --}}
-<div class="dashboard-panelheader">
-    <div class="lims-welcome-card">
+{{-- //////////////////////////////// WELCOME + KPIs ////////////////////////////////////////// --}}
+<div class="lims-directorchief-hero">
+    <div class="lims-welcome-card lims-directorchief-hero-welcome">
         <div class="lims-welcome-content">
             <p class="lims-welcome-label">
                 Welcome Back · Director / Division Chief
@@ -32,18 +32,16 @@
             </svg>
         </a>
     </div>
-</div>
 
-
-{{-- //////////////////////////////// KPIs ////////////////////////////////////////// --}}
-<div class="lims-dash-kpi-grid">
-    @foreach ($kpis as $kpi)
-        <div class="lims-dash-kpi-card">
-            <p class="lims-dash-kpi-label">{{ $kpi['label'] }}</p>
-            <p class="lims-dash-kpi-value">{{ $kpi['value'] }}</p>
-            <p class="lims-dash-kpi-note {{ $kpi['trend'] }}">{{ $kpi['note'] }}</p>
-        </div>
-    @endforeach
+    <div class="lims-directorchief-hero-kpis">
+        @foreach ($kpis as $kpi)
+            <div class="lims-dash-kpi-card">
+                <p class="lims-dash-kpi-label">{{ $kpi['label'] }}</p>
+                <p class="lims-dash-kpi-value">{{ $kpi['value'] }}</p>
+                <p class="lims-dash-kpi-note {{ $kpi['trend'] }}">{{ $kpi['note'] }}</p>
+            </div>
+        @endforeach
+    </div>
 </div>
 
 

@@ -46,7 +46,9 @@ class RequestFormController extends Controller
             'samples.*.customer_sample_code' => 'required|string',
             'samples.*.date_collected' => 'required|date',
             'samples.*.place_collected' => 'required|string',
+            'samples.*.place_code' => 'required|string',
             'samples.*.testarray' => 'required|string',
+            'samples.*.testothers' => 'nullable|string',
 
         ], [
 
@@ -72,6 +74,7 @@ class RequestFormController extends Controller
             'samples.*.date_collected.required' => 'Sample Information: Please enter the date collected.',
             'samples.*.date_collected.date' => 'Sample Information: Please enter a valid collection date.',
             'samples.*.place_collected.required' => 'Sample Information: Please enter the place collected.',
+            'samples.*.place_code.required' => 'Sample Information: Place Code is empty. Please Contact the Administrator.',
             'samples.*.testarray.required' => 'Sample Information: Please select at least one analysis for each sample.',
         ]);
 
@@ -89,7 +92,9 @@ class RequestFormController extends Controller
                 'customerSampleCode' => $sample['customer_sample_code'],
                 'dateCollected' => $sample['date_collected'],
                 'placeCollected' => $sample['place_collected'],
+                'placeCode' => $sample['place_code'],
                 'analysis' => $sample['testarray'],
+                'analysisOthers' => $sample['testothers'],
             ];
         })
         ->values()

@@ -22,10 +22,10 @@
     .lims-welcome-card::before {
         content: "";
         position: absolute;
-        top: -70px;
-        right: -70px;
-        width: 240px;
-        height: 240px;
+        top: -160px;
+        right: -160px;
+        width: 550px;
+        height: 550px;
         border-radius: 9999px;
         background: radial-gradient(circle, color-mix(in srgb, var(--accent) 40%, transparent), transparent 70%);
         pointer-events: none;
@@ -245,6 +245,11 @@
             color: var(--ink);
         }
 
+        .lims-dashboard-table td.lims-table-ref {
+            @apply font-bold;
+            color: var(--secondary);
+        }
+
         .lims-dashboard-table tbody tr {
             @apply border-b border-[#EEF2FA]
                 transition-colors
@@ -323,6 +328,257 @@
 
     }
 
+    @layer DashboardHero {
+
+        /* Compact stat-card modifier shared by any hero row that packs the
+           4 stat cards into a tighter 2x2 grid beside the welcome card
+           (Customer: welcome+stats; AdminOfficer: welcome+stats+quicklinks) -
+           every other role's dashboard still uses the full-width 4-across
+           .lims-stats-grid below the welcome card, unchanged. */
+        .lims-hero-stat-card {
+            @apply p-4;
+        }
+
+        .lims-hero-stat-card .lims-stat-icon {
+            @apply mb-3 h-9 w-9;
+        }
+
+        .lims-hero-stat-card .lims-stat-value {
+            @apply text-2xl;
+        }
+
+        /* Customer dashboard: welcome card + stats share one row. */
+        .lims-customer-hero {
+            @apply grid grid-cols-1 gap-5 lg:grid-cols-[1.6fr_1fr] items-stretch;
+        }
+
+        .lims-customer-hero-welcome {
+            @apply h-full;
+        }
+
+        .lims-customer-hero-stats {
+            @apply grid grid-cols-2 gap-4;
+        }
+
+        /* AdminOfficer dashboard: welcome card + stats + quick links share
+           one row. */
+        .lims-admin-hero {
+            @apply grid grid-cols-1 gap-5 xl:grid-cols-[1.2fr_1fr_1fr] items-stretch;
+        }
+
+        /* Same treatment as the Analyst hero's welcome card: stack content
+           top / button bottom instead of the base .lims-welcome-card's
+           single centered row, since items-stretch can make this card
+           taller than its natural row-content height. */
+        .lims-admin-hero-welcome {
+            @apply flex h-full flex-col items-start justify-between;
+        }
+
+        .lims-admin-hero-stats {
+            @apply grid grid-cols-2 gap-4;
+        }
+
+        .lims-admin-hero-quicklinks {
+            @apply flex h-full min-w-0 flex-col justify-center
+                rounded-3xl border p-6;
+            background: rgba(255, 255, 255, 0.8);
+            border-color: #E7EEF9;
+        }
+
+        .lims-admin-hero-quicklinks-header {
+            @apply mb-4;
+        }
+
+        /* Analyst dashboard: welcome card + stats + turnaround panel share
+           one row. */
+        .lims-analyst-hero {
+            @apply grid grid-cols-1 gap-5 xl:grid-cols-[1.3fr_1fr_1.2fr] items-stretch;
+        }
+
+        /* The turnaround panel beside it is tall (10-row list), so
+           items-stretch makes this card unusually tall too - stack content
+           top / button bottom instead of the base .lims-welcome-card's
+           single centered row, which would leave a big dead gap. */
+        .lims-analyst-hero-welcome {
+            @apply flex h-full flex-col items-start justify-between;
+        }
+
+        .lims-analyst-hero-stats {
+            @apply grid grid-cols-2 gap-4;
+        }
+
+        .lims-analyst-hero-turnaround {
+            @apply flex h-full min-w-0 flex-col
+                rounded-3xl border p-5;
+            background: rgba(255, 255, 255, 0.8);
+            border-color: #E7EEF9;
+        }
+
+        /* TURNAROUND WIDGET */
+        .lims-turnaround-summary {
+            @apply mt-3 flex items-start justify-between gap-3 rounded-2xl p-3;
+            background: #F6F9FE;
+        }
+
+        .lims-turnaround-summary-label {
+            @apply text-[10.5px] font-semibold;
+            color: var(--muted);
+        }
+
+        .lims-turnaround-summary-value {
+            @apply mt-1 text-[26px] font-bold leading-none;
+            color: var(--ink);
+        }
+
+        .lims-turnaround-summary-value span {
+            @apply text-xs font-semibold;
+            color: var(--muted);
+        }
+
+        .lims-turnaround-summary-side {
+            @apply text-right text-[11px] font-semibold leading-relaxed;
+            color: var(--muted);
+        }
+
+        .lims-turnaround-list {
+            @apply mt-2 flex-1 overflow-y-auto;
+            max-height: 160px;
+        }
+
+        .lims-turnaround-row {
+            @apply flex items-center justify-between gap-2 border-b py-1.5 text-xs;
+            border-color: #F1F5FB;
+        }
+
+        .lims-turnaround-row:last-child {
+            @apply border-b-0;
+        }
+
+        .lims-turnaround-row-left {
+            @apply flex min-w-0 items-center gap-2 truncate font-medium;
+            color: var(--ink);
+        }
+
+        .lims-turnaround-dot {
+            @apply h-2 w-2 shrink-0 rounded-full;
+        }
+
+        .lims-turnaround-dot.on-time {
+            background: #15803D;
+        }
+
+        .lims-turnaround-dot.late {
+            background: #DC2626;
+        }
+
+        .lims-turnaround-row-days {
+            @apply shrink-0 font-bold;
+            color: var(--ink);
+        }
+
+        .lims-turnaround-footer {
+            @apply mt-2 text-[10.5px] italic;
+            color: var(--muted);
+        }
+
+        /* Section Chief dashboard: welcome card + stats share one row (no
+           3rd column - this role has no quicklinks/turnaround slot). */
+        .lims-sectionchief-hero {
+            @apply grid grid-cols-1 gap-5 lg:grid-cols-[1.15fr_1fr] items-stretch;
+        }
+
+        .lims-sectionchief-hero-welcome {
+            @apply flex h-full flex-col items-start justify-between;
+        }
+
+        .lims-sectionchief-hero-stats {
+            @apply grid grid-cols-2 gap-4;
+        }
+
+        /* Director Chief dashboard: welcome card + 2x2 KPI cards share one
+           row, same pattern as the other 4 roles. */
+        .lims-directorchief-hero {
+            @apply grid grid-cols-1 gap-5 lg:grid-cols-[1.15fr_1fr] items-stretch;
+        }
+
+        .lims-directorchief-hero-welcome {
+            @apply flex h-full flex-col items-start justify-between;
+        }
+
+        .lims-directorchief-hero-kpis {
+            @apply grid grid-cols-2 gap-4;
+        }
+
+        /* Welcome-card summary badges - shared by any role whose hero has 2
+           queue-style counts worth calling out under the description
+           (Section Chief, Analyst, AdminOfficer). */
+        .lims-welcome-badges {
+            @apply mt-4 flex flex-wrap items-center gap-2;
+        }
+
+        .lims-welcome-badge {
+            @apply inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold;
+            background: color-mix(in srgb, var(--white) 12%, transparent);
+            color: color-mix(in srgb, var(--white) 90%, transparent);
+        }
+
+        .lims-welcome-badge-dot {
+            @apply h-2.5 w-2.5 shrink-0 rounded-full;
+        }
+
+        .lims-welcome-badge-dot.blue {
+            background: var(--lightblue);
+        }
+
+        .lims-welcome-badge-dot.amber {
+            background: #FBBF24;
+        }
+
+        /* ANALYST WORKLOAD */
+        .lims-workload-list {
+            @apply flex flex-col gap-4;
+        }
+
+        .lims-workload-row {
+            @apply flex flex-wrap items-center gap-3;
+        }
+
+        .lims-workload-avatar {
+            @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-bold;
+            background: #EDE9FE;
+            color: #6D28D9;
+        }
+
+        .lims-workload-name {
+            @apply w-28 shrink-0 truncate text-sm font-bold;
+            color: var(--secondary);
+        }
+
+        .lims-workload-track {
+            @apply h-2 min-w-30 flex-1 overflow-hidden rounded-full;
+            background: #EEF2FA;
+        }
+
+        .lims-workload-fill {
+            @apply h-full rounded-full;
+            background: var(--secondary);
+        }
+
+        .lims-workload-fill.complete {
+            background: #15803D;
+        }
+
+        .lims-workload-stats {
+            @apply shrink-0 text-right text-xs font-semibold;
+            color: var(--muted);
+        }
+
+        .lims-workload-stats .overdue {
+            @apply font-bold;
+            color: #B91C1C;
+        }
+    }
+
     @layer DashboardQueue {
 
         /* Generic action-queue panel, reused by AdminOfficer's "Awaiting
@@ -352,6 +608,10 @@
             color: var(--muted);
         }
 
+        .lims-queue-row-pills {
+            @apply flex shrink-0 flex-col items-end gap-1;
+        }
+
         .lims-queue-empty {
             @apply text-sm font-medium;
             color: var(--muted);
@@ -371,6 +631,14 @@
             @apply rounded-3xl p-5;
             background: rgba(255,255,255,0.8);
             border: 1px solid #E7EEF9;
+        }
+
+        .lims-directorchief-hero-kpis .lims-dash-kpi-card {
+            @apply p-4;
+        }
+
+        .lims-directorchief-hero-kpis .lims-dash-kpi-value {
+            @apply text-2xl;
         }
 
         .lims-dash-kpi-label {
@@ -511,3 +779,4 @@
 
     }
 }
+

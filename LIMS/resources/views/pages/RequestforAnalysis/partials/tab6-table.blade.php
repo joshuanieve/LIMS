@@ -78,6 +78,15 @@
                                 id="locationhidden0"
                                 required
                             >
+
+                            <input
+                                type="hidden"
+                                name="samples[0][place_code]"
+                                class="lims-table-input"
+                                placeholder="Location"
+                                id="locationcodehidden0"
+                                required
+                            >
                         </td>
 
                         <td>
@@ -96,6 +105,12 @@
                                 name="samples[0][testarray]"
                                 id="samplehidden0"
                                 required
+                            >
+
+                            <input
+                                type="hidden"
+                                name="samples[0][testothers]"
+                                id="samplespecifyhidden0"
                             >
                         </td>
 

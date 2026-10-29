@@ -1,0 +1,150 @@
+/* =========================================================
+   LIMS DNA LOADER
+   File: resources/css/lims-loader.css
+   ========================================================= */
+
+/* full-screen overlay */
+.lims-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 1050;               /* below SweetAlert (1060) */
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 36, 69, 0.55);
+    backdrop-filter: blur(4px);
+}
+
+.lims-loader.is-visible {
+    display: flex;
+}
+
+/* Fade in on show / fade out on hide, same remove-class/reflow/re-add
+   re-trigger pattern used for modals (see OpenModal/CloseModal in app.js).
+   JS waits out LOADER_FADE_OUT_MS (200ms, app.js) before clearing
+   .is-visible on hide, since display:none would otherwise cut the
+   animation off instantly. */
+.lims-loader-fade-in {
+    animation: lims-loader-fade-in 0.25s ease both;
+}
+
+.lims-loader-fade-out {
+    animation: lims-loader-fade-out 0.2s ease both;
+}
+
+@keyframes lims-loader-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes lims-loader-fade-out {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lims-loader-fade-in,
+    .lims-loader-fade-out {
+        animation: none !important;
+    }
+}
+
+/* white card in the middle */
+.lims-loader-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 28px 36px 24px;
+    border-radius: 22px;
+    background: #FFFFFF;
+    box-shadow: 0 24px 60px rgba(15, 36, 69, 0.3);
+}
+
+.lims-loader-art {
+    width: 112px;
+    height: 112px;
+    overflow: visible;
+}
+
+.lims-loader-art * {
+    transform-box: fill-box;
+    transform-origin: center;
+}
+
+.lims-loader-text {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #0F1B2D;
+}
+
+.lims-loader-sub {
+    margin: -8px 0 0;
+    font-size: 12px;
+    color: #64748B;
+}
+
+/* ===== DNA HELIX ===== */
+
+/* base-pair line between the two strands */
+.lims-dna-rung {
+    stroke: #CBD5E1;
+    stroke-width: 3;
+    stroke-linecap: round;
+    animation: lims-dna-rung 2.4s linear infinite;
+}
+
+/* strand 1 */
+.lims-dna-top {
+    fill: #2563EB;
+    animation: lims-dna-top 2.4s ease-in-out infinite;
+}
+
+/* strand 2 */
+.lims-dna-bottom {
+    fill: #14B8A6;
+    animation: lims-dna-bottom 2.4s ease-in-out infinite;
+}
+
+/* each column starts a little later, which creates the twist */
+.lims-dna-pair:nth-child(1) * { animation-delay: 0s; }
+.lims-dna-pair:nth-child(2) * { animation-delay: -0.2s; }
+.lims-dna-pair:nth-child(3) * { animation-delay: -0.4s; }
+.lims-dna-pair:nth-child(4) * { animation-delay: -0.6s; }
+.lims-dna-pair:nth-child(5) * { animation-delay: -0.8s; }
+.lims-dna-pair:nth-child(6) * { animation-delay: -1.0s; }
+.lims-dna-pair:nth-child(7) * { animation-delay: -1.2s; }
+.lims-dna-pair:nth-child(8) * { animation-delay: -1.4s; }
+.lims-dna-pair:nth-child(9) * { animation-delay: -1.6s; }
+
+/* strand 1 moves top -> bottom; bigger when in front, smaller when behind */
+@keyframes lims-dna-top {
+    0%   { transform: translateY(-24px) scale(1);    opacity: 1; }
+    25%  { transform: translateY(0)     scale(1.35); opacity: 1; }
+    50%  { transform: translateY(24px)  scale(1);    opacity: 1; }
+    75%  { transform: translateY(0)     scale(0.65); opacity: 0.55; }
+    100% { transform: translateY(-24px) scale(1);    opacity: 1; }
+}
+
+/* strand 2 is always opposite strand 1 */
+@keyframes lims-dna-bottom {
+    0%   { transform: translateY(24px)  scale(1);    opacity: 1; }
+    25%  { transform: translateY(0)     scale(0.65); opacity: 0.55; }
+    50%  { transform: translateY(-24px) scale(1);    opacity: 1; }
+    75%  { transform: translateY(0)     scale(1.35); opacity: 1; }
+    100% { transform: translateY(24px)  scale(1);    opacity: 1; }
+}
+
+/* the base pair shrinks when the strands cross */
+@keyframes lims-dna-rung {
+    0%, 50%, 100% { transform: scaleY(1); }
+    25%, 75%      { transform: scaleY(0.04); }
+}
+
+/* still version for users who turn off animations */
+@media (prefers-reduced-motion: reduce) {
+    .lims-loader-art * { animation: none !important; }
+    .lims-dna-top    { transform: translateY(-20px); }
+    .lims-dna-bottom { transform: translateY(20px); }
+}

@@ -34,6 +34,7 @@ namespace LIMS_API.Repositories.Results
                             TestId = s.TestId,
                             LaboratoryNumber = s.LaboratoryNumber,
                             Analysis = s.Analysis,
+                            AnalysisOthers = s.AnalysisOthers,
 
                             LabWorks = _context.LabRequestLabWorks
                                 .Where(a => a.TestId == s.TestId)

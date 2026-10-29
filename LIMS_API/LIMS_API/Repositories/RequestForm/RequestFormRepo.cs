@@ -25,6 +25,7 @@ namespace LIMS_API.Repositories.RequestForm
                 var now = DateTime.Now;
                 var labRequest = new LabRequest
                 {
+                    CustomerId = request.CustomerId,
                     CustomerName = request.CustomerName,
                     EmailAddress = request.EmailAddress,
                     DivisionSection = request.DivisionSection,
@@ -33,8 +34,8 @@ namespace LIMS_API.Repositories.RequestForm
                     TargetDate = request.DateTimeRelease,
                     SampleType = request.SamType,
                     SampleSpecify = request.SamType == "Others"
-                        ? null
-                        : request.SamTypeSpecify,
+                        ? request.SamTypeSpecify
+                        : null,
                     SampleRetrieval = request.SampRet,
                     SubInfo1 = request.Subinfo1,
                     SubInfo3 = request.Subinfo3,
@@ -75,7 +76,7 @@ namespace LIMS_API.Repositories.RequestForm
                 int lastNumber = result.FirstOrDefault();
 
                 // INSERT ALL SAMPLES
-                foreach (var sample in request.samples)
+                foreach (var sample in request.Samples)
                 {
                     lastNumber++;
                     var labRequestList = new LabRequestList
@@ -84,9 +85,11 @@ namespace LIMS_API.Repositories.RequestForm
                         LaboratoryNumber = $"{year}-{lastNumber:D4}",
                         Sample = sample.Sample,
                         CustomerSampleCode = sample.CustomerSampleCode,
-                        DateTimeCollected = sample.DateTimeCollected,
+                        DateTimeCollected = sample.dateCollected,
                         PlaceCollected = sample.PlaceCollected,
+                        PlaceCode = sample.PlaceCode,
                         Analysis = sample.Analysis,
+                        AnalysisOthers = sample.AnalysisOthers,
                         Status = 1,
 
                         CreatedAt = DateTime.Now,
@@ -99,11 +102,34 @@ namespace LIMS_API.Repositories.RequestForm
                     );
                 }
 
+
+                // audit log
+                var log = new SysAuditLog
+                {
+                    RequestId = requestId,
+                    UserId = request.CustomerId,
+                    UserName = request.CustomerName,
+                    Action = "Submitted a Request",
+                    Module = "Request for Analysis",
+                    CreatedAt = now
+                };
+                log.SysAuditLogsChanges.Add(new SysAuditLogsChange
+                {
+                    FieldName = "Status",
+                    OldValue = "-",
+                    NewValue = "Submitted"
+                });
+                _context.SysAuditLogs.Add(log);
+
+
+
                 await _context.SaveChangesAsync();
                 await _context.Database.ExecuteSqlAsync($@"
                     UPDATE Lab_Counter SET Count = {lastNumber} WHERE [Year] = {year};
                     IF @@ROWCOUNT = 0
                         INSERT INTO Lab_Counter ([Year], Count) VALUES ({year}, {lastNumber});");
+
+               
 
                 await transaction.CommitAsync();
                 return requestId;

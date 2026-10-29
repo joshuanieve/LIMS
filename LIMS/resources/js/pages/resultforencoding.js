@@ -135,6 +135,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const sampleSubtitleLabel = document.getElementById("resultsSampleSubtitle");
 
     try {
+        showLoading('Loading results for encoding…');
         const response = await fetch('/resultforencoding/data', {
             method: 'GET',
             headers: {
@@ -245,6 +246,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 </td>
             </tr>
         `;
+    } finally {
+        hideLoading();
     }
 
 });

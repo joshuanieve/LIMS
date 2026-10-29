@@ -1,5 +1,8 @@
 ﻿using LIMS_API.Entities.RequestPending;
+using LIMS_API.Entities.SystemAuditLogs;
 using LIMS_API.Models;
+using LIMS_API.Constants;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace LIMS_API.Repositories.RequestPending
@@ -18,6 +21,8 @@ namespace LIMS_API.Repositories.RequestPending
         {
             return await _context.LabRequests
                 .AsNoTracking()
+                .Where(x => x.Status == RequestStatus.Pending
+                         && x.ReceivedBy == null)
                 .OrderBy(x => x.RequestId)
                 .Select(x => new GetTable
                 {
@@ -63,13 +68,49 @@ namespace LIMS_API.Repositories.RequestPending
                             CustomerSampleCode = s.CustomerSampleCode,
                             DateTimeCollected = s.DateTimeCollected,
                             PlaceCollected = s.PlaceCollected,
-                            Analysis = s.Analysis
+                            Analysis = s.Analysis,
+                            AnalysisOthers = s.AnalysisOthers
                         })
                         .ToList()
                 })
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<AcceptResult> AcceptRequest(int requestId, int userId, string userName)
+        {
+            var request = await _context.LabRequests.FindAsync(requestId);
 
+            if (request == null) return AcceptResult.NotFound;
+            if (request.Status != RequestStatus.Pending) return AcceptResult.AlreadyAccepted;
+
+            var now = DateTime.Now;
+
+            request.Status = RequestStatus.ForRouting;              // received
+            request.ReceivedBy = userId;
+            request.ReceivedAt = now;
+            request.UpdatedAt = now;
+
+            // audit log
+            var log = new SysAuditLog
+            {
+                RequestId = requestId,
+                UserId = userId,
+                UserName = userName,
+                Action = "Received request",
+                Module = "Request Pending",
+                CreatedAt = now
+            };
+            log.SysAuditLogsChanges.Add(new SysAuditLogsChange
+            {
+                FieldName = "Status",
+                OldValue = "Submitted",
+                NewValue = "Received"
+            });
+            _context.SysAuditLogs.Add(log);
+
+            await _context.SaveChangesAsync();
+
+            return AcceptResult.Success;
+        }
     }
 }

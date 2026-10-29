@@ -10,7 +10,7 @@ class UserMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if ((int) session('role_id') !== 2) {
+        if ((int) session('role_id') !== 1) {
             return redirect()->route('welcome')->with('status', 'Access denied.');
         }
 

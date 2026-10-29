@@ -6,5 +6,7 @@ namespace LIMS_API.Services.RequestPending
     {
         Task<List<GetTable>> GetTable();
         Task<GetRequestDetails?> GetRequestPendingById(int id);
+
+        Task<AcceptResult> AcceptRequest(int requestId, int userId, string userName);
     }
 }

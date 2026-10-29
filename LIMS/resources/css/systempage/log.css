@@ -119,7 +119,16 @@
     }
 
     .lims-logs-item-time {
-        @apply shrink-0 text-[11px] font-medium;
+        @apply flex shrink-0 flex-col items-end text-right;
+    }
+
+    .lims-logs-item-date {
+        @apply text-[10px] font-medium;
+        color: var(--muted);
+    }
+
+    .lims-logs-item-clock {
+        @apply mt-0.5 text-[10px] font-medium;
         color: var(--muted);
     }
 
@@ -232,12 +241,6 @@
     .lims-logs-changes-table td.highlight {
         background: color-mix(in srgb, var(--secondary) 10%, transparent);
         font-weight: 700;
-    }
-
-    .lims-logs-reason {
-        @apply mt-5 rounded-xl p-4 text-xs italic leading-relaxed;
-        background: var(--semi1white);
-        color: var(--muted);
     }
 
     .lims-logs-detail-actions {

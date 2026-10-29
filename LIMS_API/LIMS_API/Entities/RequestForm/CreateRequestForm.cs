@@ -32,7 +32,7 @@
         public string? LaboratoryNumber { get; set; }
         public string? Sample { get; set; }
         public string? CustomerSampleCode { get; set; }
-        public DateTime? DateTimeCollected { get; set; }
+        public DateTime? dateCollected { get; set; }
         public string? PlaceCollected { get; set; }
         public string? PlaceCode { get; set; }
         public string? Analysis { get; set; }

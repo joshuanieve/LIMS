@@ -19,6 +19,7 @@ namespace LIMS_API.Entities.Results
         public int TestId { get; set; }
         public string? LaboratoryNumber { get; set; }
         public string? Analysis { get; set; }
+        public string? AnalysisOthers { get; set; }
         public List<GetRFELabWorkDetails> LabWorks { get; set; } = new();
     }
 

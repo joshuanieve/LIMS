@@ -14,7 +14,7 @@ Route::get('/analysislist/data', [AnalysisController::class, 'data']);
 
 
 use App\Http\Controllers\DashboardController;
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');           // route page
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');                                         // route page
 
 
 use App\Http\Controllers\RequestFormController;
@@ -23,14 +23,15 @@ Route::post('/requestform', [RequestFormController::class, 'storeRequestForm'])-
 
 
 use App\Http\Controllers\RequestSampleController;
-Route::get('/requestsample', [RequestSampleController::class, 'index'])->name('requestsample.index');           // route page
-Route::get('/requestsample/{id}', [RequestSampleController::class, 'data'])->name('requestsample.data');        // load table
-Route::get('/requestsample/view/{id}', [RequestSampleController::class, 'view'])->name('requestsample.view');   // view
+Route::get('/requestsample', [RequestSampleController::class, 'index'])->name('requestsample.index');                       // route page
+Route::get('/requestsample/{id}', [RequestSampleController::class, 'data'])->name('requestsample.data');                    // load table
+Route::get('/requestsample/view/{id}', [RequestSampleController::class, 'view'])->name('requestsample.view');               // view
+Route::post('/requestsample/{id}/accept', [RequestSampleController::class, 'accept'])->name('requestsample.accept');        // accept request
 
 
 use App\Http\Controllers\JobRoutingController;
-Route::get('/jobrouting', [JobRoutingController::class, 'index'])->name('jobrouting.index');           // route page
-Route::get('/jobrouting/data', [JobRoutingController::class, 'data'])->name('jobrouting.data');        // load table
+Route::get('/jobrouting', [JobRoutingController::class, 'index'])->name('jobrouting.index');                                // route page
+Route::get('/jobrouting/data', [JobRoutingController::class, 'data'])->name('jobrouting.data');                             // load table
 
 
 use App\Http\Controllers\ResultforEncodingController;

@@ -2,489 +2,80 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Client\ConnectionException;
+use Carbon\Carbon;
+
 class LogsController extends Controller
 {
     public function index()
     {
-        // TEMPORARY placeholder data - no audit-log table/API exists yet.
-        // Each entry's `detail` powers the right-hand panel when clicked;
-        // `changes`/`reason` are omitted for log types that don't have a
-        // before/after diff (sign-ins, submissions, etc).
-        $logs = [
-            [
-                'id' => 1,
-                'type' => 'success',
-                'title' => 'Encoded result 2026-5982',
-                'actor' => 'Ana Reyes',
-                'module' => 'Result for Encoding',
-                'time' => '10:42 AM',
-                'detail' => [
-                    'user' => 'Ana Reyes · Analyst',
-                    'module' => 'Result for Encoding',
-                    'record' => '2026-5982',
-                    'request' => 'Ref. #0411',
-                    'ip' => '10.8.224.51',
-                    'changes' => [
-                        ['field' => 'Result', 'before' => '–', 'after' => '2.4', 'highlight' => true],
-                        ['field' => 'Unit', 'before' => '–', 'after' => 'mg/L', 'highlight' => false],
-                    ],
-                    'reason' => null,
-                ],
-            ],
-            [
-                'id' => 2,
-                'type' => 'success',
-                'title' => 'Approved request Ref. #0412',
-                'actor' => 'Dr. Elena Cruz',
-                'module' => 'Laboratory Records',
-                'time' => '10:15 AM',
-                'detail' => [
-                    'user' => 'Dr. Elena Cruz · Division Chief',
-                    'module' => 'Laboratory Records',
-                    'record' => null,
-                    'request' => 'Ref. #0412',
-                    'ip' => '10.8.224.10',
-                    'changes' => [
-                        ['field' => 'Status', 'before' => 'For final review', 'after' => 'Released', 'highlight' => true],
-                    ],
-                    'reason' => null,
-                ],
-            ],
-            [
-                'id' => 3,
-                'type' => 'edit',
-                'title' => 'Edited result 2026-5983',
-                'actor' => 'Mark Lopez',
-                'module' => 'Result for Encoding',
-                'time' => '9:58 AM',
-                'detail' => [
-                    'timestamp' => 'Oct 13, 2026 · 9:58 AM',
-                    'user' => 'Mark Lopez · Analyst',
-                    'module' => 'Result for Encoding',
-                    'record' => '2026-5983',
-                    'request' => 'Ref. #0412',
-                    'ip' => '10.8.224.44',
-                    'changes' => [
-                        ['field' => 'Parameter', 'before' => 'Histamine', 'after' => 'Histamine', 'highlight' => false],
-                        ['field' => 'Result', 'before' => '5.2', 'after' => '<5.0', 'highlight' => true],
-                        ['field' => 'Unit', 'before' => 'mg/kg', 'after' => 'mg/kg', 'highlight' => false],
-                    ],
-                    'reason' => 'Value below detection limit after re-run.',
-                ],
-            ],
-            [
-                'id' => 4,
-                'type' => 'info',
-                'title' => 'Received request Ref. #0413',
-                'actor' => 'Mary Santos',
-                'module' => 'Request Pending',
-                'time' => '9:30 AM',
-                'detail' => [
-                    'user' => 'Mary Santos · Administrative Personnel',
-                    'module' => 'Request Pending',
-                    'record' => null,
-                    'request' => 'Ref. #0413',
-                    'ip' => '10.8.224.22',
-                    'changes' => [
-                        ['field' => 'Status', 'before' => 'Submitted', 'after' => 'Assigned to laboratory', 'highlight' => true],
-                    ],
-                    'reason' => null,
-                ],
-            ],
-            [
-                'id' => 5,
-                'type' => 'info',
-                'title' => 'Routed sample 2026-5984',
-                'actor' => 'Ramon Villanueva',
-                'module' => 'Job Routing',
-                'time' => '9:05 AM',
-                'detail' => [
-                    'user' => 'Ramon Villanueva · Section Chief',
-                    'module' => 'Job Routing',
-                    'record' => '2026-5984',
-                    'request' => 'Ref. #0412',
-                    'ip' => '10.8.224.18',
-                    'changes' => [
-                        ['field' => 'Assigned Analyst', 'before' => 'Not assigned', 'after' => 'Mark Lopez', 'highlight' => true],
-                    ],
-                    'reason' => null,
-                ],
-            ],
-            [
-                'id' => 6,
-                'type' => 'warning',
-                'title' => 'Failed sign-in',
-                'actor' => 'Joey Santos',
-                'module' => 'System',
-                'time' => '8:47 AM',
-                'detail' => [
-                    'user' => 'Joey Santos',
-                    'module' => 'System / Authentication',
-                    'record' => null,
-                    'request' => null,
-                    'ip' => '10.8.224.90',
-                    'changes' => [],
-                    'reason' => 'Incorrect password (3rd attempt).',
-                ],
-            ],
-            [
-                'id' => 7,
-                'type' => 'success',
-                'title' => 'Encoded result 2026-5979',
-                'actor' => 'Ana Reyes',
-                'module' => 'Result for Encoding',
-                'time' => '4:45 PM',
-                'detail' => [
-                    'user' => 'Ana Reyes · Analyst',
-                    'module' => 'Result for Encoding',
-                    'record' => '2026-5979',
-                    'request' => 'Ref. #0409',
-                    'ip' => '10.8.224.51',
-                    'changes' => [
-                        ['field' => 'Result', 'before' => '–', 'after' => '118', 'highlight' => true],
-                        ['field' => 'Unit', 'before' => '–', 'after' => 'CFU/g', 'highlight' => false],
-                    ],
-                    'reason' => null,
-                ],
-            ],
-            [
-                'id' => 8,
-                'type' => 'edit',
-                'title' => 'Returned for revision Ref. #0410',
-                'actor' => 'Dr. Elena Cruz',
-                'module' => 'Laboratory Records',
-                'time' => '3:20 PM',
-                'detail' => [
-                    'user' => 'Dr. Elena Cruz · Division Chief',
-                    'module' => 'Laboratory Records',
-                    'record' => null,
-                    'request' => 'Ref. #0410',
-                    'ip' => '10.8.224.10',
-                    'changes' => [
-                        ['field' => 'Status', 'before' => 'For final review', 'after' => 'Returned for revision', 'highlight' => true],
-                    ],
-                    'reason' => 'Missing uncertainty value for Parameter 3.',
-                ],
-            ],
-            [
-                'id' => 9,
-                'type' => 'info',
-                'title' => 'Submitted request Ref. #0413',
-                'actor' => 'Juan P. Dela Cruz',
-                'module' => 'Request for Analysis',
-                'time' => '1:02 PM',
-                'detail' => [
-                    'user' => 'Juan P. Dela Cruz · Requesting User',
-                    'module' => 'Request for Analysis',
-                    'record' => null,
-                    'request' => 'Ref. #0413',
-                    'ip' => '10.8.224.5',
-                    'changes' => [],
-                    'reason' => null,
-                ],
-            ],
-            [
-                'id' => 10,
-                'type' => 'neutral',
-                'title' => 'Updated analysis list Analysis #18',
-                'actor' => 'Catherine',
-                'module' => 'Settings',
-                'time' => '8:00 AM',
-                'detail' => [
-                    'user' => 'Catherine · Administrator',
-                    'module' => 'Settings',
-                    'record' => 'Analysis #18',
-                    'request' => null,
-                    'ip' => '10.8.224.2',
-                    'changes' => [
-                        ['field' => 'Method', 'before' => 'Gravimetric', 'after' => 'Gravimetric, Oven Method', 'highlight' => true],
-                    ],
-                    'reason' => null,
-                ],
-            ],
-            [
-                'id' => 11,
-                'type' => 'success',
-                'title' => 'Encoded result 2026-5978',
-                'actor' => 'Mark Lopez',
-                'module' => 'Result for Encoding',
-                'time' => '7:15 AM',
-                'detail' => [
-                    'user' => 'Mark Lopez · Analyst',
-                    'module' => 'Result for Encoding',
-                    'record' => '2026-5978',
-                    'request' => 'Ref. #0409',
-                    'ip' => '10.8.224.44',
-                    'changes' => [
-                        ['field' => 'Result', 'before' => '–', 'after' => '0.8', 'highlight' => true],
-                    ],
-                    'reason' => null,
-                ],
-            ],
-            [
-                'id' => 12,
-                'type' => 'info',
-                'title' => 'Received request Ref. #0414',
-                'actor' => 'Mary Santos',
-                'module' => 'Request Pending',
-                'time' => '6:50 AM',
-                'detail' => [
-                    'user' => 'Mary Santos · Administrative Personnel',
-                    'module' => 'Request Pending',
-                    'record' => null,
-                    'request' => 'Ref. #0414',
-                    'ip' => '10.8.224.22',
-                    'changes' => [],
-                    'reason' => null,
-                ],
-            ],
-            [
-                'id' => 13,
-                'type' => 'edit',
-                'title' => 'Edited result 2026-5975',
-                'actor' => 'Joy Santos',
-                'module' => 'Result for Encoding',
-                'time' => '5:40 PM',
-                'detail' => [
-                    'user' => 'Joy Santos · Analyst',
-                    'module' => 'Result for Encoding',
-                    'record' => '2026-5975',
-                    'request' => 'Ref. #0408',
-                    'ip' => '10.8.224.60',
-                    'changes' => [
-                        ['field' => 'Result', 'before' => '3.1', 'after' => '3.4', 'highlight' => true],
-                    ],
-                    'reason' => 'Corrected transcription error.',
-                ],
-            ],
-            [
-                'id' => 14,
-                'type' => 'info',
-                'title' => 'Routed sample 2026-5985',
-                'actor' => 'Ramon Villanueva',
-                'module' => 'Job Routing',
-                'time' => '4:10 PM',
-                'detail' => [
-                    'user' => 'Ramon Villanueva · Section Chief',
-                    'module' => 'Job Routing',
-                    'record' => '2026-5985',
-                    'request' => 'Ref. #0413',
-                    'ip' => '10.8.224.18',
-                    'changes' => [
-                        ['field' => 'Assigned Analyst', 'before' => 'Not assigned', 'after' => 'Joy Santos', 'highlight' => true],
-                    ],
-                    'reason' => null,
-                ],
-            ],
-            [
-                'id' => 15,
-                'type' => 'success',
-                'title' => 'Approved request Ref. #0408',
-                'actor' => 'Dr. Elena Cruz',
-                'module' => 'Laboratory Records',
-                'time' => '3:55 PM',
-                'detail' => [
-                    'user' => 'Dr. Elena Cruz · Division Chief',
-                    'module' => 'Laboratory Records',
-                    'record' => null,
-                    'request' => 'Ref. #0408',
-                    'ip' => '10.8.224.10',
-                    'changes' => [
-                        ['field' => 'Status', 'before' => 'For final review', 'after' => 'Released', 'highlight' => true],
-                    ],
-                    'reason' => null,
-                ],
-            ],
-            [
-                'id' => 16,
-                'type' => 'neutral',
-                'title' => 'Updated analysis list Analysis #12',
-                'actor' => 'Catherine',
-                'module' => 'Settings',
-                'time' => '3:30 PM',
-                'detail' => [
-                    'user' => 'Catherine · Administrator',
-                    'module' => 'Settings',
-                    'record' => 'Analysis #12',
-                    'request' => null,
-                    'ip' => '10.8.224.2',
-                    'changes' => [
-                        ['field' => 'Category', 'before' => 'Physico-chemicals', 'after' => 'Oils', 'highlight' => true],
-                    ],
-                    'reason' => null,
-                ],
-            ],
-            [
-                'id' => 17,
-                'type' => 'warning',
-                'title' => 'Failed sign-in',
-                'actor' => 'Mark Lopez',
-                'module' => 'System',
-                'time' => '2:58 PM',
-                'detail' => [
-                    'user' => 'Mark Lopez',
-                    'module' => 'System / Authentication',
-                    'record' => null,
-                    'request' => null,
-                    'ip' => '10.8.224.44',
-                    'changes' => [],
-                    'reason' => 'Incorrect password (1st attempt).',
-                ],
-            ],
-            [
-                'id' => 18,
-                'type' => 'info',
-                'title' => 'Submitted request Ref. #0414',
-                'actor' => 'Liza Garcia',
-                'module' => 'Request for Analysis',
-                'time' => '2:20 PM',
-                'detail' => [
-                    'user' => 'Liza Garcia · Requesting User',
-                    'module' => 'Request for Analysis',
-                    'record' => null,
-                    'request' => 'Ref. #0414',
-                    'ip' => '10.8.224.33',
-                    'changes' => [],
-                    'reason' => null,
-                ],
-            ],
-            [
-                'id' => 19,
-                'type' => 'success',
-                'title' => 'Encoded result 2026-5970',
-                'actor' => 'Joy Santos',
-                'module' => 'Result for Encoding',
-                'time' => '1:45 PM',
-                'detail' => [
-                    'user' => 'Joy Santos · Analyst',
-                    'module' => 'Result for Encoding',
-                    'record' => '2026-5970',
-                    'request' => 'Ref. #0407',
-                    'ip' => '10.8.224.60',
-                    'changes' => [
-                        ['field' => 'Result', 'before' => '–', 'after' => '<1.8', 'highlight' => true],
-                        ['field' => 'Unit', 'before' => '–', 'after' => 'MPN/100mL', 'highlight' => false],
-                    ],
-                    'reason' => null,
-                ],
-            ],
-            [
-                'id' => 20,
-                'type' => 'edit',
-                'title' => 'Returned for revision Ref. #0405',
-                'actor' => 'Dr. Elena Cruz',
-                'module' => 'Laboratory Records',
-                'time' => '1:10 PM',
-                'detail' => [
-                    'user' => 'Dr. Elena Cruz · Division Chief',
-                    'module' => 'Laboratory Records',
-                    'record' => null,
-                    'request' => 'Ref. #0405',
-                    'ip' => '10.8.224.10',
-                    'changes' => [
-                        ['field' => 'Status', 'before' => 'For final review', 'after' => 'Returned for revision', 'highlight' => true],
-                    ],
-                    'reason' => 'Customer sample code mismatch on sample 3.',
-                ],
-            ],
-            [
-                'id' => 21,
-                'type' => 'info',
-                'title' => 'Routed sample 2026-5971',
-                'actor' => 'Ramon Villanueva',
-                'module' => 'Job Routing',
-                'time' => '12:40 PM',
-                'detail' => [
-                    'user' => 'Ramon Villanueva · Section Chief',
-                    'module' => 'Job Routing',
-                    'record' => '2026-5971',
-                    'request' => 'Ref. #0409',
-                    'ip' => '10.8.224.18',
-                    'changes' => [
-                        ['field' => 'Assigned Analyst', 'before' => 'Not assigned', 'after' => 'Ana Reyes', 'highlight' => true],
-                    ],
-                    'reason' => null,
-                ],
-            ],
-            [
-                'id' => 22,
-                'type' => 'success',
-                'title' => 'Approved request Ref. #0406',
-                'actor' => 'Dr. Elena Cruz',
-                'module' => 'Laboratory Records',
-                'time' => '12:05 PM',
-                'detail' => [
-                    'user' => 'Dr. Elena Cruz · Division Chief',
-                    'module' => 'Laboratory Records',
-                    'record' => null,
-                    'request' => 'Ref. #0406',
-                    'ip' => '10.8.224.10',
-                    'changes' => [
-                        ['field' => 'Status', 'before' => 'For final review', 'after' => 'Released', 'highlight' => true],
-                    ],
-                    'reason' => null,
-                ],
-            ],
-            [
-                'id' => 23,
-                'type' => 'neutral',
-                'title' => 'Updated analyst list',
-                'actor' => 'Catherine',
-                'module' => 'Settings',
-                'time' => '11:30 AM',
-                'detail' => [
-                    'user' => 'Catherine · Administrator',
-                    'module' => 'Settings',
-                    'record' => null,
-                    'request' => null,
-                    'ip' => '10.8.224.2',
-                    'changes' => [
-                        ['field' => 'Analysts', 'before' => '8 active', 'after' => '9 active', 'highlight' => true],
-                    ],
-                    'reason' => null,
-                ],
-            ],
-            [
-                'id' => 24,
-                'type' => 'info',
-                'title' => 'Received request Ref. #0415',
-                'actor' => 'Mary Santos',
-                'module' => 'Request Pending',
-                'time' => '11:00 AM',
-                'detail' => [
-                    'user' => 'Mary Santos · Administrative Personnel',
-                    'module' => 'Request Pending',
-                    'record' => null,
-                    'request' => 'Ref. #0415',
-                    'ip' => '10.8.224.22',
-                    'changes' => [
-                        ['field' => 'Status', 'before' => 'Submitted', 'after' => 'Assigned to laboratory', 'highlight' => true],
-                    ],
-                    'reason' => null,
-                ],
-            ],
-            [
-                'id' => 25,
-                'type' => 'success',
-                'title' => 'Encoded result 2026-5965',
-                'actor' => 'Ana Reyes',
-                'module' => 'Result for Encoding',
-                'time' => '10:50 AM',
-                'detail' => [
-                    'user' => 'Ana Reyes · Analyst',
-                    'module' => 'Result for Encoding',
-                    'record' => '2026-5965',
-                    'request' => 'Ref. #0404',
-                    'ip' => '10.8.224.51',
-                    'changes' => [
-                        ['field' => 'Result', 'before' => '–', 'after' => '7.1', 'highlight' => true],
-                        ['field' => 'Unit', 'before' => '–', 'after' => 'pH', 'highlight' => false],
-                    ],
-                    'reason' => null,
-                ],
+        $logs = [];
+        $error = null;
+
+        try {
+            $response = Http::timeout(15)->get('http://localhost:5198/api/SystemAuditLogs');
+
+            if ($response->successful()) {
+                $logs = collect($response->json())
+                    ->map(fn ($log) => $this->formatLog($log))
+                    ->values()
+                    ->all();
+            } else {
+                $error = 'Failed to retrieve system audit logs.';
+            }
+        } catch (ConnectionException $e) {
+            Log::error('Audit logs API unreachable', ['error' => $e->getMessage()]);
+            $error = 'The logs service is not available right now.';
+        }
+
+        return view('systempage.Logs.index', compact('logs', 'error'));
+    }
+
+    private function formatLog(array $log): array
+    {
+        $createdAt = Carbon::parse($log['createdAt']);
+
+        $request = !empty($log['requestId'])
+            ? 'Ref. #' . str_pad($log['requestId'], 4, '0', STR_PAD_LEFT)
+            : null;
+
+        $record = $log['labNumber'] ?? null;
+
+        return [
+            'id'     => $log['logId'],
+            'type'   => $this->actionType($log['action'] ?? ''),
+            'title'  => trim(($log['action'] ?? '') . ' ' . ($record ?? $request ?? '')),
+            'actor'  => $log['userName'] ?? 'Unknown user',
+            'module' => $log['module'] ?? '',
+            'time'   => $createdAt->format('g:i A'),
+            'date' => $createdAt->format('M j, Y'),
+            'detail' => [
+                'user'      => $log['userName'] ?? null,
+                'module'    => $log['module'] ?? null,
+                'record'    => $record,
+                'request'   => $request,
+                'timestamp' => $createdAt->format('M j, Y · g:i A'),
+                'changes'   => collect($log['changes'] ?? [])->map(fn ($c) => [
+                    'field'     => $c['fieldName'] ?? '',
+                    'before'    => $c['oldValue'] ?? '—',
+                    'after'     => $c['newValue'] ?? '—',
+                    'highlight' => true,
+                ])->all(),
             ],
         ];
+    }
 
-        return view('systempage.Logs.index', compact('logs'));
+    private function actionType(string $action): string
+    {
+        return match ($action) {
+            'Encoded result', 'Approved request'                   => 'success',
+            'Edited result', 'Returned for revision'               => 'edit',
+            'Submitted request', 'Received request',
+            'Routed sample', 'Started analysis'                    => 'info',
+            'Failed sign-in', 'Rejected request'                   => 'warning',
+            default                                                => 'neutral',
+        };
     }
 }

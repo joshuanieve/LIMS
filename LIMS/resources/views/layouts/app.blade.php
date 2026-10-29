@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <meta charset="utf-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <title>@yield('title', 'LIMS')</title>
 
     {{-- Boxicons --}}
@@ -16,14 +19,12 @@
     @vite([
         'resources/css/app.css',
         'resources/css/components/datatable.css',
+        'resources/css/lims-loader.css',
         'resources/js/app.js'
     ])
 </head>
 
 <body class="font" data-role="{{ session('lims_role') }}">
-    {{-- Loader --}}
-    <div id="loadingOverlay" class="loading-overlay"><div class="loader"></div></div>
-
     <div class="relative min-h-screen">
         
 
@@ -243,7 +244,6 @@
 
     @yield('modals')
 
-
-    
+    @include('partials.lims-loader')
 </body>
 </html>

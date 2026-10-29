@@ -9,6 +9,7 @@
         public DateTime? DateTimeCollected { get; set; }
         public string? PlaceCollected { get; set; }
         public string? Analysis { get; set; }
+        public string? AnalysisOthers { get; set; }
         public int? Status { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

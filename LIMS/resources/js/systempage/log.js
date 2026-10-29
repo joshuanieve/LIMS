@@ -50,7 +50,10 @@ function renderList(logs, activeId, page) {
                 <span class="lims-logs-item-meta">${log.actor} &middot; ${log.module}</span>
             </span>
 
-            <span class="lims-logs-item-time">${log.time}</span>
+            <span class="lims-logs-item-time">
+                <span class="lims-logs-item-date">${log.date}</span>
+                <span class="lims-logs-item-clock">${log.time}</span>
+            </span>
         </button>
     `).join('');
 
@@ -122,12 +125,15 @@ function renderDetail(log) {
 
     const d = log.detail;
 
+    // Sample-level events have both a reference number and a lab number
+    // ("Ref. #0411 2026-5982"); request-level events only have the
+    // reference number ("Ref. #0412") - combined into one "Record" line.
+    const combinedRecord = d.record ? [d.request, d.record].filter(Boolean).join(' ') : d.request;
+
     const fields = [
         ['User', d.user, false],
         ['Module', d.module, false],
-        ['Record', d.record, true],
-        ['Request', d.request, true],
-        ['IP address', d.ip, false]
+        ['Record', combinedRecord, true],
     ].filter(([, value]) => value);
 
     const fieldsHtml = fields.map(([label, value, isLink]) => `
@@ -142,15 +148,13 @@ function renderDetail(log) {
             <span class="lims-logs-detail-icon ${log.type}">${iconSvg(log.type, 20)}</span>
             <div>
                 <p class="lims-logs-detail-title">${log.title}</p>
-                <p class="lims-logs-detail-time">${d.timestamp ?? log.time}</p>
+                <p class="lims-logs-detail-time">${log.date} · ${log.time}</p>
             </div>
         </div>
 
         <div class="lims-logs-detail-grid">${fieldsHtml}</div>
 
         ${renderChangesTable(d.changes)}
-
-        ${d.reason ? `<p class="lims-logs-reason">${d.reason}</p>` : ''}
 
         <div class="lims-logs-detail-actions">
             ${d.record

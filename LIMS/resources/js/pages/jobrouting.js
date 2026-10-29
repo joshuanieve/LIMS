@@ -43,8 +43,21 @@ function countCategories(analysisValue) {
     return counts;
 }
 
-function buildCategoryPills(analysisValue) {
+// "Others" is free text (requestform.js's AnalysisOthers field) - a
+// comma-separated list of custom analysis names typed by the requester,
+// not IDs from the analysis catalog, so it's counted separately from
+// countCategories() rather than folded into chemical/microbiological.
+function countOtherAnalyses(analysisOthersValue) {
+    return (analysisOthersValue ?? '')
+        .split(',')
+        .map(name => name.trim())
+        .filter(name => name !== '')
+        .length;
+}
+
+function buildCategoryPills(analysisValue, analysisOthersValue) {
     const { chemical, microbiological } = countCategories(analysisValue);
+    const other = countOtherAnalyses(analysisOthersValue);
     let html = '';
 
     if (chemical > 0) {
@@ -53,6 +66,10 @@ function buildCategoryPills(analysisValue) {
 
     if (microbiological > 0) {
         html += `<span class="lims-grid-category-pill microbiological">${microbiological} micro</span>`;
+    }
+
+    if (other > 0) {
+        html += `<span class="lims-grid-category-pill other">${other} other</span>`;
     }
 
     return html || '<span class="lims-grid-category-pill">No analyses</span>';
@@ -89,12 +106,22 @@ function formatReference(request) {
     return `Ref. #${String(request.requestId).padStart(4, '0')}`;
 }
 
+// "Others" is free text typed by the requester (not a catalog ID), so it
+// has to be escaped before going into an HTML attribute or innerHTML -
+// unlike the numeric `analysis` IDs used everywhere else in this file.
+function escapeHtml(value) {
+    const div = document.createElement('div');
+    div.textContent = value ?? '';
+    return div.innerHTML;
+}
+
 // POPULATE CARDS
 document.addEventListener("DOMContentLoaded", async function () {
     const tableBody = document.getElementById("JobRoutingTableBody");
     const sampleCountLabel = document.getElementById("jobRoutingSampleCount");
 
     try {
+        showLoading('Loading samples to route…');
         const response = await fetch('/jobrouting/data', {
             method: 'GET',
             headers: {
@@ -139,7 +166,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             </p>
 
                             <div class="lims-grid-card-categories">
-                                ${buildCategoryPills(sample.analysis)}
+                                ${buildCategoryPills(sample.analysis, sample.analysisOthers)}
                             </div>
 
                             <div class="lims-grid-card-actions">
@@ -157,6 +184,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     type="button"
                                     data-request-id="${request.requestId}"
                                     data-request-analysis="${sample.analysis}"
+                                    data-request-other-analysis="${escapeHtml(sample.analysisOthers)}"
                                     data-lab-no="${sample.laboratoryNumber ?? '-'}"
                                     data-sample-name="${sample.sample ?? '-'}"
                                     class="noselect lims-button-view remove-row"
@@ -228,6 +256,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 </td>
             </tr>
         `;
+    } finally {
+        hideLoading();
     }
 
 });
@@ -272,28 +302,51 @@ function viewRequest(event) {
         `;
     });
 
+    // "Others" - free-text analyses typed by the requester, not in the
+    // catalog (requestform.js's AnalysisOthers field). Each gets its own
+    // route row too, using a synthetic "other:<name>" analysis id since
+    // there's no real analysisId for them.
+    (button.dataset.requestOtherAnalysis ?? '')
+        .split(',')
+        .map(name => name.trim())
+        .filter(name => name !== '')
+        .forEach(name => {
+            const safeName = escapeHtml(name);
+            rows += `
+                <div class="lims-route-row">
+                    <div>
+                        <p class="lims-analysis-name">${safeName}</p>
+                        <p class="lims-analysis-method">Custom analysis (not in catalog)</p>
+                    </div>
+                    <select class="lims-input lims-route-select" data-analysis-id="other:${safeName}">
+                        <option value="">Select analyst</option>
+
+                    </select>
+                </div>
+            `;
+        });
+
     container.innerHTML = rows || '<p class="lims-analysis-method">No analysis requested.</p>';
     OpenModal('RouteModal');
 }
 
 
 // "Cancel Test" - stub pending a real endpoint.
-JobRoutingTable.addEventListener('click', function (event) {
+JobRoutingTable.addEventListener('click', async function (event) {
     const button = event.target.closest('.lims-grid-cancel-button');
     if (!button) return;
 
-    window.Swal.fire({
-        icon: 'warning',
-        title: 'Cancel Test',
-        text: `Cancel testing for ${button.dataset.labNo}? This isn't wired to a backend yet.`,
-        showCancelButton: true,
-        confirmButtonText: 'Yes, cancel it',
-        cancelButtonText: 'Never mind'
-    }).then(result => {
-        if (result.isConfirmed) {
-            console.log('Cancel Test (not implemented):', button.dataset.testId, button.dataset.requestId);
-        }
-    });
+    const confirmed = await window.swal_confirm(
+        'Cancel Test',
+        `Cancel testing for ${button.dataset.labNo}? This isn't wired to a backend yet.`,
+        'Yes, cancel it',
+        'Never mind',
+        'warning'
+    );
+
+    if (confirmed) {
+        console.log('Cancel Test (not implemented):', button.dataset.testId, button.dataset.requestId);
+    }
 });
 
 

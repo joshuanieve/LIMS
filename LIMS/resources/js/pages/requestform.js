@@ -52,6 +52,15 @@ let rowIndex = 1;
                         id="locationhidden${rowIndex}"
                         required
                     >
+
+                    <input
+                        type="hidden"
+                        name="samples[${rowIndex}][place_code]"
+                        class="lims-table-input"
+                        placeholder="Location"
+                        id="locationcodehidden${rowIndex}"
+                        required
+                    >
                 </td>
 
                 <td>
@@ -69,6 +78,12 @@ let rowIndex = 1;
                         type="hidden"
                         name="samples[${rowIndex}][testarray]"
                         id="samplehidden${rowIndex}"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="samples[${rowIndex}][testothers]"
+                        id="samplespecifyhidden${rowIndex}"
                     >
                 </td>
 
@@ -119,6 +134,10 @@ let activeAnalysisRow = null;
         // Show the Tab
         analysisModal.classList.remove('hidden');
         analysisModal.classList.add('flex');
+
+        analysisModal.classList.remove('lims-fade-in');
+        void analysisModal.offsetWidth;
+        analysisModal.classList.add('lims-fade-in');
     });
 
     // FILTER TESTS IN THE ANALYSIS MODAL BY THE SELECTED LABORATORY
@@ -202,45 +221,42 @@ let activeAnalysisRow = null;
     const ApplyButton = document.getElementById('applyAnalysis');
     ApplyButton.addEventListener('click', function () {
 
-        const checkedCheckboxes = document.querySelectorAll(
-            'input.analysis-checkbox:checked'
-        );
-        let Analyte = [];
-        let ID = [];
+        const checkedCheckboxes = document.querySelectorAll('input.analysis-checkbox:checked');
+
+        const ids = [];
+        const analytes = [];
 
         checkedCheckboxes.forEach(function (checkbox) {
-            ID.push(checkbox.value);
-            Analyte.push(checkbox.dataset.name);
+            ids.push(checkbox.value);
+            analytes.push(checkbox.dataset.name);
         });
-        
-        // Get Others value
-        const otherAnalysis = document
-            .getElementById('AnalysisOthers')
-            .value
-            .trim();
 
-        // If user entered an Other analysis
+        // "Others" text from the modal
+        const otherAnalysis = document.getElementById('AnalysisOthers').value.trim();
+
+        // hidden inputs that get submitted
+        document.getElementById(`samplehidden${activeAnalysisRow}`).value = ids.join(',');           // "1,2,3,4"
+        document.getElementById(`samplespecifyhidden${activeAnalysisRow}`).value = otherAnalysis;    // "Lead, Mercury" or ""
+
+        // what the user sees in the row
+        const displayItems = [...analytes];
         if (otherAnalysis !== '') {
-            ID.push(`OTHERS:${otherAnalysis}`);
-            Analyte.push(otherAnalysis);
+            displayItems.push(`Others: ${otherAnalysis}`);
         }
+        document.getElementById(`analysisDisplay${activeAnalysisRow}`).textContent = displayItems.join(', ');
 
-        document.getElementById(
-        `analysisDisplay${activeAnalysisRow}`
-        ).textContent = Analyte.join(', ');
-
-        document.getElementById(
-        `samplehidden${activeAnalysisRow}`
-        ).value = ID.join(', ');
-
-        analysisModal.classList.remove('flex');
-        analysisModal.classList.add('hidden');
+        closeAnalysisModal();
     });
 
     // Close Analysis Tab
     function closeAnalysisModal() {
-        analysisModal.classList.add('hidden');
-        analysisModal.classList.remove('flex');
+        analysisModal.classList.remove('lims-fade-in');
+        analysisModal.classList.add('lims-fade-out');
+
+        setTimeout(() => {
+            analysisModal.classList.remove('flex', 'lims-fade-out');
+            analysisModal.classList.add('hidden');
+        }, 200);
     }
     cancelAnalysis.addEventListener('click', closeAnalysisModal);
 
@@ -263,7 +279,7 @@ cancelButton.addEventListener('click', function (event) {
 });
 
 async function CreateRequest() {
-    showLoading();
+    showLoading('Submitting your request…');
 
     const requestForm = document.getElementById('requestForm');
     const formData = new FormData(requestForm);
@@ -310,7 +326,9 @@ async function CreateRequest() {
 
     // SUCCESS
     await window.swal_success('Request Submitted', result.message);
+    document.getElementById('pagebody')?.scrollTo({ top: 0, behavior: 'smooth' });
     window.location.reload();
+    
 }
 
 
@@ -513,6 +531,10 @@ const ApplyLocationBUtton = document.getElementById('applyLocation');
 
         locationModal.classList.remove('hidden');
         locationModal.classList.add('flex');
+
+        locationModal.classList.remove('lims-fade-in');
+        void locationModal.offsetWidth;
+        locationModal.classList.add('lims-fade-in');
     });
 
     // Submit Location Tab
@@ -521,6 +543,16 @@ const ApplyLocationBUtton = document.getElementById('applyLocation');
         const provinceText = provinceSelect.options[provinceSelect.selectedIndex].text;
         const municipalityText = municipalitySelect.options[municipalitySelect.selectedIndex].text;
         
+        const regionCode       = regionSelect.value;
+        const provinceCode     = provinceSelect.value;
+        const municipalityCode = municipalitySelect.value;
+
+        let placeCode = '';
+
+        if (municipalityCode)  { placeCode = municipalityCode;  } 
+        else if (provinceCode) { placeCode = provinceCode;      } 
+        else if (regionCode)   { placeCode = regionCode;        }
+
         let location_value;
         if(provinceSelect.value != "" && municipalitySelect.value != ""){
             location_value = municipalityText +" "+ provinceText;
@@ -528,7 +560,7 @@ const ApplyLocationBUtton = document.getElementById('applyLocation');
         else{
             location_value = regionText;
         }
-        console.log(activeLocationRow);
+        // console.log(activeLocationRow);
 
         document.getElementById(
         `locationDisplay${activeLocationRow}`
@@ -538,13 +570,22 @@ const ApplyLocationBUtton = document.getElementById('applyLocation');
         `locationhidden${activeLocationRow}`
         ).value = location_value;
 
+        document.getElementById(
+        `locationcodehidden${activeLocationRow}`
+        ).value = placeCode;
+
         closeLocationModal();
     });
 
     // Close Location Tab
     function closeLocationModal() {
-        locationModal.classList.add('hidden');
-        locationModal.classList.remove('flex');
+        locationModal.classList.remove('lims-fade-in');
+        locationModal.classList.add('lims-fade-out');
+
+        setTimeout(() => {
+            locationModal.classList.remove('flex', 'lims-fade-out');
+            locationModal.classList.add('hidden');
+        }, 200);
     }
     CancelLocationButton.addEventListener('click', closeLocationModal);
 

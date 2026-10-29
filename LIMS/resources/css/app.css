@@ -45,100 +45,6 @@ body * {
     );
 }
 
-@layer Loader {
-
-    .loader {
-        width: 80px;
-        aspect-ratio: 1;
-        --c:no-repeat radial-gradient(farthest-side,#ffffff 92%,#f3020200);
-        background: 
-            var(--c) 50%  0, 
-            var(--c) 50%  100%, 
-            var(--c) 100% 50%, 
-            var(--c) 0    50%;
-        background-size: 10px 10px;
-        animation: l18 1s infinite;
-        position: relative;
-    }
-    .loader::before {    
-        content:"";
-        position: absolute;
-        inset:0;
-        margin: 3px;
-        background: repeating-conic-gradient(#ffffff00 0 35deg,#ffffff 0 90deg);
-        -webkit-mask: radial-gradient(farthest-side,#0000 calc(100% - 3px),#000 0);
-        border-radius: 50%;
-    }
-    @keyframes l18 { 
-        100%{transform: rotate(.5turn)}
-    }
-
-    .loader::after {
-        content: "";
-        grid-area: 1/1;
-        height: 50px;
-        aspect-ratio: 3;
-        --c: transparent 64%,
-             #ffffff 66% 98%,
-             transparent 101%;
-
-        background:
-            radial-gradient(
-                35% 146% at 50% 159%,
-                var(--c)
-            ) 0 0,
-            radial-gradient(
-                35% 146% at 50% -59%,
-                var(--c)
-            ) 100% 100%;
-
-        background-size: calc(200% / 3) 50%;
-        background-repeat: repeat-x;
-        clip-path: inset(0 100% 0 0);
-        animation: l16 1.5s infinite linear;
-    }
-
-    .loader::after {
-        scale: -1 1;
-        animation-delay: -.75s;
-    }
-
-    @keyframes l16 {
-        50% { clip-path: inset(0); }
-        to { clip-path: inset(0 0 0 100%);}
-    }
-
-    /* FULL SCREEN OVERLAY */
-    .loading-overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 9999;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        /* 100% OPAQUE */
-        background: #0000007e;
-
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-
-        transition:
-            opacity 0.3s ease,
-            visibility 0.3s ease;
-    }
-
-    .loading-overlay.show {
-        opacity: 1;
-        visibility: visible;
-        pointer-events: auto;
-    }
-
-    
-}
-
 @layer header{
     .lims-header-dropdown-wrapper {
         @apply relative;
@@ -708,6 +614,25 @@ body * {
        jobrouting.js/resultforencoding.js/requestsample.js/results.js. */
     .lims-fade-in {
         animation: lims-page-fade-in 0.25s ease both;
+    }
+
+    /* Reverse of .lims-fade-in, played on modal close before the element is
+       set back to display:none - JS waits out LIMS_MODAL_FADE_MS (200ms,
+       app.js) before hiding it, since display:none would otherwise cut the
+       animation off instantly. */
+    .lims-fade-out {
+        animation: lims-fade-out 0.2s ease both;
+    }
+
+    @keyframes lims-fade-out {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateY(8px);
+        }
     }
 
     .dashboard-panelheader{

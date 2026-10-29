@@ -36,7 +36,8 @@ namespace LIMS_API.Repositories.JobRouting
                             Sample = s.Sample,
                             DateTimeCollected = s.DateTimeCollected,
                             PlaceCollected = s.PlaceCollected,
-                            Analysis = s.Analysis
+                            Analysis = s.Analysis,
+                            AnalysisOthers = s.AnalysisOthers
                         })
                         .ToList()
                 })

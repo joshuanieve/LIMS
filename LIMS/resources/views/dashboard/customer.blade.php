@@ -8,9 +8,9 @@
 
 @vite(['resources/css/pages/dashboard.css'])
 
-{{-- //////////////////////////////// WELCOME ////////////////////////////////////////// --}}
-<div class="dashboard-panelheader">
-    <div class="lims-welcome-card">
+{{-- //////////////////////////////// WELCOME + STATS ////////////////////////////////////////// --}}
+<div class="lims-customer-hero">
+    <div class="lims-welcome-card lims-customer-hero-welcome">
         <div class="lims-welcome-content">
             <p class="lims-welcome-label">
                 Welcome Back
@@ -32,53 +32,51 @@
             </svg>
         </a>
     </div>
-</div>
 
-
-{{-- //////////////////////////////// STATS ////////////////////////////////////////// --}}
-<div class="lims-stats-grid">
-    <div class="lims-stat-card">
-        <div class="lims-stat-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6M9 8h2m-5 13h12a2 2 0 002-2V7l-5-5H6a2 2 0 00-2 2v15a2 2 0 002 2z" />
-            </svg>
+    <div class="lims-customer-hero-stats">
+        <div class="lims-stat-card lims-hero-stat-card">
+            <div class="lims-stat-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6M9 8h2m-5 13h12a2 2 0 002-2V7l-5-5H6a2 2 0 00-2 2v15a2 2 0 002 2z" />
+                </svg>
+            </div>
+            <p class="lims-stat-label">My Total Requests</p>
+            <p class="lims-stat-value">{{ $stats['myRequests'] }}</p>
+            <p class="lims-stat-description">Total requests submitted</p>
         </div>
-        <p class="lims-stat-label">My Requests</p>
-        <p class="lims-stat-value">{{ $stats['myRequests'] }}</p>
-        <p class="lims-stat-description">Total requests submitted</p>
-    </div>
 
-    <div class="lims-stat-card">
-        <div class="lims-stat-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 3h6m-5 0v6l-5 9a2 2 0 001.74 3h10.52A2 2 0 0019 18l-5-9V3M8 15h8" />
-            </svg>
+        <div class="lims-stat-card lims-hero-stat-card">
+            <div class="lims-stat-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <p class="lims-stat-label">Completed</p>
+            <p class="lims-stat-value">{{ $stats['completed'] }}</p>
+            <p class="lims-stat-description">Results released to you</p>
         </div>
-        <p class="lims-stat-label">My Samples</p>
-        <p class="lims-stat-value">{{ $stats['mySamples'] }}</p>
-        <p class="lims-stat-description">Submitted for testing</p>
-    </div>
 
-    <div class="lims-stat-card">
-        <div class="lims-stat-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3v18h18M7 16v-4m5 4V8m5 8v-7" />
-            </svg>
+        <div class="lims-stat-card lims-hero-stat-card">
+            <div class="lims-stat-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3v18h18M7 16v-4m5 4V8m5 8v-7" />
+                </svg>
+            </div>
+            <p class="lims-stat-label">In Progress</p>
+            <p class="lims-stat-value">{{ $stats['inProgress'] }}</p>
+            <p class="lims-stat-description">Currently being processed</p>
         </div>
-        <p class="lims-stat-label">In Progress</p>
-        <p class="lims-stat-value">{{ $stats['inProgress'] }}</p>
-        <p class="lims-stat-description">Currently being processed</p>
-    </div>
 
-    <div class="lims-stat-card">
-        <div class="lims-stat-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7" />
-            </svg>
+        <div class="lims-stat-card lims-hero-stat-card">
+            <div class="lims-stat-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 3h6m-5 0v6l-5 9a2 2 0 001.74 3h10.52A2 2 0 0019 18l-5-9V3M8 15h8" />
+                </svg>
+            </div>
+            <p class="lims-stat-label">Total Samples Submitted</p>
+            <p class="lims-stat-value">{{ $stats['mySamples'] }}</p>
+            <p class="lims-stat-description">Submitted for testing</p>
         </div>
-        <p class="lims-stat-label">Completed</p>
-        <p class="lims-stat-value">{{ $stats['completed'] }}</p>
-        <p class="lims-stat-description">Results released to you</p>
     </div>
 </div>
 
@@ -105,7 +103,7 @@
             <tbody>
                 @foreach ($myRequests as $r)
                     <tr>
-                        <td>{{ $r['request_no'] }}</td>
+                        <td class="lims-table-ref">{{ $r['request_no'] }}</td>
                         <td>{{ $r['samples'] }}</td>
                         <td>{{ $r['date'] }}</td>
                         <td>
